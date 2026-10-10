@@ -1,0 +1,88 @@
+# Architecture
+
+## Loading model
+- All files in `src/` are **classic scripts sharing one global scope**; there are no ES modules. Order matters and is defined once in `src/manifest.json`.
+- `index.html` loads them in that order during development. `tools/build.mjs` inlines them into `dist/asset-forge.html`, and the library part into `dist/asset-forge-lib.js`.
+- Top-level `const` names must be unique across files. Later files may *reassign* function declarations to extend them (for example `tileMats`).
+- Uses three.js **r128** APIs (`outputEncoding`, `sRGBEncoding`, `PMREMGenerator.fromEquirectangular`). Don't upgrade three without porting.
+
+## Files
+| File | Contents |
+|---|---|
+| core/models.js | RNG (`mulberry32`, `hashStr`, `seed`), canvas texture helpers, `box()` with world-space UVs, `put()`, legacy smooth buildings (unused) |
+| core/anim.js | villager clip sampler (`sampleClip`) and the 13 villager clips scaled per body type `VB` |
+| characters/villager.js | `bm()` pixel materials for characters, `bx()` box helper, `villagerTraits`, `buildVillager(kind,seed,job,force)`, `TOOLS` (held tools plus workpieces), `buildWorkpiece` |
+| characters/occ.js | `OCC` occupations (outfit, head, accessories, tool), `applyOccupation`, extra tools |
+| characters/registry_chars.js | registers the villager, woman, boy and girl |
+| buildings/blocky.js | **voxel core**: `VXD` texture recipes, `vxTex`, `vm(kind)` materials, `vWalls`, `vWin`, `vDoor`, `vRoof`, `vArchRoof`, `vPyramid`, `vlog`, `vYard`, props (`vBarrel`, `vCrate`, `vHay`, `vBush`, `vLantern`, `vFence`, `vWoodpile`, `vCart`, `vSack`), the first 6 buildings |
+| buildings/blocky2..13.js | later batches of buildings; helpers grew along the way (`vTree`, `vHangSign`/`ICONS`, `vBanner`, `vMerlons`, `vSlit`, `vDisc`, `vDome`, `vMouth` (glowing oven mouth), `vFirePit`, `vLeanTo`, `vTable`, `vChest`, `vGateAnim`, `vStoneWallSeg`, `vPalisadeSeg`, `vWaterWheel`…) |
+| buildings/blocky3.js, blocky8.js | numbered types built from config arrays: `cottageType`, `brickType`, `croftType`, `townType`, `farmBase`, `vStall` |
+| buildings/blocky9.js | categories (`CATS`) mapping asset ids to category folders |
+| buildings/fences.js | `fWood`, `fStone`, `fGate` |
+| terrain/terrain.js | `vTile(classify,deco)`, `roadTile`, `waterTile`, `WATERMAT` (animated, sky-reflective water), `vWaterSurface`, `vWaterArea`, sprite foliage `vSprite` |
+| environment/env.js | `vxTree(kind,size)`, rocks with veins, ore, reeds, bushes, ferns, flowers, mushrooms, stump, log |
+| items/items.js | `iRoot`, `upright`, `vFlame`, `hollow`, weapons `w*`, armour `a*`, potions `p*`, containers `i*` with `fillTop`, furniture, lighting `l*` |
+| characters/animals.js | `QUAD` species specs, `buildQuad(sp,o)` with `young`, `aClip` sampler, `quadClips`, birds (`buildBird`, `buildAvian`), coat colour sets, registrations |
+| characters/outlaws.js | outlaw occupations, extra weapons, camp builders |
+| scenes/scenes.js | `sceneTerrain` (voxel heightmap, only visible faces), `mergeStatic` (optional chunk size so big scenes can cull), `compactRig` (folds a character into one skinned mesh using a shared 16 × 16 texture atlas and vertex colours), `pineSwap`, `sceneStats`, agent behaviours (`agentOf`, `behPath`, `behWander`, `behCircle`, `giveTool`, `workPiece`) |
+| scenes/scenes2.js | "Farm by the lake" (`vxSceneFarm2`), replacing the build of `sc-farm` |
+| scenes/scenes3.js | "Mining village" (`vxSceneMining`, `sc-mining`), 200 × 200 m |
+| scenes/scenes4.js | "Large fortified town" (`vxSceneTown`, `sc-town`), 300 × 300 m, plateau, palisade, river, sea shore |
+| scenes/scenes5.js | "Fortified city" (`vxSceneCity`, `sc-city`), 500 × 500 m: curved road ribbons and bridges, irregular stone and wooden wall rings that follow the ground, a placement planner (oriented footprints, flat pads, regions, road fill), distance-based animation detail |
+| export/export.js | `window.AssetForge` and GLB export (see EXPORT.md) |
+| app/app.js | library UI, viewer, thumbnails, lighting presets, `Orbit` controls (WASD), options panel, animation panel, rig overlay |
+
+## The registry
+Every asset is one object in the global `ASSETS` array; folders live in the global `FOLDERS` map.
+```js
+ASSETS.push({
+  id:'vx-example',                 // stable, unique, prefixed
+  folder:'buildings/medieval/production',
+  name:'Example',
+  build:(seed,opts)=>THREE.Group, // seed only matters when variants:true
+  desc:'One or two sentences shown in the viewer.',
+  kind:'character'|'scene',       // optional; changes camera framing, animation UI
+  variants:true, defaultSeed:3,    // optional: enables "New look"
+  groundR:6,                       // optional legacy; prefer root.userData.ground
+  opts:[{key:'contents',label:'Contents',choices:[['wine','Wine'],['water','Water']],def:'wine',live:false}]
+});
+FOLDERS['buildings/medieval/production']={name:'Production',blurb:'…',children:[]};
+```
+
+### What the root group carries (`root.userData`)
+| key | meaning |
+|---|---|
+| `lights` | PointLights; their intensity follows Day/Dusk/Night (`userData.min` sets an always-on floor) |
+| `ground` | grass base half-size in metres; `-1` means no base (terrain tiles, scenes) |
+| `clips`, `joints` | AnimationClips and the joint objects (characters and animals) |
+| `post()` | called after each mixer update (villager skirts) |
+| `tick(dt)` | per-frame update (scenes, gate animation) |
+| `setOpt(key,value)` | applies a `live` option without rebuilding |
+| `awning`, `awnColor` | recolourable awning meshes (market stalls) |
+| `animal` | marks animals (hides the tool row) |
+| `occTool` | tool a villager holds for their occupation |
+
+## Adding a building (pattern)
+```js
+function vxMyHall(){const root=new THREE.Group(),L=[];root.userData.lights=L;const Lx=6,Dz=4.4,base=.4,hw=2.6;
+  vYard(root,10,8,0,1);bx(root,Lx+.2,base,Dz+.2,vm('cobble'),0,base/2,0);              // dirt yard + plinth
+  const W=vWalls({Lx,Dz,y:base,h:hw,t:.2,mat:vm('plaster'),frame:vm('timber'),
+    ops:{front:[{type:'door',x:0,w:1,y0:0,y1:2},{x:-1.8,w:.8,y0:.9,y1:1.7,flowers:true}],back:[],left:[],right:[]}});root.add(W.group);
+  put(root,vRoof(Dz,Lx,2.4,vm('thatch'),{ov:.7,ovL:.6,step:.4,gable:vm('plaster'),ridge:vm('hay')}),0,base+hw,0);
+  vLantern(root,L,.8,base+2,Dz/2);root.userData.ground=6;return root;}
+ASSETS.push({id:'vx-myhall',folder:'buildings/medieval/civil',name:'My hall',build:vxMyHall,desc:'…'});
+```
+- `vWalls` openings: `type:'door'|'hole'` (default window), `x` along the face, `y0/y1` height, `w` width, plus optional `shutter`, `flowers`, `sill`, `lintel`, `leaf`, `open`. Each face (`W.faces.front` and so on) is a group in face coordinates, so decorations can be added to it.
+- `vRoof(W,L,H,…)` builds a gable with its ridge along x. Rotate it π/2 for a front-facing gable.
+- Animated parts set `mesh.onBeforeRender` to update a parent group. `mergeStatic` keeps those groups unmerged.
+
+## Characters
+- `buildVillager(kind,seed,job,force)`: `kind` is `male`, `female` or `child`; `job` is an `OCC` key; `force.girl` is a boolean. Accessories are listed in `T.acc` and built near the end of `buildVillager`.
+- Clips for villagers come from `anim.js`; tool clips need `TOOLS[name].two` to match (`Tool strike` uses two hands, `Hammering` one).
+- Animals: `buildQuad(species,{coat,face,leg,mane,muzzle,belly,young,antlers,…})`. Clips are sampled with `aClip(model,name,dur,loop,fn)`, where `fn(u)` returns joint angles in degrees plus `_pos` for the body.
+
+## Scenes
+`sceneTerrain(root,size,cell,heightAt,surfAt)` builds the ground. Road tiles go at y = −0.8, so their tops sit at 0, and the terrain under them is lowered to −0.85. Static content goes in one group that is then passed to `mergeStatic`. People and animals are agents updated in `root.userData.tick`. Call `compactRig(agent.m)` on every agent once the scene is built (cuts draw calls about 15×), and `sceneStats(root,{buildings,houses,trees})` so the viewer can show FPS, buildings, population, animals, wildlife and trees (optional extra keys: `production`, `military`, `farm`). `root.userData.tick(dt, camera)` receives the camera. Scenes larger than about 320 m get a shadow box that follows the orbit target, and point lights are off in Day mode.
+
+## Tooling
+`tools/dev-server.mjs` (static server, free port, live reload, background rebuild), `tools/build.mjs`, `tools/gen-catalog.mjs` (loads the library in Node with a canvas stub; also a quick check that every asset still builds).

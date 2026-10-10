@@ -1,0 +1,14 @@
+{
+  "name": "blocky-assets",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Blocky medieval 3D asset library for three.js r128: buildings, characters, animals, items, terrain, environment and scenes. Every asset exports to GLB.",
+  "scripts": {
+    "start": "node tools/dev-server.mjs",
+    "dev": "node tools/dev-server.mjs",
+    "build": "node tools/build.mjs",
+    "catalog": "node tools/gen-catalog.mjs"
+  },
+  "engines": { "node": ">=18" }
+}
