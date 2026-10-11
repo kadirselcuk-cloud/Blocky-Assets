@@ -7,7 +7,7 @@ const TYPES={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=
 const clients=new Set();
 const LIVE=`<script>(()=>{const es=new EventSource('/__live');es.onmessage=e=>{if(e.data==='reload')location.reload();};})();</script>`;
 const free=p=>new Promise(r=>{const s=net.createServer().once('error',()=>r(false)).once('listening',()=>s.close(()=>r(true))).listen(p,'127.0.0.1');});
-let port=5173;while(!(await free(port)))port++;
+let port=+process.env.PORT||5173;while(!(await free(port)))port++;
 http.createServer((req,res)=>{const u=decodeURIComponent(req.url.split('?')[0]);
   if(u==='/__live'){res.writeHead(200,{'Content-Type':'text/event-stream','Cache-Control':'no-cache',Connection:'keep-alive'});res.write('data: hello\n\n');clients.add(res);req.on('close',()=>clients.delete(res));return;}
   let f=path.join(ROOT,u==='/'?'index.html':u);if(!f.startsWith(ROOT)){res.writeHead(403);return res.end();}

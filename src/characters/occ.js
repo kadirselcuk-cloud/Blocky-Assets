@@ -26,7 +26,7 @@ const OCC={
 const OCC_CHOICES=Object.keys(OCC).map(k=>[k,OCC[k].name]);
 function applyOccupation(T,job){if(!job||job==='none'||!OCC[job])return T;const o=OCC[job],f=T.kind==='female';T.job=job;
   T.outfit=(f?o.fOutfit:o.outfit)||T.outfit;if(o.main)T.main=o.main;if(o.second)T.second=o.second;if(o.legs)T.legs=o.legs;if(o.legwear&&!(f&&['kirtle','bodice','apron','robe'].includes(T.outfit)))T.legwear=o.legwear;
-  if(o.boots)T.boots=o.boots;T.head=(f&&o.fHead)||o.head||T.head;if(o.rolled!=null)T.rolled=o.rolled;T.acc=(o.acc||[]).slice();if(T.acc.includes('knife'))T.knife=true;
+  if(o.boots)T.boots=o.boots;T.head=(f&&o.fHead)||o.head||T.head;if(o.rolled!=null)T.rolled=o.rolled;T.acc=(o.acc||[]).slice();if(T.acc.includes('knife'))T.knife=true;if(o.fn)o.fn(T);
   if(['hoodUp','kettleHelm','chefCap','knitCap','leatherCap','hunterHat','beret','flatCap','strawHat','cap','coif','spikedHelm','slouchHat'].includes(T.head)&&['loose','twinBraids','pigtails'].includes(T.hairStyle))T.hairStyle='bun';
   if(T.head==='kerchief'||T.head==='wimple'){if(['loose','twinBraids','pigtails'].includes(T.hairStyle))T.hairStyle='bun';}
   T.tool=o.tool||null;return T;}

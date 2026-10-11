@@ -11,6 +11,17 @@ Read this file first in every session, then open only the doc you need:
 | How the code is organised, helper functions, how to add an asset | `docs/ARCHITECTURE.md` |
 | Every asset id, folder, options (generated) | `docs/ASSET_CATALOG.md` |
 | Using assets in another project (GLB, JS API, catalog.json) | `docs/EXPORT.md` |
+| The warrior: body, equipment, all clips and how they are built | `docs/WARRIOR.md` |
+| The goblin enemy: body, clothes, weapons, clips | `docs/GOBLIN.md` |
+| The goblin shaman: body, accessories, staffs, clips | `docs/GOBLIN_SHAMAN.md` |
+| The hobgoblin: body, armour, weapons, clips | `docs/HOBGOBLIN.md` |
+| The warg: body, looks, clips | `docs/WARG.md` |
+| The ogre: body, weapons, clips | `docs/OGRE.md` |
+| The troll: body, looks, clips (fall unconscious and rise) | `docs/TROLL.md` |
+| The skeleton (undead): bones, armour, weapons, the bone-pile death and rise | `docs/SKELETON.md` |
+| The skeleton archer: bow, string and arrow posing, shooting and reload clips | `docs/SKELETON_ARCHER.md` |
+| The skeletal warrior: heavy-boned 2.2 m skeleton, two-handed sword, clips | `docs/SKELETON_WARRIOR.md` |
+| The ghoul (undead): one arm torn off, limping, body pieces fall apart in Death and rise | `docs/GHOUL.md` |
 
 ## Run it
 

@@ -47,7 +47,7 @@ function bx(par,w,h,d,mat,x=0,y=0,z=0,rx,ry,rz){const m=box(w,h,d,mat,{s:.8,ox:0
 
 /* ---------- builder ---------- */
 function buildVillager(kind='male',seedN=1,job=null,force={}){
-  const B=VB[kind],T=applyOccupation(villagerTraits(kind,seedN,force),job),g=B.g,root=new THREE.Group();root.userData.lights=[];root.userData.traits=T;
+  const B=force.B||VB[kind],T=applyOccupation(villagerTraits(kind,seedN,force),job),g=B.g,root=new THREE.Group();root.userData.lights=[];root.userData.traits=T;
   const er=mulberry32(seedN*7919+11);T.eyes=['#3a2a1a','#3d5a78','#4a6a30','#2a1a10'][Math.floor(er()*4)];
   const skin=bm(T.skin[0],'skin'),skinD=bm('#'+new THREE.Color(T.skin[0]).multiplyScalar(.86).getHexString(),'skin'),hairM=bm(T.hair[0],'hair'),main=bm(T.main[0],T.outfit==='gambeson'?'quilt':'cloth'),second=bm(T.second[0]),legsM=bm(T.legs[0]),boots=bm(T.boots,'leather'),beltM=bm(T.belt,'leather'),
     apronM=bm(T.apron[0]),dark=bm('#1c1410','plain'),white=bm('#f0ece2','plain'),pupil=bm(T.eyes,'plain'),brass=bm('#c8a050','plain'),chemise=bm('#ece4d2'),linen=bm('#ece6d6'),wraps=bm('#b8ab8e'),straw=bm('#d2b060','straw'),wood=bm('#6a4a2e','leather');
@@ -55,14 +55,14 @@ function buildVillager(kind='male',seedN=1,job=null,force={}){
   const female=kind==='female'||T.girl,adultF=kind==='female',ch=T.child,isDress=['kirtle','bodice','dress','robe'].includes(T.outfit)||(T.outfit==='apron'&&female);
   const topM=T.outfit==='bodice'?chemise:main;
   const hips=J('hips',root,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
-  const aw=.12*g,lw=.13*g,TW=2*(B.shW-aw/2),TD=.18*g,HW=adultF?TW*1.12:TW,vs=B.tS;
+  const aw=.12*g*(B.arm||1),lw=.13*g,TW=2*(B.shW-aw/2),TD=.18*g*(B.td||1),HW=(adultF?TW*1.12:TW)*(B.hipK||1),SW=TW*(adultF?.92:1)*(B.waistK||1),vs=B.tS;
   /* torso */
   bx(hips,HW,.16*vs,TD,isDress?main:legsM,0,-.04*vs,0);
-  bx(spine,TW*(adultF?.92:1),.25*vs,TD,topM,0,.08*vs,0);
+  bx(spine,SW,.25*vs,TD,topM,0,.08*vs,0);
   const chH=.27*B.cS;bx(chest,TW,chH,TD,topM,0,.1*B.cS,0);
   if(adultF)bx(chest,TW*.78,.085*B.cS,.04,topM,0,.11*B.cS,TD/2+.018);
   if(T.outfit==='jerkin'||T.outfit==='bodice'){const v=second,e=.02;
-    bx(chest,TW+e,chH*.92,TD+e,v,0,.08*B.cS,0);bx(spine,TW*(adultF?.92:1)+e,.25*vs,TD+e,v,0,.08*vs,0);
+    bx(chest,TW+e,chH*.92,TD+e,v,0,.08*B.cS,0);bx(spine,SW+e,.25*vs,TD+e,v,0,.08*vs,0);
     if(adultF)bx(chest,TW*.78+e,.085*B.cS,.04+e,v,0,.11*B.cS,TD/2+.02);
     const fz=TD/2+e/2+(adultF?.042:0)+.004;bx(chest,.06*g,chH*.8,.01,topM,0,.08*B.cS,fz);
     if(T.outfit==='bodice')for(let i=0;i<4;i++){bx(spine,.07*g,.012,.008,dark,0,(.0+i*.055)*vs,TD/2+e/2+.006,0,0,i%2?.6:-.6);}}

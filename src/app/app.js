@@ -164,7 +164,7 @@ function setupOpts(model,a){const aw=!!model.userData.awning,ok=aw||!!(a.opts&&a
 function setupAnim(model,first='Idle'){const clips=model.userData.clips,panel=$('#vanims');V.mixer=null;V.cur=null;if(V.piece){V.piece.parent&&V.piece.parent.remove(V.piece);V.piece=null;}V.toolObj=null;
   if(V.rig){V.scene.remove(V.rig.group);V.rig=null;}
   $('#tRig').hidden=!clips;panel.hidden=!clips;$('#viewer').classList.toggle('has-anims',!!clips);if(!clips)return;
-  V.mixer=new THREE.AnimationMixer(model);V.mixer.addEventListener('finished',e=>{if(e.action===V.cur&&e.action.getClip().name!=='Death')playClip('Idle');});
+  V.mixer=new THREE.AnimationMixer(model);V.mixer.addEventListener('finished',e=>{if(e.action===V.cur&&!/^(Death|Fall)/.test(e.action.getClip().name))playClip('Idle');});
   $('#animList').innerHTML=clips.map(c=>`<li><button data-clip="${esc(c.name)}" aria-pressed="false"><span class="an-name">${esc(c.name)}</span><span class="an-meta">${c.duration.toFixed(c.duration<1?2:1)} s, ${c.loopMode?'loop':'once'}</span></button></li>`).join('');
   $('#animList').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>playClip(b.dataset.clip)));
   $('#toolRow').innerHTML=['',...Object.keys(TOOLS)].map(n=>`<button data-tool="${n}" aria-pressed="false">${n||'No tool'}</button>`).join('');
