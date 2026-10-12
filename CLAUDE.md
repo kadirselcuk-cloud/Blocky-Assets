@@ -29,6 +29,7 @@ Read this file first in every session, then open only the doc you need:
 | The revenant (undead): 2.2 m, heavy plate, a weapon in each hand (short sword, axe or mace), drops and recalls them in Death/Rise | `docs/REVENANT.md` |
 | The vampire spawn (undead): bald, big round head, long ears, fangs, humpback; bite, leap & feed, rises from the ground | `docs/VAMPIRE_SPAWN.md` |
 | The vampire (mini boss, phase 1): floating gentleman with a cloth cape; summons spawn, blood spells, vanishes into his cape in smoke | `docs/VAMPIRE.md` |
+| The necromancer (boss): gothic sorceress, straight hair, corset and slit gown, skull staff; soul spells, rune circle, soul-fire ring, kiss of death, vanishes in smoke | `docs/NECROMANCER.md` |
 | The vampire beast form (mini boss, phase 2): 2.2 m bald grey creature with bat-wing arms; always flying, talon kicks, wraps the enemy in his wings to drink, appears out of the phase 1 smoke | `docs/VAMPIRE_BEAST.md` |
 
 ## Run it

@@ -44,6 +44,7 @@
     "src/characters/vampire_spawn.js",
     "src/characters/vampire.js",
     "src/characters/vampire_beast.js",
+    "src/characters/necromancer.js",
     "src/buildings/fences.js",
     "src/scenes/scenes.js",
     "src/scenes/scenes2.js",
