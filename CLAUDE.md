@@ -28,6 +28,7 @@ Read this file first in every session, then open only the doc you need:
 | The wight (undead): semi-crouched, two clawed hands, long hair that drapes and never goes into the body | `docs/WIGHT.md` |
 | The revenant (undead): 2.2 m, heavy plate, a weapon in each hand (short sword, axe or mace), drops and recalls them in Death/Rise | `docs/REVENANT.md` |
 | The vampire spawn (undead): bald, big round head, long ears, fangs, humpback; bite, leap & feed, rises from the ground | `docs/VAMPIRE_SPAWN.md` |
+| The vampire (mini boss, phase 1): floating gentleman with a cloth cape; summons spawn, blood spells, vanishes into his cape in smoke | `docs/VAMPIRE.md` |
 
 ## Run it
 
@@ -61,3 +62,4 @@ Other commands: `npm run build` (writes `dist/asset-forge.html` and `dist/asset-
 2. Edit the builder in `src/…` and save. The browser reloads by itself.
 3. New asset: write a builder, `ASSETS.push({...})` in the matching file (see `docs/ARCHITECTURE.md`), and add a new file to `src/manifest.json`.
 4. Check day, dusk and night, the options, and the animations. Then update `docs/HISTORY.md` with one line per change.
+5. **Commit and push every change** right away (owner decision, 2026-10-12): `git add -A`, a clear message, `git push`.

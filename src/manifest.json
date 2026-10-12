@@ -42,6 +42,7 @@
     "src/characters/revenant.js",
     "src/characters/ogre_boss.js",
     "src/characters/vampire_spawn.js",
+    "src/characters/vampire.js",
     "src/buildings/fences.js",
     "src/scenes/scenes.js",
     "src/scenes/scenes2.js",
