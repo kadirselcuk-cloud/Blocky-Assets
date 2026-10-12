@@ -23,7 +23,6 @@ Open it: `http://localhost:<port>/#/a/vampire-spawn`
 - **Humpback**: a big hump over the shoulder blades with spine knobs along it.
 - Gaunt torso and limbs; the wight's big clawed hands and long clawed feet (the IK foot, g 1.45, matches the mesh).
 - Ragged breeches to the knee, bare shins smeared with grave dirt; a torn grave shirt, or a bare chest with ribs.
-- **Grave** (`g_grave`, child of the root): a dark hole in a ring of broken earth with a few clods, lying on the ground. Every clip keys `g_grave.scale`; it shows only in Rise from the ground and is shrunk away (0.001) everywhere else.
 
 ## Clips (15)
 
@@ -43,7 +42,7 @@ Open it: `http://localhost:<port>/#/a/vampire-spawn`
 | Heavy hit | 1.8 s | once | Knocked back two steps, then stalks in again |
 | Death | 2.4 s | once, held | Shudders, drops onto its knees and pitches forward face down |
 | Rise | 4.5 s | once | Pushes up onto hands and knees, kneels, plants a foot and rises into the war stance |
-| Rise from the ground | 5.4 s | once | Starts buried: the claws burst out of the earth, slap down either side of the hole and drag the body up; head, shoulders and chest come out, the right foot is planted at the rim, the left leg climbs out and it crouches into the war stance, hissing. The earth patch settles flat at the end. Followed by Idle (war mode) |
+| Rise from the ground | 5.4 s | once | Starts buried: the claws burst out of the earth, slap down on the ground and drag the body up; head, shoulders and chest come out, the right foot is planted, the left leg climbs out and it crouches into the war stance, hissing. No ground piece of its own: the ground tile hides the buried body, and a summoning effect is meant to be added separately. Followed by Idle (war mode) |
 
 Every combat clip starts and ends on the war stance; Death ends where Rise starts.
 
@@ -52,7 +51,7 @@ Every combat clip starts and ends on the war stance; Death ends where Rise start
 - The wight's machinery (see `docs/WIGHT.md`): relaxed (`VS_N`) and war (`VS_W`) stances in the warrior's IK terms, hand targets in the torso's frame, hands never aimed (keyed wrists `wr`/`wl`), elbow poles chosen by a cost search with frame-to-frame continuity, looping clips warmed up one cycle so the seam never flips an arm.
 - Jumps (Leap & feed) are IK keys with the hips raised and positive foot lift; foot z is absolute, so the landing feet move forward with the hips.
 - Leap & feed adds the gulping pulse on top of the keys (`o.add`) while it feeds.
-- **Rise from the ground** uses the same IK: the hips start 2.3 m down and the feet have negative lift, so the legs stay naturally folded underground; the hands are targets on the ground beside the hole. The right knee points up (`nR`) while that foot is planted at the rim with the thigh near level, so the thigh doesn't roll. The clip is marked `clip.underground` (the checker skips the below-ground flag for it); the opaque ground tile hides the buried body.
+- **Rise from the ground** uses the same IK: the hips start 2.3 m down and the feet have negative lift, so the legs stay naturally folded underground; the hands are targets on the ground. The right knee points up (`nR`) while that foot is planted with the thigh near level, so the thigh doesn't roll. The clip is marked `clip.underground` (the checker skips the below-ground flag for it); the opaque ground tile hides the buried body.
 - Death and Rise (`vsFalls`): the wight's keyed falls (`gbDeathKeys`), dropped onto the lowest point every frame, sampled at 60 fps. The head stays face down so the long ears lie flat.
 
 ## Checks done

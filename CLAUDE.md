@@ -27,7 +27,7 @@ Read this file first in every session, then open only the doc you need:
 | The lich (undead sorcerer): robe, headwear, staffs, levitation, spells | `docs/LICH.md` |
 | The wight (undead): semi-crouched, two clawed hands, long hair that drapes and never goes into the body | `docs/WIGHT.md` |
 | The revenant (undead): 2.2 m, heavy plate, a weapon in each hand (short sword, axe or mace), drops and recalls them in Death/Rise | `docs/REVENANT.md` |
-| The vampire spawn (undead): bald, big round head, long ears, fangs, humpback; bite, leap & feed, rises out of a grave | `docs/VAMPIRE_SPAWN.md` |
+| The vampire spawn (undead): bald, big round head, long ears, fangs, humpback; bite, leap & feed, rises from the ground | `docs/VAMPIRE_SPAWN.md` |
 
 ## Run it
 

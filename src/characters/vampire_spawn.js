@@ -4,8 +4,8 @@
    warrior's leg and arm IK, wrSolve, fits unchanged) with the wight's clip machinery: hand targets in the torso's frame, wrists keyed
    (never aimed), elbow poles chosen frame by frame so no arm flips. Bald, a large round head with veins on the scalp, long pointed
    ears that sweep out and back, glowing eyes, a hooked nose, two long upper fangs and a lower jaw that opens (g_jaw); big clawed hands.
-   Rise from the ground: the claws break out of the earth, it drags itself up out of a grave (g_grave: a broken earth patch round a
-   dark hole, shown only in that clip) and crouches into the war stance. Death collapses face down; Rise gets back up. */
+   Rise from the ground: the claws break out of the earth, it drags itself up out of the ground (no ground
+   piece of its own: a summoning effect is added separately) and crouches into the war stance. Death collapses face down; Rise gets back up. */
 VB.vspawn=Object.assign({},VB.male,{sex:'male',g:1.45});
 {const b=VB.vspawn;b.key='vspawn';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 const VS_SKIN={chalk:['#c8c6bc','chalk white'],bluish:['#9ea6ac','grey-blue'],green:['#9ea692','grey-green'],sallow:['#c0b696','sallow']};
@@ -81,13 +81,6 @@ function buildVampireSpawn(seed,o={}){const B=VB.vspawn,r=mulberry32(((seed*2654
   }
   const joints=[];root.traverse(q=>{if(q.userData.joint&&!q.userData.socket)joints.push(q);});root.userData.joints=joints;
   if(o.bare)return root;
-  /* the grave it climbs out of: a dark hole in a ring of broken earth with a few clods, lying on the ground. Only Rise from the
-     ground shows it (every clip keys g_grave.scale; elsewhere it is shrunk away) */
-  const gv=new THREE.Group();gv.name='g_grave';root.add(gv);const soil=bm('#4e3c2a','plain'),soilD=bm('#3a2c1e','plain'),hole=bm('#0c0806','plain');
-  bx(gv,.62,.004,.54,hole,0,.002,.02);
-  for(const[x,z,w,d]of[[0,.44,1.1,.3],[0,-.34,1.1,.18],[.44,.02,.22,.54],[-.44,.02,.22,.54]])bx(gv,w,.03,d,soil,x,.015,z);
-  for(const[x,z,w,h]of[[.36,.42,.1,.05],[-.5,.2,.08,.04],[.52,-.2,.07,.05],[-.3,-.42,.09,.04],[.1,-.48,.06,.035],[-.6,-.12,.05,.03]])bx(gv,w,h,w*.9,soilD,x,h/2,z,0,x*3,0);
-  gv.scale.setScalar(.001);
   if(!o.noClips){root.userData.clips=vampireSpawnClips();jw.rotation.x=.1;}
   root.userData.ground=2.4;
   const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
@@ -124,12 +117,12 @@ function vampireSpawnClips(){if(VS_CLIPS)return VS_CLIPS;const B=VB.vspawn,D=Mat
       if(!best)best=prev||el0;nx[sd]=best;o['p'+sd]=best.toArray();}
     PP=nx;return o;};
   const solve=p0=>{let p=yawF(p0);wrSolve(R,p);p=poles(p);const s=wrSolve(R,p);s.wR=[p.wr[0]*.4,p.wr[1],p.wr[2]];s.wL=[p.wl[0]*.4,-p.wl[1],-p.wl[2]];s.fist=p.fist;return s;};
-  /* every clip keys the jaw and the grave (shrunk away unless o.grave gives its scale over time); looping clips run one warm-up cycle first */
-  const extra=(c,jaw,grave)=>{const T=c.tracks[0].times,JQ=[],GS=[],q=new Q(),e=new THREE.Euler();
-    for(const t of T){q.setFromEuler(e.set(jaw(t),0,0));JQ.push(q.x,q.y,q.z,q.w);const g=grave?grave(t):[.001,.001,.001];GS.push(...g);}
-    c.tracks.push(new THREE.QuaternionKeyframeTrack('g_jaw.quaternion',Array.from(T),JQ),new THREE.VectorKeyframeTrack('g_grave.scale',Array.from(T),GS));};
+  /* every clip keys the jaw; looping clips run one warm-up cycle first */
+  const extra=(c,jaw)=>{const T=c.tracks[0].times,JQ=[],q=new Q(),e=new THREE.Euler();
+    for(const t of T){q.setFromEuler(e.set(jaw(t),0,0));JQ.push(q.x,q.y,q.z,q.w);}
+    c.tracks.push(new THREE.QuaternionKeyframeTrack('g_jaw.quaternion',Array.from(T),JQ));};
   const CC=(name,dur,fn,o={})=>{PP=null;if(o.loop)for(let i=0;i<Math.round(dur*30);i++)solve(fn(i/30));const c=sampleClip(name,dur,t=>solve(fn(t)),Object.assign({autoFeet:false},o),B);
-    extra(c,t=>fn(t).jw[0],o.grave);if(o.next)c.next=o.next;if(o.underground)c.underground=true;L.push(c);return c;};
+    extra(c,t=>fn(t).jw[0]);if(o.next)c.next=o.next;if(o.underground)c.underground=true;L.push(c);return c;};
   const KC=(name,dur,keys,note,o={})=>{const f=wrKeys(keys.map(k=>[k[0],wrP(o.base||VS_W,k[1]||{})]));return CC(name,dur,o.add?t=>o.add(t,f(t)):f,Object.assign({note},o));};
   const lift=(o,dy)=>{o.gR=[o.gR[0],o.gR[1]+dy,o.gR[2]];o.gL=[o.gL[0],o.gL[1]+dy,o.gL[2]];return o;};
   const GAIT=(name,dur,G,note)=>{const fn=t=>{const u=t/dur,o=G.body(u),c2=C(D*(u-G.duty/2));o.HP=[G.sw*c2,G.y0-G.b*C(2*D*(u-G.duty/2)),G.z0||0];lift(o,o.HP[1]-G.y0);
@@ -232,7 +225,7 @@ function vampireSpawnClips(){if(VS_CLIPS)return VS_CLIPS;const B=VB.vspawn,D=Mat
     [1.8,{}]],'Knocked back two steps, then stalks in again');
   vsFalls(L,solve,extra);
 
-  /* Rise from the ground: starts buried (the grave shows), the claws burst up out of the earth, slap down on either side of the hole
+  /* Rise from the ground: starts buried, the claws burst up out of the earth, slap down on either side
      and drag the body up; head, shoulders and chest come out, the right foot is planted at the rim, the left leg climbs out and it
      crouches into the war stance, hissing. Feet below the ground are IK feet with negative lift, so the legs fold naturally */
   {const FL0=VS_W.FL,FR0=VS_W.FR,dn=(F,l,z)=>[F[0],z===undefined?F[1]:z,F[2],l,0];
@@ -250,10 +243,10 @@ function vampireSpawnClips(){if(VS_CLIPS)return VS_CLIPS;const B=VB.vspawn,D=Mat
     [4.0,{HP:[0,-.36,.06],h:[36,0,0],sp:[18,0,0],ch:[20,0,0],nk:[22,0,0],hd:[-32,0,0],FL:[FL0[0],FL0[1],FL0[2],0,0],FR:[-.15,.1,-20,.05,0],gR:[-.3,.74,.62],gL:[.28,.76,.64],jw:[.4]}],
     [4.4,{HP:[0,-.24,0],FR:[FR0[0],FR0[1],FR0[2],0,0],nk:[30,0,0],hd:[-16,0,0],jw:[1.1]}],
     [4.85,{HP:[0,-.2,0],nk:[30,0,0],hd:[-16,0,0],jw:[1.0]}],
-    [5.4,{}]],'Starts buried: the claws burst out of the earth, it drags itself up out of the grave, climbs out and crouches into the war stance, hissing',
+    [5.4,{}]],'Starts buried: the claws burst out of the earth, it drags itself up out of the ground, climbs out and crouches into the war stance, hissing',
     {underground:true,next:'Idle (war mode)',
     /* the right knee points up while the foot is planted at the rim with the thigh near level (pointing it over the toes would roll the thigh) */
-    add:(t,p)=>{const w=Math.max(0,Math.min(1,(t-2.7)/.5,(4.1-t)/.5));return w>0?Object.assign({},p,{nR:[-.07*(1-w),.8*w,1-.4*w]}):p;},grave:t=>t<4.7?[1,1,1]:t<5.3?[1,Math.max(.02,1-(t-4.7)/.6),1]:[.001,.001,.001]});}
+    add:(t,p)=>{const w=Math.max(0,Math.min(1,(t-2.7)/.5,(4.1-t)/.5));return w>0?Object.assign({},p,{nR:[-.07*(1-w),.8*w,1-.4*w]}):p;}});}
   return VS_CLIPS=L;}
 
 /* Death and Rise: the wight's keyed falls (gbDeathKeys joint angles, dropped onto the lowest point every frame) on a bare spawn.
@@ -310,4 +303,4 @@ ASSETS.push({id:'vampire-spawn',folder:'characters/enemies/undead',name:'Vampire
   opts:[{key:'skin',label:'Skin',choices:[['random','Random'],...Object.entries(VS_SKIN).map(([k,v])=>[k,v[1].charAt(0).toUpperCase()+v[1].slice(1)])],def:'random'},
     {key:'eyes',label:'Eyes',choices:[['random','Random'],['red','Red glow'],['amber','Amber glow'],['white','White glow']],def:'random'},
     {key:'clothes',label:'Clothes',choices:[['random','Random'],['rags','Torn grave shirt'],['bare','Bare chest']],def:'random'}],
-  desc:'Vampire spawn: a feral, freshly risen vampire, about 1.8 m tall but always hunched (about 1.4 m): bald with a large round head and veins on the scalp, long pointed ears, glowing eyes, a hooked nose, two long fangs and a jaw that opens, a big hump on its back, gaunt limbs and big clawed hands and feet. Torn grave shirt or bare chest, ragged breeches, grave dirt on the shins. Clips: Idle, Walk, Run, war-mode Idle and Walk, Bite, Claw swipe, Leap & feed (leaps on its prey and sucks its blood), Hiss, Hit 1, Hit 2, Heavy hit, Death (face down), Rise, and Rise from the ground (claws its way up out of a grave).'});
+  desc:'Vampire spawn: a feral, freshly risen vampire, about 1.8 m tall but always hunched (about 1.4 m): bald with a large round head and veins on the scalp, long pointed ears, glowing eyes, a hooked nose, two long fangs and a jaw that opens, a big hump on its back, gaunt limbs and big clawed hands and feet. Torn grave shirt or bare chest, ragged breeches, grave dirt on the shins. Clips: Idle, Walk, Run, war-mode Idle and Walk, Bite, Claw swipe, Leap & feed (leaps on its prey and sucks its blood), Hiss, Hit 1, Hit 2, Heavy hit, Death (face down), Rise, and Rise from the ground (claws its way up out of the ground).'});
