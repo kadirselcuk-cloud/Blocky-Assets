@@ -71,7 +71,7 @@ function wrSolve(R,p){const{m,J,B}=R,D=Math.PI/180,V=THREE.Vector3,Q=THREE.Quate
   for(let pass=0;pass<3;pass++){
     for(const sd of['L','R']){const F=p['F'+sd],yaw=F[2]*D,pit=Math.max(F[4]||0,heel[sd])*D,hs=.07*fk,zt=.03*g+lw*.8,zh=.03*g-lw*.8;
       const low=Math.min(-hs*Math.cos(pit)-zt*Math.sin(pit),-hs*Math.cos(pit)-zh*Math.sin(pit));
-      feet[sd]={A:new V(F[0]*k,(F[3]||0)*k-low,F[1]*k),yaw,q:new Q().setFromEuler(new THREE.Euler(pit,yaw,(F[5]||0)*D,'YXZ')),air:(F[3]||0)>.02};}
+      feet[sd]={A:new V(F[0]*k,(F[3]||0)*k-low,F[1]*k),yaw,q:new Q().setFromEuler(new THREE.Euler(pit,yaw,(F[5]||0)*D,'YXZ')),air:(F[3]||0)>.02,lift:(F[3]||0)*k};}
     /* lower the hips when a leg can't reach its foot, so nothing floats */
     hy=hp[1]*1;for(let it=0;it<4;it++){J.hips.position.set(hp[0],B.hipH+hy,hp[2]);m.updateMatrixWorld(true);let drop=0;
       for(const sd of['L','R']){const H=J['thigh_'+sd].getWorldPosition(new V()),A=feet[sd].A,hz=Math.hypot(A.x-H.x,A.z-H.z);drop=Math.max(drop,(H.y-A.y)-Math.sqrt(Math.max(0,Lmax*Lmax-hz*hz)));}
@@ -84,7 +84,7 @@ function wrSolve(R,p){const{m,J,B}=R,D=Math.PI/180,V=THREE.Vector3,Q=THREE.Quate
       const tq=basis(new V().crossVectors(Y,Z),Y,Z),tl=th.parent.getWorldQuaternion(new Q()).invert().multiply(tq),kn=Math.PI-Math.acos(cl((a*a+b*b-d*d)/(2*a*b))),kq=new Q().setFromEuler(new THREE.Euler(kn,0,0));
       const fl=tq.clone().multiply(kq).invert().multiply(f.q);th.quaternion.copy(tl);J['shin_'+sd].quaternion.copy(kq);J['foot_'+sd].quaternion.copy(fl);
       out['t'+sd]=deg(tl);out['k'+sd]=[kn/D,0,0];out['a'+sd]=deg(fl);
-      const K=H.clone().addScaledVector(t,a),tilt=Math.atan2(K.clone().sub(f.A).dot(fw),K.y-f.A.y)/D,want=f.air?0:Math.min(50,(tilt-30)*1.3);if(want>heel[sd]+.5){heel[sd]=want;again=true;}}
+      const K=H.clone().addScaledVector(t,a),tilt=Math.atan2(K.clone().sub(f.A).dot(fw),K.y-f.A.y)/D,want=R.heelFade?Math.min(50,(tilt-30)*1.3)*Math.max(0,1-f.lift/R.heelFade)/* R.heelFade (m): the heel lift fades out as the foot rises instead of stopping at once */:f.air?0:Math.min(50,(tilt-30)*1.3);if(want>heel[sd]+.5){heel[sd]=want;again=true;}}
     if(!again)break;}
   out.pos=[hp[0]/k,hy/k,hp[2]/k];
   m.updateMatrixWorld(true);
@@ -96,7 +96,8 @@ function wrSolve(R,p){const{m,J,B}=R,D=Math.PI/180,V=THREE.Vector3,Q=THREE.Quate
     let tgt=new V(G[0]*k+hp[0],G[1]*k,G[2]*k+hp[2]);if(R.two&&sd==='L')tgt=haft.P.clone().lerp(tgt,lf);
     /* hand = forearm turned by the smallest rotation that points the thumb side along the blade/haft, or the back of the hand at the shield facing */
     const handQ=faq=>{const ax=v=>v.applyQuaternion(faq),zf=ax(new V(0,0,1)),xf=ax(new V(1,0,0)),fy=ax(new V(0,1,0)),blade=d=>new Q().setFromUnitVectors(zf,d).multiply(faq);
-      if(sd==='R'){const q=blade(dir);if(p.eR){const e=new V(...p.eR),yw=new V(0,1,0).applyQuaternion(q),A=yw.addScaledVector(dir,-yw.dot(dir)).negate().normalize(),Bv=e.addScaledVector(dir,-e.dot(dir)).normalize();
+      /* R.lprop: the left hand holds a prop of its own (dL its direction, eL its roll), aimed like the right */
+      if(sd==='R'||R.lprop){const q=blade(dir),e0=sd==='R'?p.eR:p.eL;if(e0){const e=new V(...e0),yw=new V(0,1,0).applyQuaternion(q),A=yw.addScaledVector(dir,-yw.dot(dir)).negate().normalize(),Bv=e.addScaledVector(dir,-e.dot(dir)).normalize();
         if(Bv.lengthSq()>.5)q.premultiply(new Q().setFromAxisAngle(dir,Math.atan2(new V().crossVectors(A,Bv).dot(dir),A.dot(Bv))));}return q;}
       const f=dir.clone().addScaledVector(fy,-dir.dot(fy)).normalize(),qs=new Q().setFromUnitVectors(xf,f).multiply(faq);if(!R.two)return qs;
       /* R.lroll: the left fist turns about the haft so its fingers wrap the same way as the right's (no flips when the forearm points back along the haft) */

@@ -10,7 +10,7 @@ Open it: `http://localhost:<port>/#/a/ghoul`
 |---|---|---|
 | Skin | Random, Ashen grey, Grey-green, Bluish, Bruised, Leathery brown | |
 | Clothes | Random, Ragged shirt and trousers, Burial shroud, Torn trousers only | Random rolls rags twice as often; rag colours come from the goblin rag list |
-| Weapon | Random, None (claws), Knife, Small cleaver, Small club | Right hand. The club is the skeleton's (`skClub`) |
+| Weapon | Random, None (claws), Knife, Small cleaver | Right hand |
 | Eyes | Random, Milky, Yellow glow, Red glow | Glowing eyes are emissive (show most at dusk and night) |
 
 "New look" also rolls the rag colours, how many hair patches are left, a torn ear and a missing toe on the wounded foot.
@@ -51,7 +51,8 @@ Every combat clip starts and ends on the war stance; Death ends where Rise start
 
 - Two stances: relaxed (`IST`) and war mode (`GST`), keyed in the warrior's IK terms (hip offset, feet, right grip and blade direction). `stL` keys the stump's upper-arm angles directly; `jw` opens the jaw (radians), written to `g_jaw.quaternion` in every clip.
 - **Limp (`LIMP`)**: per leg a heel-strike phase, stance share, lift and toe pitch. The right leg is planted 72 % of the stride, the wounded left only 52 %; the left swings out stiffly (`circ`) with its toes scraping (`drag`) and lands flat, and the hips dip and lurch onto it. Planted feet slide back at one steady speed (stored in `clip.speed`).
-- Attacks and reactions are keyframes solved with `wrSolve`, with the same elbow and blade-roll continuity as the warrior's clips (right arm only).
+- Attacks and reactions are keyframes solved with `wrSolve`, with the warrior's elbow continuity (right arm only). Hand targets sit 0.35–0.5 m from the hunched shoulder, so the arm never folds tight (a folded arm makes the elbow direction unstable and the arm spins).
+- The right hand is never aimed at a world direction: it follows the forearm, bent only by the keyed wrist angles `wr` (x tips a weapon back towards the elbow or forward, z bends the claws back or curls them; a weapon uses mostly x, the claws mostly z). The wrist stays within 50° and a held weapon always comes out of the thumb side of the fist.
 - Death and Rise use the skeleton's `skDeathRise` with options: own slump keys, release at 0.78 s, a forward topple (`fwd`: each piece lands further ahead the higher it starts) and slower rise timing. The torso (pelvis, belly, chest, neck) falls as one piece face down, the jaw stays with the head, the hand with the forearm, each foot with its shin (`userData.joinChunk`); each piece carries its resting rule in `userData.restRule`.
 
 ## Changes elsewhere
@@ -60,6 +61,7 @@ Every combat clip starts and ends on the war stance; Death ends where Rise start
 
 ## Checks done
 
-- Every clip, all four weapons, several seeds, sampled at 30 fps: no part below the ground (lowest point within 1 mm), feet on the ground in every frame except during Death and Rise.
+- Every clip, all three weapon choices: the upper arm, forearm and hand turn at most about 43° per frame (only in the fast strikes), the wrist bends at most 50°.
+- Every clip, all three weapon choices, several seeds, sampled at 30 fps: no part below the ground (lowest point within 1 mm), feet on the ground in every frame except during Death and Rise.
 - Contact sheets of the walk, run, attacks, bite, heavy hit, Death and Rise from several angles; Day, Dusk and Night (eye glow).
 - GLB export works (about 1 MB with animations).

@@ -7,7 +7,7 @@ function keyed(keys){const ch=new Set();keys.forEach(k=>Object.keys(k[1]).forEac
   return t=>{let i=0;while(i<keys.length-2&&t>keys[i+1][0])i++;const[t0,p0]=keys[i],[t1,p1]=keys[i+1];let u=t1>t0?Math.min(1,Math.max(0,(t-t0)/(t1-t0))):0;u=u*u*(3-2*u);
     const o={};for(const c of ch){const A=p0[c]||zero(c),B=p1[c]||zero(c);o[c]=A.map((v,j)=>v+((B[j]??0)-v)*u);}return o;};}
 function addPose(a,b){const o=Object.assign({},a);for(const k in b)o[k]=o[k]?o[k].map((v,i)=>v+(b[k][i]||0)):b[k];return o;}
-function sampleClip(name,dur,fn,o={},B){const hipH=B?B.hipH:.95,ps=B?B.legS:1;const fps=30,n=Math.max(2,Math.round(dur*fps)),times=[],Q={},P=[],e=new THREE.Euler(),q=new THREE.Quaternion(),D2R=Math.PI/180;
+function sampleClip(name,dur,fn,o={},B){const hipH=B?B.hipH:.95,ps=B?B.legS:1;const fps=o.fps||30,n=Math.max(2,Math.round(dur*fps)),times=[],Q={},P=[],e=new THREE.Euler(),q=new THREE.Quaternion(),D2R=Math.PI/180;
   for(const j of RIG_JOINTS)Q[j]=[];
   for(let i=0;i<=n;i++){const t=i/n*dur;times.push(t);const p=fn(t),pose={};
     for(const k in p){if(k==='pos'||k==='fist')continue;pose[JALIAS[k]||k]=p[k];}

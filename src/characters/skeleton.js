@@ -35,7 +35,7 @@ function buildSkeleton(seed,o={}){const B=o.B||VB.skeleton,r=mulberry32(((seed*2
   const has={};if(cov==='random'){for(const k of order)has[k]=arm!=='none'&&has0[k];if(arm!=='none'&&!order.some(k=>has[k]))has[extra]=true;}
   else{const[a,b]=SK_COVER[cov],n=a+Math.floor(nCov*(b-a+1));for(const k of order)has[k]=arm!=='none'&&rank.indexOf(k)<n;}
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),bone=bm(boneC[0],'plain'),boneD=bm(shade(boneC[0],.78),'plain'),dark=bm('#16120e','plain');
-  const ey=SK_EYES[eyeK],eyeM=ey?wrGlow(ey[0],ey[1],1.6,pxTex('plain')):bm('#2a2420','plain');
+  const ey=(o.eyeTab||SK_EYES)[eyeK],eyeM=ey?wrGlow(ey[0],ey[1],1.6,pxTex('plain')):bm('#2a2420','plain');
   /* armour materials: one type for every worn piece */
   const AM=arm==='leather'?{a:bm('#5a3a24','leather'),b:bm('#3e2818','leather'),c:bm('#6e4a2e','leather')}:arm==='chain'?{a:vm('mail'),b:bm('#4a4e54','plain'),c:vm('mail')}:
     {a:bm('#8a9096','plain'),b:bm('#5e646a','plain'),c:bm('#7a4a2e','plain')};
@@ -115,7 +115,8 @@ function buildSkeleton(seed,o={}){const B=o.B||VB.skeleton,r=mulberry32(((seed*2
     else{bx(rc,.29,.22,.03,AM.a,0,.07,.11);bx(rc,.29,.22,.03,AM.a,0,.07,-.125);bx(rc,.04,.16,.012,AM.b,0,.07,.13);for(const s of[-1,1]){bx(rc,.02,.04,.26,bm('#3e2818','leather'),s*.135,.13,-.007);bx(rc,.02,.04,.26,bm('#3e2818','leather'),s*.135,.0,-.007);bx(rc,.04,.02,.24,AM.b,s*.08,.19,-.007);}
       bx(rc,.06,.05,.012,AM.c,.07,.03,.128);}}
   /* weapon in the right hand (blade along the thumb side, edge towards the fingers), buckler in the left facing out */
-  if(o.archer)skaGear(root,chest,has,arm,AM);else{
+  /* o.gear: another skeleton kind brings its own gear (the lich), so no weapon or buckler here */
+  if(o.archer)skaGear(root,chest,has,arm,AM);else if(!o.gear){
   const wr=new THREE.Group();wr.name='weapon_R';wr.userData.piece=wr.userData.gear=true;root.getObjectByName('socket_R').add(wr);const wp=o.great?skwSword(o.great):wpn==='club'?skClub():gbWeapon(wpn);
   wp.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,1),new THREE.Vector3(-1,0,0)));wr.add(wp);wr.userData.long=!!o.great;
   /* two-handed sword: no buckler, the left fist grips the long handle WR_HAFT behind the right one */
@@ -170,7 +171,8 @@ function skDeathRise(root,B,seed,X={}){const D2R=Math.PI/180,V=THREE.Vector3,Q=T
     const bb=new THREE.Box3();for(const b of ch.boxes)for(const c of b)bb.expandByPoint(c);ch.cl=bb.getCenter(new V());const d=dec(A);ch.q0=d.q;ch.c0=ch.cl.clone().applyQuaternion(d.q).add(d.p);};
   const wpnCh=chunks.filter(c=>c.list[0].userData.gear),bodyCh=chunks.filter(c=>!wpnCh.includes(c));
   poseAt(0);for(const c of wpnCh){c.tDet=tW+(c.list[0].userData.dropDt||0);poseAt(c.tDet);capture(c);}
-  poseAt(tDet);for(const c of bodyCh){capture(c);c.tDet=tDet;}
+  /* userData.detaching tells post() that the pieces are being let go (the lich's skirt then hangs straight from its pelvis) */
+  root.userData.detaching=true;poseAt(tDet);for(const c of bodyCh){capture(c);c.tDet=tDet;}root.userData.detaching=false;
   /* X.fwd: the body topples forward, every piece lands further ahead the higher it starts */
   const Fw=new V(0,0,1).applyQuaternion(Q0.hips).setY(0).normalize();
   /* attached transform at the slumped pose (where Rise flies each chunk back to) */
@@ -183,8 +185,8 @@ function skDeathRise(root,B,seed,X={}){const D2R=Math.PI/180,V=THREE.Vector3,Q=T
     const q=new Q().setFromRotationMatrix(new M4().makeBasis(X,L,U)).multiply(new Q().setFromRotationMatrix(new M4().makeBasis(lx,la,ua)).invert());
     if(tilt)q.premultiply(new Q().setFromAxisAngle(X.clone().normalize(),(r()-.5)*2*tilt*D2R));return q;};
   for(const c of chunks){const n=c.name,U=c.list[0].userData.restRule;let sh=.65,push=new V();
-    /* a piece's own resting rule (userData.restRule): long and up axes, sign of the up axis, yaw jitter, tilt, long axis along the fall (L:'fwd'), roll-away radius, lands first */
-    if(U){c.qF=rest(c,U.long,U.up,U.sgn||0,U.yaw??25,U.tilt||0,U.L==='fwd'?Fw:null);if(U.roll){const a=r()*6.28;push.set(Math.cos(a)*U.roll,0,Math.sin(a)*U.roll);}c.first=!!U.first;}
+    /* a piece's own resting rule (userData.restRule): long and up axes, sign of the up axis, yaw jitter, tilt, long axis along the fall (L:'fwd'), roll-away radius, lands first, extra shift along the fall (fw) and to the right of it (sd), in metres; late: flies back last in Rise, landing as the body finishes straightening */
+    if(U){c.qF=rest(c,U.long,U.up,U.sgn||0,U.yaw??25,U.tilt||0,U.L==='fwd'?Fw:null);if(U.roll){const a=r()*6.28;push.set(Math.cos(a)*U.roll,0,Math.sin(a)*U.roll);}if(U.fw)push.addScaledVector(Fw,U.fw);if(U.sd)push.addScaledVector(new V().crossVectors(Fw,up),U.sd);c.first=!!U.first;}
     /* ribcage on its back: its top points backwards, its front faces up */
     else if(n==='bone_ribs'){const F=ax.z.clone().applyQuaternion(c.q0).setY(0).normalize().negate();c.qF=new Q().setFromRotationMatrix(new M4().makeBasis(new V().crossVectors(F,up),F,up));push.copy(F).multiplyScalar(.18);}
     else if(n==='bone_pelvis')c.qF=rest(c,'y','z',0,30);
@@ -228,11 +230,11 @@ function skDeathRise(root,B,seed,X={}){const D2R=Math.PI/180,V=THREE.Vector3,Q=T
       return anchorM(c,cen,big?new Q().setFromAxisAngle(c.wob,14*D2R*Math.sin(2*Math.PI*s)*(1-s)).multiply(c.qF):c.qF);}
     return restM(c,0,0);};
   /* Rise timing: tremble, pick-up spread (top of the pile first), flight, then straighten */
-  const[tTr,spread,fl,tSt]=X.rise||[.7,.8,.5,.8],tUp=tTr+spread+fl,NC=chunks.length;for(const c of chunks)c.tUp=tTr+(NC-1-c.li)/(NC-1)*spread;
+  const[tTr,spread,fl,tSt]=X.rise||[.7,.8,.5,.8],tUp=tTr+spread+fl,NC=chunks.length;for(const c of chunks)c.tUp=(c.list[0].userData.restRule||{}).late?tUp+tSt-fl:tTr+(NC-1-c.li)/(NC-1)*spread;
   const riseM=(c,t)=>{if(t<c.tUp)return restM(c,t,Math.min(1,t/tTr));const s=(t-c.tUp)/fl;if(s>=1)return null;const k=ss(s),cen=c.cF.clone().lerp(c.cA,k);cen.y+=.2*Math.sin(Math.PI*k);
     return anchorM(c,cen,c.qF.clone().slerp(c.qA,k));};
   /* sampler: joints from poseAt, each loose chunk's pieces written in their parent joint's frame */
-  const rec=(name,dur,poseT,chunkM,note)=>{const n=Math.round(dur*30),T=[],JQ={},HP=[],PP={},PQ={},GT=gearTr.map(()=>({p:[],q:[],s:[]})),tmp=new M4();for(const j of RIG_JOINTS)JQ[j]=[];for(const k in pieces){PP[k]=[];PQ[k]=[];}
+  const rec=(name,dur,poseT,chunkM,note)=>{const n=Math.round(dur*(X.fps||30)),T=[],JQ={},HP=[],PP={},PQ={},GT=gearTr.map(()=>({p:[],q:[],s:[]})),tmp=new M4();for(const j of RIG_JOINTS)JQ[j]=[];for(const k in pieces){PP[k]=[];PQ[k]=[];}
     for(let i=0;i<=n;i++){const t=i/n*dur;T.push(t);poseAt(poseT(t));for(const j of RIG_JOINTS){const q=JN[j].quaternion;JQ[j].push(q.x,q.y,q.z,q.w);}const h=JN.hips.position;HP.push(h.x,h.y,h.z);
       gearTr.forEach(([o],i)=>{GT[i].p.push(...o.position.toArray());GT[i].q.push(...o.quaternion.toArray());GT[i].s.push(...o.scale.toArray());});
       for(const c of chunks){const W=chunkM(c,t);c.list.forEach((g,gi)=>{if(!W){PP[g.name].push(...g.position.toArray());PQ[g.name].push(...g.quaternion.toArray());return;}

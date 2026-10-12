@@ -2,7 +2,6 @@
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const assetsIn=(path,deep)=>ASSETS.filter(a=>deep?(!path||a.folder===path||a.folder.startsWith(path+'/')):a.folder===path);
-const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const store={get(k,d){try{const v=localStorage.getItem('forge:'+k);return v==null?d:v;}catch(e){return d;}},set(k,v){try{localStorage.setItem('forge:'+k,v);}catch(e){}}};
 
 /* ---------- lighting presets ---------- */
@@ -112,7 +111,7 @@ const V={tool:'',toolObj:null,piece:null,mixer:null,cur:null,speed:1,rigOn:false
 if(!PRESETS[V.mode])V.mode='day';
 const wireMat=new THREE.MeshBasicMaterial({color:0x9fb6c4,wireframe:true});
 function ensureViewer(){if(V.renderer)return;const r=new THREE.WebGLRenderer({antialias:true});r.setPixelRatio(Math.min(devicePixelRatio,2));setupRenderer(r);$('#stage').appendChild(r.domElement);V.renderer=r;
-  V.cam=new THREE.PerspectiveCamera(38,1,.03,700);V.ctl=new Orbit(V.cam,r.domElement);V.ctl.auto=!reduceMotion;
+  V.cam=new THREE.PerspectiveCamera(38,1,.03,700);V.ctl=new Orbit(V.cam,r.domElement);V.ctl.auto=false;
   new ResizeObserver(resize).observe($('#stage'));
   document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
   $('#tTurn').addEventListener('click',()=>{V.ctl.auto=!V.ctl.auto;syncBar();});
@@ -164,7 +163,7 @@ function setupOpts(model,a){const aw=!!model.userData.awning,ok=aw||!!(a.opts&&a
 function setupAnim(model,first='Idle'){const clips=model.userData.clips,panel=$('#vanims');V.mixer=null;V.cur=null;if(V.piece){V.piece.parent&&V.piece.parent.remove(V.piece);V.piece=null;}V.toolObj=null;
   if(V.rig){V.scene.remove(V.rig.group);V.rig=null;}
   $('#tRig').hidden=!clips;panel.hidden=!clips;$('#viewer').classList.toggle('has-anims',!!clips);if(!clips)return;
-  V.mixer=new THREE.AnimationMixer(model);V.mixer.addEventListener('finished',e=>{if(e.action===V.cur&&!/^(Death|Fall)/.test(e.action.getClip().name))playClip('Idle');});
+  V.mixer=new THREE.AnimationMixer(model);V.mixer.addEventListener('finished',e=>{if(e.action===V.cur&&!/^(Death|Fall)/.test(e.action.getClip().name))playClip(e.action.getClip().next||'Idle');});
   $('#animList').innerHTML=clips.map(c=>`<li><button data-clip="${esc(c.name)}" aria-pressed="false"><span class="an-name">${esc(c.name)}</span><span class="an-meta">${c.duration.toFixed(c.duration<1?2:1)} s, ${c.loopMode?'loop':'once'}</span></button></li>`).join('');
   $('#animList').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>playClip(b.dataset.clip)));
   $('#toolRow').innerHTML=['',...Object.keys(TOOLS)].map(n=>`<button data-tool="${n}" aria-pressed="false">${n||'No tool'}</button>`).join('');

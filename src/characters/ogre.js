@@ -78,11 +78,11 @@ function buildOgre(seed,o={}){const B=VB.ogre,r=mulberry32(((seed*2654435761)>>>
   /* the gut: a wide core, love handles, and a paunch that swells forward in steps and hangs over the belt */
   bx(spine,1.3,.66,.94,skin,0,.02,.02);bx(spine,1.42,.38,.74,skin,0,-.08,.04);bx(spine,1.12,.54,.14,skin,0,-.04,.56);bx(spine,.86,.38,.1,skin,0,-.07,.68);
   bx(spine,.07,.06,.02,skinX,0,-.04,.735);bx(spine,.8,.035,.02,skinM,0,-.27,.735-.12);bx(spine,1.1,.5,.08,skin,0,.02,-.5);
-  if(scar)bx(spine,.32,.03,.012,skinX,-.18,.08,.737,0,0,.5);
+  if(scar)bx(spine,.32,.03,.012,skinX,-.18,-.02,.734,0,0,.5);
   /* chest: broad, sagging pecs, heavy traps and a hump */
   bx(chest,1.18,.5,.86,skin,0,.19,0);bx(chest,.96,.16,.68,skin,0,.5,-.06);bx(chest,.84,.3,.12,skin,0,.34,-.48);
   for(const s of[-1,1]){bx(chest,.44,.24,.1,skin,s*.25,.17,.47);bx(chest,.4,.03,.02,skinM,s*.25,.05,.52);}
-  bx(neck,.62,.26,.6,skin,0,.02,.1);
+  if(!o.heads)bx(neck,.62,.26,.6,skin,0,.02,.1);
   /* robe (ogre magi): open hide robe over the back and sides of the chest and gut, lapels at the front edges, half sleeves below */
   if(rb){bx(chest,1.24,.58,.07,hide,0,.2,-.56);for(const s of[-1,1]){bx(chest,.06,.52,.9,hide,s*.62,.18,-.08);bx(chest,.16,.52,.05,hideD,s*.53,.18,.5);
       bx(spine,.06,.66,.62,hide,s*.75,.02,-.2);bx(spine,.05,.6,.1,hideD,s*.75,.02,.13);}bx(spine,1.34,.62,.07,hide,0,.04,-.575);}
@@ -95,7 +95,9 @@ function buildOgre(seed,o={}){const B=VB.ogre,r=mulberry32(((seed*2654435761)>>>
       bx(chest,.03,.08,.03,cord,0,cy-.05,fz+.02);bx(chest,.16,.16,.04,gold,0,cy-.17,fz+.025,0,0,Math.PI/4);bx(chest,.1,.1,.05,gem,0,cy-.17,fz+.03,0,0,Math.PI/4);}
     else{for(const x of[-.27,-.16,.16,.27])bx(chest,.05,.12,.04,ivory,x,cy-.07,fz+.02);bx(chest,.07,.18,.05,bone,0,cy-.1,fz+.025);bx(chest,.12,.04,.05,bone,0,cy-.2,fz+.025);}}
   /* head: small for the body; broad skull, underslung jaw with lower tusks, heavy single brow, small eyes, flat nose, stubby ears */
-  const hg=new THREE.Group();head.add(hg);hg.position.z=.12;
+  /* o.heads (two-headed ogre): builds its own heads on the neck instead of this one */
+  if(o.heads)o.heads({head,neck,chest,skin,skinD,skinM,skinX,eyeM,dark,ivory,nail,hairM,rope,ir,cord,warts});
+  else{const hg=new THREE.Group();head.add(hg);hg.position.z=.12;
   bx(hg,.62,.5,.6,skin,0,.36,-.02);bx(hg,.72,.22,.62,skin,0,.1,.06);bx(hg,.56,.12,.44,skin,0,-.04,.06);
   bx(hg,.66,.1,.12,skinM,0,.47,.3);bx(hg,.5,.03,.02,skinX,0,.213,.37);
   for(const s of[-1,1]){bx(hg,.09,.06,.02,eyeM,s*.14,.39,.285);bx(hg,.035,.05,.022,dark,s*.13,.39,.287);
@@ -107,7 +109,7 @@ function buildOgre(seed,o={}){const B=VB.ogre,r=mulberry32(((seed*2654435761)>>>
   if(warts){bx(hg,.04,.04,.03,skinD,.2,.3,.29);bx(hg,.035,.035,.03,skinD,-.24,.55,.2);bx(hg,.03,.03,.03,skinD,.12,.06,.37);}
   if(hair==='topknot'){bx(hg,.2,.1,.2,hairM,0,.65,-.08);bx(hg,.22,.04,.22,rope,0,.71,-.08);bx(hg,.15,.2,.15,hairM,0,.83,-.1,-.2,0,0);bx(hg,.1,.12,.1,hairM,0,.96,-.15,-.4,0,0);}
   if(hair==='shaggy'){bx(hg,.66,.3,.06,hairM,0,.42,-.34);for(const s of[-1,1])bx(hg,.05,.24,.36,hairM,s*.335,.47,-.14);bx(hg,.5,.05,.3,hairM,0,.63,-.16);
-    for(const[x,L]of[[-.24,.12],[-.08,.18],[.08,.14],[.24,.1]])bx(hg,.12,L,.05,hairM,x,.27-L/2+.02,-.34);}
+    for(const[x,L]of[[-.24,.12],[-.08,.18],[.08,.14],[.24,.1]])bx(hg,.12,L,.05,hairM,x,.27-L/2+.02,-.34);}}
   const sockHead=J('socket_head',head,0,.72,0);sockHead.userData.socket=true;
   /* arms: long and heavy, leather wrist wraps, big mitts with dark nails; sometimes a broken iron shackle on the left wrist */
   for(const[sd,s]of[['L',1],['R',-1]]){const sh=J('shoulder_'+sd,chest,s*B.shW*.325,.165*B.cS,0),ua=J('upperArm_'+sd,sh,s*B.shW*.675,0,0),fa=J('foreArm_'+sd,ua,0,-B.ua,0),hd=J('hand_'+sd,fa,0,-B.fa,0);
@@ -132,7 +134,7 @@ function buildOgre(seed,o={}){const B=VB.ogre,r=mulberry32(((seed*2654435761)>>>
   /* the right fist stays closed round the weapon while it is held (the death clips let it fall) */
   const skirt=rb?ogSkirt(hips,hide,hideD,bm(rb.sash[0]),r):null;
   root.userData.post=()=>{if(skirt)skirt.post(Jn('thigh_L'),Jn('thigh_R'));if(rb?Math.abs(wr.quaternion.w)<.9999||Math.abs(wr.position.x)+Math.abs(wr.position.y)>1e-4:wr.position.lengthSq()>1e-6)return;Jn('fingers_R').rotation.set(0,0,95*D2);Jn('fingerTips_R').rotation.set(0,0,90*D2);Jn('thumb_R').rotation.set(14*D2,0,33*D2);};
-  const joints=[];root.traverse(q=>{if(q.userData.joint&&!q.userData.socket)joints.push(q);});root.userData.joints=joints;
+  const joints=[];root.traverse(q=>{if(q.userData.joint&&!q.userData.socket)joints.push(q);});root.userData.joints=joints;root.userData.mantle=mantle;
   if(o.bare)return root;
   if(!o.noClips)root.userData.clips=ogreClips(wpn);root.userData.ground=wpn==='trunk'?5.5:4.2;
   const cap=s=>s.charAt(0).toUpperCase()+s.slice(1),hairT={bald:'bald',topknot:'a topknot',shaggy:'shaggy hair'}[hair];

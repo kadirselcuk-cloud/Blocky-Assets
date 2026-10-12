@@ -256,17 +256,18 @@ const GB_EASE={io:s=>s*s*(3-2*s),in:s=>s*s,out:s=>1-(1-s)*(1-s),lin:s=>s};
 function gbDeathKeys(K0,keys){const K=[[0,K0,'io']];for(const[t,p,e]of keys)K.push([t,Object.assign({},K[K.length-1][1],p),e||'io']);
   return t=>{let i=1;while(i<K.length-1&&t>K[i][0])i++;const[t0,a]=K[i-1],[t1,b,e]=K[i],s=GB_EASE[e](Math.min(1,Math.max(0,(t-t0)/(t1-t0)))),o={};
     for(const c in b){const A=a[c]||b[c];o[c]=b[c].map((v,j)=>A[j]+(v-A[j])*s);}return o;};}
-/* GX (optional, for other goblin kinds): st = war stance, R = IK rig, M = model to measure, drop = {clip name: [release time, push]}, lieZ = the dropped weapon lies along z */
+/* GX (optional, for other goblin kinds): fps = sampling rate (default 30), st = war stance, R = IK rig, M = model to measure, drop = {clip name: [release time, push]}, lieZ = the dropped weapon lies along z */
 function goblinDeaths(B,wpn,GX={}){const ck=B.key+':'+wpn+':death';if(GCLIPS[ck])return GCLIPS[ck];const k=B.legS,D2R=Math.PI/180,V=THREE.Vector3,L=[];
   const S0=wrSolve(GX.R||wrRig(B,false),gbU(B,GX.st||GB_ST)),K0={X:[S0.pos[0]*k,S0.pos[2]*k],anc:[1,1],flat:[1,1]};
   for(const c of['h','sp','ch','nk','hd','tL','kL','aL','tR','kR','aR','uL','fL','wL','uR','fR','wR','fist'])K0[c]=S0[c].slice();
   /* a goblin to measure against: its meshes give the ground contact, its socket the weapon's start */
   const M=GX.M||buildGoblin(1,{skin:'green',top:'shirt',legs:'pants',weapon:wpn,noClips:true}),JN={};M.traverse(q=>{if(q.userData.joint)JN[q.name]=q;});
-  const wr=M.getObjectByName('weapon_R'),wp=wr.children[0],under=q=>{while(q){if(q===wr)return true;q=q.parent;}return false;},body=[];M.traverse(q=>{if(q.isMesh&&!under(q))body.push(q);});
+  /* GX.left = {clip name: [release time, push, share of the hand's velocity (default 0.35)]}: a prop in the left hand (weapon_L) is dropped the same way */
+  const WP=['R','L'].map(sd=>M.getObjectByName('weapon_'+sd)).filter(Boolean),under=q=>{while(q){if(WP.includes(q))return true;q=q.parent;}return false;},body=[];M.traverse(q=>{if(q.isMesh&&!under(q))body.push(q);});
   const corner=new V(),lowest=()=>{let y=1e9;for(const q of body){const p=q.geometry.parameters;for(let i=0;i<8;i++){corner.set((i&1?.5:-.5)*p.width,(i&2?.5:-.5)*p.height,(i&4?.5:-.5)*p.depth).applyMatrix4(q.matrixWorld);if(corner.y<y)y=corner.y;}}return y;};
   const pose=p=>{const P={};for(const c in p)if(JALIAS[c])P[JALIAS[c]]=p[c];const f=p.fist;P.fingers_L=[0,0,-f[0]];P.fingerTips_L=[0,0,-f[0]*.95];P.thumb_L=[f[0]*.15,0,-f[0]*.35];P.fingers_R=[0,0,f[1]];P.fingerTips_R=[0,0,f[1]*.95];P.thumb_R=[f[1]*.15,0,f[1]*.35];
     for(const j of RIG_JOINTS){const b=BASEPOSE[j]||[0,0,0],v=P[j]||[0,0,0];JN[j].rotation.set((b[0]+v[0])*D2R,(b[1]+v[1])*D2R,(b[2]+v[2])*D2R);}};
-  const DC=(name,dur,tRel,push,keys,note)=>{if(GX.drop&&GX.drop[name])[tRel,push]=GX.drop[name];const f=gbDeathKeys(K0,keys);let ref=null,full=[0,0];
+  const DC=(name,dur,tR0,pu0,keys,note)=>{if(GX.drop&&GX.drop[name])[tR0,pu0]=GX.drop[name];const f=gbDeathKeys(K0,keys);let ref=null,full=[0,0];
     const fn=t=>{const p=f(t);
       /* flat feet: the foot turns so its sole stays level while the leg folds */
       for(const[i,sd]of[[0,'L'],[1,'R']]){const w=p.flat[i];if(w>0){const a=p['a'+sd].slice();a[0]=a[0]*(1-w)-(p.h[0]+p['t'+sd][0]+p['k'+sd][0])*w;p['a'+sd]=a;}}
@@ -276,13 +277,14 @@ function goblinDeaths(B,wpn,GX={}){const ck=B.key+':'+wpn+':death';if(GCLIPS[ck]
       const w=Math.min(1,Math.max(p.anc[0],p.anc[1]));if(w>.999)full=[cx,cz];const X=[p.X[0]+w*cx+(1-w)*full[0],p.X[1]+w*cz+(1-w)*full[1]];
       JN.hips.position.set(X[0],B.hipH,X[1]);M.updateMatrixWorld(true);const y=-lowest();
       const o={};for(const c in p)if(JALIAS[c]||c==='fist')o[c]=p[c];o.pos=[X[0]/k,y/k,X[1]/k];return o;};
-    const c=sampleClip(name,dur,fn,{autoFeet:false,note},B);
+    const c=sampleClip(name,dur,fn,{autoFeet:false,note,fps:GX.fps},B);
     /* weapon: held until tRel, then flung clear of the body (part of the hand's velocity plus a push to the side), falls, turns flat, bounces once and lies still */
-    const mx=new THREE.AnimationMixer(M),act=mx.clipAction(c);act.play();const n=Math.round(dur*30),T=[],PV=[],QV=[],wpQ=wp.quaternion.clone(),wpQi=wpQ.clone().invert();
+    for(const sd of['R','L']){const wr=M.getObjectByName('weapon_'+sd);if(!wr||sd==='L'&&!(GX.left&&GX.left[name]))continue;const wp=wr.children[0],[tRel,push,vk=.35]=sd==='R'?[tR0,pu0]:GX.left[name];
+    const mx=new THREE.AnimationMixer(M),act=mx.clipAction(c);act.play();const n=Math.round(dur*(GX.fps||30)),T=[],PV=[],QV=[],wpQ=wp.quaternion.clone(),wpQi=wpQ.clone().invert();
     let prev=null,rel=null;
-    for(let i=0;i<=n;i++){const t=i/n*dur;act.time=t;mx.update(0);M.updateMatrixWorld(true);const SW=JN.socket_R.matrixWorld,sp=new V().setFromMatrixPosition(SW);T.push(t);
+    for(let i=0;i<=n;i++){const t=i/n*dur;act.time=t;mx.update(0);M.updateMatrixWorld(true);const SW=JN['socket_'+sd].matrixWorld,sp=new V().setFromMatrixPosition(SW);T.push(t);
       if(t<tRel){PV.push(0,0,0);QV.push(0,0,0,1);prev=sp;continue;}
-      if(!rel){const q0=new THREE.Quaternion().setFromRotationMatrix(SW).multiply(wpQ),v0=sp.clone().sub(prev).multiplyScalar(.35*n/dur).add(new V(...push));
+      if(!rel){const q0=new THREE.Quaternion().setFromRotationMatrix(SW).multiply(wpQ),v0=sp.clone().sub(prev).multiplyScalar(vk*n/dur).add(new V(...push));
         const Y=new V(0,1,0).applyQuaternion(q0).setY(0);if(GX.lieZ)Y.set(0,0,Y.z<0?-1:1);if(Y.lengthSq()<1e-4)Y.set(1,0,0);Y.normalize();const Z=new V(0,new V(0,0,1).applyQuaternion(q0).y>=0?1:-1,0),X=new V().crossVectors(Y,Z);
         const qF=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(X,Y,Z));let lo=1e9;wp.updateMatrixWorld(true);
         wp.traverse(q=>{if(!q.isMesh)return;const pr=q.geometry.parameters;for(let j=0;j<8;j++){corner.set((j&1?.5:-.5)*pr.width,(j&2?.5:-.5)*pr.height,(j&4?.5:-.5)*pr.depth).applyMatrix4(q.matrix).applyQuaternion(qF);lo=Math.min(lo,corner.y);}});
@@ -291,7 +293,7 @@ function goblinDeaths(B,wpn,GX={}){const ck=B.key+':'+wpn+':death';if(GCLIPS[ck]
       let q;if(tau<rel.tl){const s=tau/rel.tl;q=rel.q0.clone().slerp(rel.qF,s*s*(3-2*s));let lo=1e9;wp.traverse(m=>{if(!m.isMesh)return;const pr=m.geometry.parameters;for(let j=0;j<8;j++){corner.set((j&1?.5:-.5)*pr.width,(j&2?.5:-.5)*pr.height,(j&4?.5:-.5)*pr.depth).applyMatrix4(m.matrix).applyQuaternion(q);lo=Math.min(lo,corner.y);}});pos.y=Math.max(pos.y,rel.yR,.002-lo);}
       else{const b=tau-rel.tl;if(b<.16)pos.y+=.03*Math.sin(Math.PI*b/.16);const sl=Math.min(b,.25)/.25;pos.addScaledVector(rel.v0.clone().setY(0),.04*sl);q=rel.qF.clone();}
       const W=new THREE.Matrix4().compose(pos,q.multiply(wpQi),new V(1,1,1)),Lm=SW.clone().invert().multiply(W),lp=new V(),lq=new THREE.Quaternion(),ls=new V();Lm.decompose(lp,lq,ls);PV.push(lp.x,lp.y,lp.z);QV.push(lq.x,lq.y,lq.z,lq.w);}
-    act.stop();mx.uncacheRoot(M);c.tracks.push(new THREE.VectorKeyframeTrack('weapon_R.position',T,PV),new THREE.QuaternionKeyframeTrack('weapon_R.quaternion',T,QV));L.push(c);};
+    act.stop();mx.uncacheRoot(M);c.tracks.push(new THREE.VectorKeyframeTrack(wr.name+'.position',T,PV),new THREE.QuaternionKeyframeTrack(wr.name+'.quaternion',T,QV));}L.push(c);};
   DC('Death 1',2.4,.62,[-1.1,.8,.1],[
     [.12,{h:[-2,-14,0],sp:[-12,-2,0],ch:[-16,-2,0],nk:[-6,0,0],hd:[-14,0,0],uL:[-50,0,45],fL:[-30,0,0],uR:[-40,-10,-55],fR:[-35,0,0],wR:[20,0,0],fist:[10,95]},'out'],
     [.4,{h:[0,-8,0],sp:[-6,0,0],ch:[-8,0,0],nk:[8,0,0],hd:[10,0,0],tL:[-45,0,6],kL:[80,0,0],tR:[-40,0,-8],kR:[75,0,0],X:[0,-.06],uL:[-30,0,35],uR:[-30,0,-45],fL:[-40,0,0],fR:[-30,0,0]}],

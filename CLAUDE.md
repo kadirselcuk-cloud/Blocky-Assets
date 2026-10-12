@@ -8,6 +8,7 @@ Read this file first in every session, then open only the doc you need:
 |---|---|
 | What has been built and why, the owner's feedback over time | `docs/HISTORY.md` |
 | Rules for designing or changing assets (style, mistakes to avoid) | `docs/DESIGN_GUIDE.md` |
+| Creating or changing a character: rig and clip rules, no twisted limbs, the required check | `docs/CHARACTER_CREATION.md` |
 | How the code is organised, helper functions, how to add an asset | `docs/ARCHITECTURE.md` |
 | Every asset id, folder, options (generated) | `docs/ASSET_CATALOG.md` |
 | Using assets in another project (GLB, JS API, catalog.json) | `docs/EXPORT.md` |
@@ -17,11 +18,16 @@ Read this file first in every session, then open only the doc you need:
 | The hobgoblin: body, armour, weapons, clips | `docs/HOBGOBLIN.md` |
 | The warg: body, looks, clips | `docs/WARG.md` |
 | The ogre: body, weapons, clips | `docs/OGRE.md` |
+| The two-headed ogre (brute boss): 3.75 m, warrior head with horned wooden helmet, smaller mage head with ruby diadem, club and staff, clips | `docs/OGRE_BOSS.md` |
 | The troll: body, looks, clips (fall unconscious and rise) | `docs/TROLL.md` |
 | The skeleton (undead): bones, armour, weapons, the bone-pile death and rise | `docs/SKELETON.md` |
 | The skeleton archer: bow, string and arrow posing, shooting and reload clips | `docs/SKELETON_ARCHER.md` |
 | The skeletal warrior: heavy-boned 2.2 m skeleton, two-handed sword, clips | `docs/SKELETON_WARRIOR.md` |
 | The ghoul (undead): one arm torn off, limping, body pieces fall apart in Death and rise | `docs/GHOUL.md` |
+| The lich (undead sorcerer): robe, headwear, staffs, levitation, spells | `docs/LICH.md` |
+| The wight (undead): semi-crouched, two clawed hands, long hair that drapes and never goes into the body | `docs/WIGHT.md` |
+| The revenant (undead): 2.2 m, heavy plate, a weapon in each hand (short sword, axe or mace), drops and recalls them in Death/Rise | `docs/REVENANT.md` |
+| The vampire spawn (undead): bald, big round head, long ears, fangs, humpback; bite, leap & feed, rises out of a grave | `docs/VAMPIRE_SPAWN.md` |
 
 ## Run it
 
@@ -47,6 +53,7 @@ Other commands: `npm run build` (writes `dist/asset-forge.html` and `dist/asset-
 6. **Name numbered variants `Name 1…5`.** Put assets in the right category folder.
 7. After a change, **look at it**: the viewer (day, dusk and night) and, for scenes, several camera angles. Report what changed concisely.
 8. Reply in the language the owner writes in, and keep replies concise.
+9. **Characters: no twisted or flipping arms and legs.** Run `node tools/check-character.mjs <id>` for every weapon/size option and a few seeds; every clip must pass before reporting (decision in `docs/CHARACTER_CREATION.md`).
 
 ## Workflow for a change
 
