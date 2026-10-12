@@ -3,14 +3,13 @@
    slit up the right leg, thigh-high heeled boots, long black gloves with pointed silver nails, a bone pauldron with spikes on the
    left shoulder, a choker with a glowing gem and long straight hair with a blunt fringe. Glowing eyes in smoky make-up, dark lips,
    black veins at the temples and the neck; a headpiece (horns, crown of thorns or a skull diadem). A two-metre staff topped by a
-   skull (horned, caged in bone claws, or under a crescent) in the right hand; a soul flame (orb_L) grows in the left palm.
+   skull (horned, caged in bone claws, or under a crescent) in the right hand.
    Built from its own meshes on the villager's 25 joints inside a body group (vbody), so the warrior's IK (wrSolve) fits unchanged.
    Clips use the vampire's arm machinery (hand targets in the torso's frame, keyed wrists, elbow poles by a cost search); the
    staff is carried, never aimed: the right elbow is chosen so that the straight wrist already points the staff where it should go
    (the lich's carried staff) and the staff never goes below the ground. After the clips are made the gown (16 panels round the
    hips, ncSkirtTracks) is laid over the legs every frame and the hair is laid by the wight's wtHairTracks, both baked into tracks,
-   so they move the same in the GLB. Effects: a circle of runes on the ground (ncircle), a ring of soul fire (nnova), smoke for
-   Vanish, Reappear and Death (nsmoke_*). */
+   so they move the same in the GLB. Spell effects are not part of the asset (the owner adds them separately). */
 VB.necro=Object.assign({},VB.female,{thigh:.44,shin:.42,g:.95,sex:'female'});
 {const b=VB.necro;b.key='necro';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 const NC_SKIN={porcelain:['#ece2e2','porcelain'],ashen:['#d0cacc','ashen'],lilac:['#d6cada','grey-lilac']};
@@ -22,8 +21,6 @@ const NC_STAFF={horned:'a horned skull',caged:'a skull caged in bone claws',cres
 /* gown: NC_SK panels round the hips (angle round the waist, 0 = front), upper part NC_L1 long, lower part NC_L2 (the hem about 0.1 m
    above the ground). The front panel over the right leg stops high: the slit. a0 = the gown's flare when nothing pushes it */
 const NC_SK=16,NC_L1=.4,NC_L2=.36,NC_SLIT=[-18,-40],NC_A0=[4,9];
-const NC_PUFFM={};
-function ncSmokeMat(hex,op){const k=hex+op;return NC_PUFFM[k]||(NC_PUFFM[k]=new THREE.MeshStandardMaterial({map:pxTex('plain'),color:new THREE.Color(hex).convertSRGBToLinear(),transparent:true,opacity:op,roughness:1,depthWrite:false}));}
 /* a box from point a to point b (parent's frame) */
 function ncSeg(par,a,b,w,d,m){const V=THREE.Vector3,A=new V(...a),Bv=new V(...b),D=Bv.clone().sub(A),mesh=bx(par,w,D.length(),d,m,(A.x+Bv.x)/2,(A.y+Bv.y)/2,(A.z+Bv.z)/2);
   mesh.quaternion.setFromUnitVectors(new V(0,1,0),D.normalize());return mesh;}
@@ -63,7 +60,7 @@ function buildNecromancer(seed,o={}){const B=VB.necro,r=mulberry32(((seed*265443
   const skin=bm(SK,'skin'),skinD=bm(shade(SK,.84),'skin'),vein=bm('#3a2a44','plain'),hair=bm(HC,'hair'),hairS=bm(shade(HC,hairK==='white'?.88:1.35),'hair'),hairD=bm(shade(HC,.7),'hair');
   const dark=bm('#0e0a0e','plain'),smoky=bm('#2a1c2c','plain'),lip=bm('#5c1430','plain'),lipD=bm('#3a0c1e','plain'),teeth=bm('#ece6da','plain'),gown=bm(GC,'cloth'),gownD=bm(shade(GC,.6),'cloth'),corset=bm('#141016','leather'),corsetL=bm('#2c2430','leather');
   const glove=bm('#121014','leather'),gloveT=bm(shade(GC,.9),'cloth'),boot=bm('#141114','leather'),bootD=bm('#08070a','leather'),silver=bm('#b4b8c4','plain'),silverD=bm('#6a6c78','plain'),bone=bm('#ddd3bc','plain'),boneD=bm('#a89c84','plain'),horn=bm('#1a161a','plain'),hornD=bm('#2c2630','plain');
-  const ey=NC_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.8,pxTex('plain')),gemM=wrGlow(ey[0],ey[1],1.5,pxTex('plain')),soul=wrGlow(ey[0],ey[1],2.2,pxTex('plain')),soulW=wrGlow('#ffffff',ey[1],2.4,pxTex('plain'));
+  const ey=NC_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.8,pxTex('plain')),gemM=wrGlow(ey[0],ey[1],1.5,pxTex('plain'));
   const col=m=>{m.userData.hairCol=true;return m;};
   const vb=new THREE.Group();vb.name='vbody';root.add(vb);
   const hips=J('hips',vb,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
@@ -122,9 +119,7 @@ function buildNecromancer(seed,o={}){const B=VB.necro,r=mulberry32(((seed*265443
       /* bone pauldron: two curved plates of bone over the shoulder and two sharp spikes rising up and out */
       col(bx(ua,.12,.045,.13,bone,.015,.032,0,0,0,-.3));bx(ua,.1,.035,.12,boneD,.05,-.012,0,0,0,-.75);
       ncHorn(ua,[[.03,.05,-.025],[.065,.15,-.04],[.09,.24,-.055],[.105,.3,-.065]],.046,.012,bone,boneD);ncHorn(ua,[[.045,.04,.035],[.085,.11,.045],[.115,.16,.05],[.135,.19,.052]],.04,.012,bone,boneD);
-      /* soul flame in front of the palm, hidden (tiny) unless a clip grows it */
-      const orb=new THREE.Group();orb.name='orb_L';orb.userData.gear=true;orb.position.set(-s*.07,-.08,.02);orb.scale.setScalar(.001);hd.add(orb);
-      bx(orb,.09,.09,.09,soul,0,0,0,.6,.6,0);bx(orb,.055,.055,.055,soulW,0,0,0,0,.8,.6);bx(orb,.04,.08,.04,soul,0,.07,0,0,.4,0);}}
+}}
   /* legs: pale skin above thigh-high boots with a silver garter clasp, pointed heeled boots (the sole is the IK foot's) */
   for(const[sd,s]of[['L',1],['R',-1]]){const th=J('thigh_'+sd,hips,s*B.hipW,-(B.hipOff+.01),0),sn=J('shin_'+sd,th,0,-B.thigh,0),ft=J('foot_'+sd,sn,0,-B.shin,0);
     bx(th,.118,.2,.122,skin,0,-.09,0);bx(th,.12,.25,.124,boot,0,-.32,0);bx(th,.126,.026,.13,bootD,0,-.195,0);bx(th,.02,.06,.01,silver,-s*.03,-.165,.062);bx(th,.008,.09,.006,dark,-s*.03,-.12,.062);
@@ -143,17 +138,6 @@ function buildNecromancer(seed,o={}){const B=VB.necro,r=mulberry32(((seed*265443
   if(o.bare)return root;
   /* staff in the right socket */
   const wr=new THREE.Group();wr.name='weapon_R';wr.userData.gear=true;root.getObjectByName('socket_R').add(wr);const st=ncStaff(staffK,eyeM,gemM);st.quaternion.copy(SH_BASIS());wr.add(st);
-  /* circle of runes on the ground (Spell 2): two rings with diamonds between them, hidden unless the clip grows it */
-  const rc=new THREE.Group();rc.name='ncircle';rc.scale.set(.001,1,.001);root.add(rc);
-  for(const[R,n,w]of[[1.3,28,.3],[1.0,22,.3]])for(let i=0;i<n;i++){const a=i/n*Math.PI*2;bx(rc,w,.012,.045,gemM,Math.sin(a)*R,.009,Math.cos(a)*R,0,a,0);}
-  for(let i=0;i<8;i++){const a=(i+.5)/8*Math.PI*2;bx(rc,.1,.012,.1,gemM,Math.sin(a)*1.15,.009,Math.cos(a)*1.15,0,Math.PI/4,0);bx(rc,.05,.014,.05,soulW,Math.sin(a)*1.15,.009,Math.cos(a)*1.15,0,Math.PI/4,0);}
-  /* ring of soul fire (Spell 4): flames on a unit ring, grown outwards by the clip */
-  const nv=new THREE.Group();nv.name='nnova';nv.scale.set(.001,.001,.001);root.add(nv);
-  for(let i=0;i<24;i++){const a=i/24*Math.PI*2,h=.3+.12*(i%3);bx(nv,.1,h,.1,soul,Math.sin(a),h/2,Math.cos(a),0,a,0);bx(nv,.05,h*.7,.05,soulW,Math.sin(a),h*.35,Math.cos(a),0,a,0);}
-  /* smoke for Vanish, Reappear and Death (hidden unless those clips play) */
-  const sm=new THREE.Group();sm.name='nsmoke';sm.scale.setScalar(.001);root.add(sm);
-  VL_PUFF.forEach((P,j)=>{const g=new THREE.Group();g.name='nsmoke_'+j;g.scale.setScalar(.001);sm.add(g);const m1=ncSmokeMat(j%3===0?'#24302a':'#1e1a22',.78),m2=ncSmokeMat(j%4===1?shade(ey[1],.45):'#2e2a34',.7);
-    bx(g,1,1,1,m1,0,0,0,0,P.a,0);bx(g,.62,.62,.62,m2,.36*Math.sin(P.a*3),.28,.3*Math.cos(P.a*2),.3,P.a,0);});
   if(!o.noClips){root.userData.clips=ncBake(root);const mx=new THREE.AnimationMixer(root);mx.clipAction(root.userData.clips[0]).play();mx.update(0);}
   root.userData.ground=2.0;
   const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
@@ -202,13 +186,13 @@ let NC_CLIPS=null;
 function ncBake(root){if(NC_CLIPS)return NC_CLIPS;return NC_CLIPS=wtHairTracks(root,ncSkirtTracks(root,necromancerClips()),'necro');}
 /* stances (body units; x,z of the hands hips-relative, y absolute; fl lifts the hips, feet and hands together).
    Relaxed (NC_N): weight on the left leg, the hip cocked out, the right knee bent in, the staff upright at her right side, the left
-   hand on her hip, chin lowered. War (NC_W): wider, left foot forward, the staff angled forward, the left hand raised with the soul
-   flame. Extra channels: jw jaw, oL soul flame size, vb body [scale, spin°], sm smoke phase, rc rune circle size, nv soul-fire ring phase */
+   hand on her hip, chin lowered. War (NC_W): wider, left foot forward, the staff angled forward, the left hand raised.
+   Extra channels: jw jaw, vb body [scale, spin°] */
 const NC_N={fl:[0],HP:[.035,-.012,0],h:[0,-8,5],sp:[1,3,-2],ch:[-2,4,-4],nk:[2,0,0],hd:[6,-6,5],FL:[.07,.0,6,0,0],FR:[-.05,.07,-16,0,6],
-  gR:[-.33,1.0,.12],dR:[0,1,0],pR:[-.5,-.4,-.7],gL:[.2,1.0,-.01],dL:[1,0,0],pL:[.7,-.2,-.6],wr:[0,0,0],wl:[0,0,-40],fist:[20,95],jw:[0],oL:[0],vb:[1,0],sm:[0],rc:[0],nv:[0]};
+  gR:[-.33,1.0,.12],dR:[0,1,0],pR:[-.5,-.4,-.7],gL:[.2,1.0,-.01],dL:[1,0,0],pL:[.7,-.2,-.6],wr:[0,0,0],wl:[0,0,-40],fist:[20,95],jw:[0],vb:[1,0]};
 const NC_W=wrP(NC_N,{HP:[0,-.05,0],h:[4,-16,0],sp:[3,-4,0],ch:[3,-6,0],nk:[0,0,0],hd:[-4,16,0],FL:[.11,.17,-4,0,0],FR:[-.11,-.15,-34,0,0],
-  gR:[-.38,1.1,.3],dR:[-.1,.95,.3],gL:[.3,1.3,.42],pL:[.6,-.5,-.6],wl:[12,0,-24],fist:[25,95],oL:[.55]});
-/* wrapped in smoke (Vanish, Reappear): arms crossed low before her, the staff upright */
+  gR:[-.38,1.1,.3],dR:[-.1,.95,.3],gL:[.3,1.3,.42],pL:[.6,-.5,-.6],wl:[12,0,-24],fist:[25,95]});
+/* drawn up (Vanish, Reappear): arms crossed low before her, the staff upright */
 const NC_WRAP={fl:[.06],h:[0,0,0],sp:[0,0,0],ch:[-4,0,0],nk:[-6,0,0],hd:[-14,0,0],FL:[.07,.0,6,0,0],FR:[-.07,.0,-6,0,0],gR:[-.3,1.1,.24],dR:[0,1,0],gL:[.42,1.24,.2],wl:[-10,0,-30],fist:[0,95],jw:[.2]};
 function ncRig(){const B=VB.necro,m=buildNecromancer(1,{bare:true}),J={};m.traverse(q=>{if(q.userData.joint)J[q.name]=q;});return{m,J,B,two:false};}
 
@@ -249,19 +233,15 @@ function necromancerClips(){const B=VB.necro,D=Math.PI*2,S=Math.sin,C=Math.cos,V
   const solve=p0=>{let p=yawF(lift(p0));wrSolve(R,p);p=poles(p);let s=wrSolve(R,p);wrist(s,p);
     for(let it=0;it<3;it++){const dy=.01-staffLow();if(dy<3e-4)break;p.gR=[p.gR[0],p.gR[1]+dy/k,p.gR[2]];s=wrSolve(R,p);wrist(s,p);}
     s.wL=[p.wl[0]*.4,-p.wl[1],-p.wl[2]];s.fist=p.fist;return s;};
-  /* extra tracks every clip carries: jaw, soul flame, body group (scale about its middle and spin), smoke, rune circle, soul-fire ring */
-  const extra=(c,fn,smoke)=>{const T=Array.from(c.tracks[0].times),JQ=[],OL=[],VS=[],VQ=[],VP=[],SM=[],RC=[],NV=[],q=new Q(),e=new THREE.Euler();
-    for(const t of T){const p=fn(t);q.setFromEuler(e.set(p.jw[0],0,0));JQ.push(q.x,q.y,q.z,q.w);const ol=Math.max(.001,p.oL[0]);OL.push(ol,ol,ol);
-      const s=Math.max(.001,p.vb[0]);VS.push(s,s,s);VP.push(0,1.0*(1-s),0);q.setFromEuler(e.set(0,p.vb[1]*D2R,0));VQ.push(q.x,q.y,q.z,q.w);const sv=p.sm[0]>.002&&p.sm[0]<.998?1:.001;SM.push(sv,sv,sv);
-      const rc=Math.max(.001,p.rc[0]);RC.push(rc,1,rc);const n=p.nv[0],on=n>.002&&n<.998,rr=on?.4+3*n:.001,hh=on?Math.max(.001,1.3*Math.sin(Math.PI*Math.min(1,n*1.15))):.001;NV.push(rr,hh,rr);}
-    c.tracks.push(new THREE.QuaternionKeyframeTrack('g_jaw.quaternion',T,JQ),new THREE.VectorKeyframeTrack('orb_L.scale',T,OL),new THREE.VectorKeyframeTrack('vbody.scale',T,VS),
-      new THREE.VectorKeyframeTrack('vbody.position',T,VP),new THREE.QuaternionKeyframeTrack('vbody.quaternion',T,VQ),new THREE.VectorKeyframeTrack('nsmoke.scale',T,SM),
-      new THREE.VectorKeyframeTrack('ncircle.scale',T,RC),new THREE.VectorKeyframeTrack('nnova.scale',T,NV));
-    if(smoke)VL_PUFF.forEach((P,j)=>{const PP=[],SS=[];for(const t of T){const u=vlPuff(P,fn(t).sm[0],.12);PP.push(...u.p);SS.push(u.s,u.s,u.s);}
-      c.tracks.push(new THREE.VectorKeyframeTrack(`nsmoke_${j}.position`,T,PP),new THREE.VectorKeyframeTrack(`nsmoke_${j}.scale`,T,SS));});};
+  /* extra tracks every clip carries: jaw, body group (scale about its middle and spin) */
+  const extra=(c,fn)=>{const T=Array.from(c.tracks[0].times),JQ=[],VS=[],VQ=[],VP=[],q=new Q(),e=new THREE.Euler();
+    for(const t of T){const p=fn(t);q.setFromEuler(e.set(p.jw[0],0,0));JQ.push(q.x,q.y,q.z,q.w);
+      const s=Math.max(.001,p.vb[0]);VS.push(s,s,s);VP.push(0,1.0*(1-s),0);q.setFromEuler(e.set(0,p.vb[1]*D2R,0));VQ.push(q.x,q.y,q.z,q.w);}
+    c.tracks.push(new THREE.QuaternionKeyframeTrack('g_jaw.quaternion',T,JQ),new THREE.VectorKeyframeTrack('vbody.scale',T,VS),
+      new THREE.VectorKeyframeTrack('vbody.position',T,VP),new THREE.QuaternionKeyframeTrack('vbody.quaternion',T,VQ));};
   /* looping clips: one warm-up cycle first, so the elbows start where the cycle ends */
   const CC=(name,dur,fn,o={})=>{PP=null;MIN=o.min||.4;if(o.loop)for(let i=0;i<Math.round(dur*30);i++)solve(fn(i/30));
-    const c=sampleClip(name,dur,t=>solve(fn(t)),Object.assign({autoFeet:false},o),B);extra(c,fn,o.smoke);if(o.next!==undefined){if(o.next)c.next=o.next;}else if(!o.loop)c.next='Idle (war mode)';if(o.hold)c.hold=true;L.push(c);MIN=.4;return c;};
+    const c=sampleClip(name,dur,t=>solve(fn(t)),Object.assign({autoFeet:false},o),B);extra(c,fn);if(o.next!==undefined){if(o.next)c.next=o.next;}else if(!o.loop)c.next='Idle (war mode)';if(o.hold)c.hold=true;L.push(c);MIN=.4;return c;};
   const KC=(name,dur,keys,note,o={})=>{const f=wrKeys(keys.map(q=>[q[0],wrP(o.base||NC_W,q[1]||{})]));return CC(name,dur,o.add?t=>o.add(t,f(t)):f,Object.assign({note},o));};
   /* in-place IK gait: planted feet slide back at one steady speed, swinging feet come forward lifted; the hands ride with the hips */
   const GAIT=(name,dur,G,note)=>{const fn=t=>{const u=t/dur,o=G.body(u),c2=C(D*(u-G.duty/2)),dy=-G.b*C(2*D*(u-G.duty/2));o.HP=[o.HP[0]+G.sw*c2,o.HP[1]+dy,o.HP[2]];
@@ -282,114 +262,114 @@ function necromancerClips(){const B=VB.necro,D=Math.PI*2,S=Math.sin,C=Math.cos,V
 
   /* ---- war mode ---- */
   CC('Idle (war mode)',2.6,t=>{const p=D*t/2.6,b=S(p);return wrP(NC_W,{HP:[0,-.05-.008*b,0],ch:[3+1.2*S(2*p),-6,0],hd:[-4+1.5*S(2*p+1),16+5*S(p),0],
-    gR:[-.38,1.1+.01*S(p+.4),.3],gL:[.3,1.3+.02*S(p+1.2),.42],wl:[12,0,-24-8*Math.max(0,S(2*p))],oL:[.55+.08*S(3*p)],fist:[25+10*Math.max(0,S(2*p+.3)),95]});},
-    {loop:true,note:'Wider stance, left foot forward, the staff angled ahead, the soul flame flickering in her raised left hand'});
+    gR:[-.38,1.1+.01*S(p+.4),.3],gL:[.3,1.3+.02*S(p+1.2),.42],wl:[12,0,-24-8*Math.max(0,S(2*p))],fist:[25+10*Math.max(0,S(2*p+.3)),95]});},
+    {loop:true,note:'Wider stance, left foot forward, the staff angled ahead, her left hand raised like a claw'});
   GAIT('Walk (war mode)',1.3,{duty:.64,s:.21,lift:.06,toe:16,x:.1,yaw:[-2,-30],b:.01,sw:.016,st:.07,
-    body:u=>wrP(NC_W,{h:[5,-16-3*C(D*u),0],gR:[-.38,1.1,.3+.03*C(D*u)],gL:[.3,1.3,.42-.03*C(D*u)],oL:[.55+.05*S(2*D*u)]})},'Advances slowly, staff and soul flame held ahead');
+    body:u=>wrP(NC_W,{h:[5,-16-3*C(D*u),0],gR:[-.38,1.1,.3+.03*C(D*u)],gL:[.3,1.3,.42-.03*C(D*u)]})},'Advances slowly, staff and left hand held ahead');
 
   /* ---- spells ---- */
   /* Spell 1 (soul bolt): draws the soul flame in at her left side (elbow down), thrusts the open hand forward and hurls it */
   KC('Spell 1 (soul bolt)',2.0,[[0,{}],
-    [.45,{h:[4,10,0],sp:[2,6,0],ch:[0,10,0],hd:[-4,4,0],gL:[.42,1.12,.05],wl:[0,0,-30],fist:[4,95],oL:[.95],jw:[.2]}],
-    [.7,{h:[8,-22,0],sp:[6,-8,0],ch:[8,-12,0],hd:[-6,22,0],FL:[.11,.24,-4,0,0],gL:[.14,1.34,.66],wl:[20,0,10],fist:[0,95],oL:[1.15],jw:[.5]}],
-    [.76,{h:[8,-22,0],sp:[6,-8,0],ch:[8,-12,0],hd:[-6,22,0],FL:[.11,.24,-4,0,0],gL:[.14,1.35,.67],wl:[20,0,10],fist:[0,95],oL:[.001],jw:[.5]}],
-    [1.15,{h:[6,-18,0],ch:[5,-8,0],FL:[.11,.2,-4,0,0],gL:[.24,1.28,.54],fist:[10,95],oL:[.001],jw:[.15]}],
-    [1.6,{oL:[.2]}],[2.0,{}]],'Draws the soul flame in at her side, then thrusts the open hand forward and hurls it');
+    [.45,{h:[4,10,0],sp:[2,6,0],ch:[0,10,0],hd:[-4,4,0],gL:[.42,1.12,.05],wl:[0,0,-30],fist:[4,95],jw:[.2]}],
+    [.7,{h:[8,-22,0],sp:[6,-8,0],ch:[8,-12,0],hd:[-6,22,0],FL:[.11,.24,-4,0,0],gL:[.14,1.34,.66],wl:[20,0,10],fist:[0,95],jw:[.5]}],
+    [.76,{h:[8,-22,0],sp:[6,-8,0],ch:[8,-12,0],hd:[-6,22,0],FL:[.11,.24,-4,0,0],gL:[.14,1.35,.67],wl:[20,0,10],fist:[0,95],jw:[.5]}],
+    [1.15,{h:[6,-18,0],ch:[5,-8,0],FL:[.11,.2,-4,0,0],gL:[.24,1.28,.54],fist:[10,95],jw:[.15]}],
+    [1.6,{}],[2.0,{}]],'Draws the left hand in at her side, then thrusts the open hand forward to hurl a bolt');
   /* Spell 2 (raise the dead): lifts the staff high and rises off the ground, the soul flame swelling in her raised palm, head thrown
      back; then drops and drives the staff's foot into the ground ahead: a circle of runes flares round her (where the dead climb out) */
   {const UP={fl:[.22],HP:[0,0,0],h:[-2,0,0],sp:[-5,0,0],ch:[-8,0,0],nk:[-6,0,0],hd:[-20,0,0],FL:[.07,.0,6,-.04,40],FR:[-.07,-.03,-6,-.04,36],gR:[-.3,1.62,.12],dR:[0,1,0],wr:[0,0,0],gL:[.48,1.62,.14],wl:[-20,0,-30],fist:[0,95]};
   const DN={fl:[0],HP:[0,-.16,.04],h:[16,-6,0],sp:[8,-2,0],ch:[8,-2,0],nk:[4,0,0],hd:[8,8,0],FL:[.1,.14,-4,0,0],FR:[-.12,-.2,-26,0,0],gR:[-.28,.88,.46],dR:[0,1,.1],gL:[.42,1.04,.3],wl:[-10,0,-50],fist:[0,95]};
   KC('Spell 2 (raise the dead)',3.6,[[0,{}],
-    [.6,wrP(UP,{fl:[.12],oL:[.6],jw:[.3]})],
-    [1.25,wrP(UP,{oL:[1.1],jw:[.7]})],
-    [1.5,wrP(UP,{fl:[.24],gR:[-.3,1.66,.14],oL:[1.2],jw:[.8]})],
-    [1.72,wrP(DN,{oL:[.3],rc:[.3],jw:[.6]})],
-    [1.85,wrP(DN,{oL:[.001],rc:[1.05],jw:[.5]})],
-    [2.8,wrP(DN,{HP:[0,-.15,.04],gL:[.43,1.05,.3],oL:[.001],rc:[1],jw:[.3]})],
-    [3.25,{oL:[.1],rc:[.001]}],[3.6,{}]],'Lifts the staff high and rises off the ground, the soul flame swelling in her palm; drops and drives the staff into the ground ahead, a circle of runes flaring round her to call up the dead, and holds');}
+    [.6,wrP(UP,{fl:[.12],jw:[.3]})],
+    [1.25,wrP(UP,{jw:[.7]})],
+    [1.5,wrP(UP,{fl:[.24],gR:[-.3,1.66,.14],jw:[.8]})],
+    [1.72,wrP(DN,{jw:[.6]})],
+    [1.85,wrP(DN,{jw:[.5]})],
+    [2.8,wrP(DN,{HP:[0,-.15,.04],gL:[.43,1.05,.3],jw:[.3]})],
+    [3.25,{}],[3.6,{}]],'Lifts the staff high and rises off the ground, her left palm raised; drops and drives the staff into the ground ahead (where the dead are called up) to call up the dead, and holds');}
   /* Spell 3 (drain life): reaches out with the open left hand, clenches it and draws the stolen life back to her breast, the flame
      swelling, head tipping back, eyes half closed */
   KC('Spell 3 (drain life)',3.0,[[0,{}],
-    [.5,{h:[8,-14,0],sp:[5,-6,0],ch:[6,-8,0],hd:[2,12,0],gL:[.2,1.36,.68],wl:[10,0,-10],fist:[0,95],oL:[.15],jw:[.3]}],
-    [1.0,{h:[8,-14,0],sp:[5,-6,0],ch:[6,-8,0],hd:[2,12,0],gL:[.2,1.38,.66],wl:[10,0,-10],fist:[70,95],oL:[.35],jw:[.2]}],
-    [2.0,{h:[0,-6,0],sp:[-3,-2,0],ch:[-7,-2,0],nk:[-4,0,0],hd:[-16,4,0],gL:[.26,1.26,.32],wl:[0,0,-10],fist:[80,95],oL:[.95],jw:[.4]}],
-    [2.4,{h:[0,-6,0],sp:[-4,-2,0],ch:[-9,-2,0],nk:[-5,0,0],hd:[-20,4,0],gL:[.26,1.27,.31],wl:[0,0,-10],fist:[82,95],oL:[1.05],jw:[.45]}],
-    [3.0,{}]],'Reaches out with an open hand, clenches it and draws the stolen life back to her breast, the soul flame swelling, head tipping back');
+    [.5,{h:[8,-14,0],sp:[5,-6,0],ch:[6,-8,0],hd:[2,12,0],gL:[.2,1.36,.68],wl:[10,0,-10],fist:[0,95],jw:[.3]}],
+    [1.0,{h:[8,-14,0],sp:[5,-6,0],ch:[6,-8,0],hd:[2,12,0],gL:[.2,1.38,.66],wl:[10,0,-10],fist:[70,95],jw:[.2]}],
+    [2.0,{h:[0,-6,0],sp:[-3,-2,0],ch:[-7,-2,0],nk:[-4,0,0],hd:[-16,4,0],gL:[.26,1.26,.32],wl:[0,0,-10],fist:[80,95],jw:[.4]}],
+    [2.4,{h:[0,-6,0],sp:[-4,-2,0],ch:[-9,-2,0],nk:[-5,0,0],hd:[-20,4,0],gL:[.26,1.27,.31],wl:[0,0,-10],fist:[82,95],jw:[.45]}],
+    [3.0,{}]],'Reaches out with an open hand, clenches it and draws the stolen life back to her breast, head tipping back');
   /* Spell 4 (death nova): sinks low gathering the flame, then rises into the air, arms flung wide, head back; a ring of soul fire
      bursts out along the ground; she sinks back down */
   {const HI={fl:[.42],HP:[0,0,0],h:[-4,0,0],sp:[-6,0,0],ch:[-10,0,0],nk:[-6,0,0],hd:[-22,0,0],FL:[.08,-.02,6,-.06,46],FR:[-.08,-.05,-6,-.05,42],gR:[-.62,1.5,.08],dR:[-.2,1,0],wr:[0,0,0],gL:[.66,1.5,.08],wl:[-20,0,-34],fist:[0,95]};
   KC('Spell 4 (death nova)',3.4,[[0,{}],
-    [.6,{HP:[0,-.2,0],h:[16,-6,0],sp:[10,-2,0],ch:[10,-2,0],hd:[10,6,0],gR:[-.32,.96,.36],dR:[0,1,.1],gL:[.22,1.0,.36],wl:[10,0,-40],fist:[30,95],oL:[.8],jw:[.1]}],
-    [1.15,wrP(HI,{fl:[.34],oL:[1.0],jw:[.6]})],
-    [1.3,wrP(HI,{oL:[.001],jw:[.9],nv:[.01]})],
-    [2.2,wrP(HI,{fl:[.44],gR:[-.63,1.51,.08],gL:[.67,1.51,.08],oL:[.001],jw:[.7],nv:[.995]})],
-    [2.9,{fl:[.08],oL:[.1],nv:[1]}],[3.4,{nv:[1]}]],'Sinks low gathering the flame, then rises into the air with her arms flung wide and head thrown back: a ring of soul fire bursts out along the ground; she sinks back down');}
+    [.6,{HP:[0,-.2,0],h:[16,-6,0],sp:[10,-2,0],ch:[10,-2,0],hd:[10,6,0],gR:[-.32,.96,.36],dR:[0,1,.1],gL:[.22,1.0,.36],wl:[10,0,-40],fist:[30,95],jw:[.1]}],
+    [1.15,wrP(HI,{fl:[.34],jw:[.6]})],
+    [1.3,wrP(HI,{jw:[.9]})],
+    [2.2,wrP(HI,{fl:[.44],gR:[-.63,1.51,.08],gL:[.67,1.51,.08],jw:[.7]})],
+    [2.9,{fl:[.08]}],[3.4,{}]],'Sinks low, then rises into the air with her arms flung wide and head thrown back (the moment the nova bursts); she sinks back down');}
   /* Kiss of death: lifts the left palm before her lips, the soul flame kindling on it, and blows it towards the enemy */
   KC('Kiss of death',2.4,[[0,{}],
-    [.6,{h:[2,-8,0],sp:[2,-4,0],ch:[2,-6,0],nk:[6,0,0],hd:[6,6,-8],gL:[.14,1.46,.36],wl:[-10,0,-50],fist:[10,95],oL:[.15],jw:[.0]}],
-    [1.1,{h:[2,-8,0],sp:[2,-4,0],ch:[2,-6,0],nk:[6,0,0],hd:[8,8,-8],gL:[.14,1.47,.37],wl:[-10,0,-50],fist:[5,95],oL:[.6],jw:[.12]}],
-    [1.3,{h:[6,-14,0],sp:[4,-6,0],ch:[6,-8,0],nk:[4,0,0],hd:[0,10,-4],gL:[.2,1.44,.58],wl:[0,0,-40],fist:[0,95],oL:[.7],jw:[.2]}],
-    [1.38,{h:[6,-14,0],sp:[4,-6,0],ch:[6,-8,0],nk:[4,0,0],hd:[0,10,-4],gL:[.2,1.44,.6],wl:[0,0,-40],fist:[0,95],oL:[.001],jw:[.1]}],
-    [1.9,{hd:[2,14,6],gL:[.28,1.3,.48],oL:[.001],jw:[0]}],[2.4,{}]],'Lifts the left palm before her lips, a soul flame kindling on it, and blows it towards the enemy',{min:.34});
+    [.6,{h:[2,-8,0],sp:[2,-4,0],ch:[2,-6,0],nk:[6,0,0],hd:[6,6,-8],gL:[.14,1.46,.36],wl:[-10,0,-50],fist:[10,95],jw:[.0]}],
+    [1.1,{h:[2,-8,0],sp:[2,-4,0],ch:[2,-6,0],nk:[6,0,0],hd:[8,8,-8],gL:[.14,1.47,.37],wl:[-10,0,-50],fist:[5,95],jw:[.12]}],
+    [1.3,{h:[6,-14,0],sp:[4,-6,0],ch:[6,-8,0],nk:[4,0,0],hd:[0,10,-4],gL:[.2,1.44,.58],wl:[0,0,-40],fist:[0,95],jw:[.2]}],
+    [1.38,{h:[6,-14,0],sp:[4,-6,0],ch:[6,-8,0],nk:[4,0,0],hd:[0,10,-4],gL:[.2,1.44,.6],wl:[0,0,-40],fist:[0,95],jw:[.1]}],
+    [1.9,{hd:[2,14,6],gL:[.28,1.3,.48],jw:[0]}],[2.4,{}]],'Lifts the left palm before her lips and blows a kiss towards the enemy',{min:.34});
   /* Staff strike: lifts the skull high beside her right shoulder and brings it down ahead, beside the body */
   KC('Staff strike',1.5,[[0,{}],
-    [.45,{h:[2,16,0],sp:[-2,6,0],ch:[-6,10,0],hd:[-4,-10,0],gR:[-.42,1.56,.0],dR:[0,.9,-.4],wr:[0,0,0],gL:[.36,1.2,.36],oL:[.3],jw:[.2]}],
-    [.64,{h:[12,-4,0],sp:[8,-2,0],ch:[8,-4,0],hd:[2,6,0],FL:[.11,.26,-4,0,0],gR:[-.4,1.32,.48],dR:[0,.6,.8],gL:[.34,1.1,.24],oL:[.3],jw:[.5]}],
-    [.78,{h:[20,-10,0],sp:[12,-4,0],ch:[12,-6,0],hd:[8,10,0],FL:[.11,.28,-4,0,0],gR:[-.4,1.08,.5],dR:[0,.1,1],gL:[.32,1.04,.16],oL:[.3],jw:[.3]}],
-    [1.0,{h:[18,-10,0],sp:[10,-4,0],ch:[10,-6,0],hd:[6,10,0],FL:[.11,.28,-4,0,0],gR:[-.4,1.1,.48],dR:[0,.15,1],oL:[.35]}],
+    [.45,{h:[2,16,0],sp:[-2,6,0],ch:[-6,10,0],hd:[-4,-10,0],gR:[-.42,1.56,.0],dR:[0,.9,-.4],wr:[0,0,0],gL:[.36,1.2,.36],jw:[.2]}],
+    [.64,{h:[12,-4,0],sp:[8,-2,0],ch:[8,-4,0],hd:[2,6,0],FL:[.11,.26,-4,0,0],gR:[-.4,1.32,.48],dR:[0,.6,.8],gL:[.34,1.1,.24],jw:[.5]}],
+    [.78,{h:[20,-10,0],sp:[12,-4,0],ch:[12,-6,0],hd:[8,10,0],FL:[.11,.28,-4,0,0],gR:[-.4,1.08,.5],dR:[0,.1,1],gL:[.32,1.04,.16],jw:[.3]}],
+    [1.0,{h:[18,-10,0],sp:[10,-4,0],ch:[10,-6,0],hd:[6,10,0],FL:[.11,.28,-4,0,0],gR:[-.4,1.1,.48],dR:[0,.15,1]}],
     [1.5,{}]],'Lifts the skull high beside her right shoulder and brings it down ahead with a step in, the staff clear of the body');
   /* Taunt (beckon): holds out the left hand palm up and curls the fingers twice, come here; tilts her head and laughs */
   KC('Taunt (beckon)',3.0,[[0,{}],
-    [.5,{h:[0,-10,4],sp:[0,-4,-2],ch:[-3,-6,-3],hd:[8,8,12],gL:[.24,1.22,.5],wl:[-30,0,0],fist:[0,95],oL:[.001],jw:[.05]}],
-    [2.4,{h:[0,-10,4],sp:[0,-4,-2],ch:[-3,-6,-3],hd:[-6,8,12],gL:[.25,1.23,.51],wl:[-30,0,0],fist:[0,95],oL:[.001],jw:[.05]}],
+    [.5,{h:[0,-10,4],sp:[0,-4,-2],ch:[-3,-6,-3],hd:[8,8,12],gL:[.24,1.22,.5],wl:[-30,0,0],fist:[0,95],jw:[.05]}],
+    [2.4,{h:[0,-10,4],sp:[0,-4,-2],ch:[-3,-6,-3],hd:[-6,8,12],gL:[.25,1.23,.51],wl:[-30,0,0],fist:[0,95],jw:[.05]}],
     [3.0,{}]],'Holds out her left hand palm up and curls the fingers twice (come here), tilts her head and laughs',
     {add:(t,p)=>{const o=Object.assign({},p);if(t>.6&&t<1.6){const g=Math.max(0,S(D*(t-.6)/.5));o.fist=[p.fist[0]+80*g,p.fist[1]];}
       if(t>1.6&&t<2.5){const w=Math.min(1,(t-1.6)/.15,(2.5-t)/.15),g=Math.max(0,S(D*(t-1.6)/.3))*w;o.jw=[p.jw[0]+.3*g];o.ch=[p.ch[0]-2*g,p.ch[1],p.ch[2]];}return o;}});
 
   /* ---- reactions ---- */
   KC('Hit 1',.9,[[0,{}],
-    [.1,{HP:[0,-.06,-.1],h:[-8,-10,0],sp:[-8,-4,0],ch:[-12,-6,0],nk:[-8,0,0],hd:[-24,6,8],gL:[.42,1.4,.2],wl:[-10,0,-30],fist:[5,95],oL:[.1],jw:[.6]}],
-    [.36,{HP:[0,-.06,-.05],h:[2,-12,0],sp:[2,-4,0],ch:[0,-6,0],hd:[-8,8,0],gL:[.36,1.3,.32],oL:[.3],jw:[.2]}],
+    [.1,{HP:[0,-.06,-.1],h:[-8,-10,0],sp:[-8,-4,0],ch:[-12,-6,0],nk:[-8,0,0],hd:[-24,6,8],gL:[.42,1.4,.2],wl:[-10,0,-30],fist:[5,95],jw:[.6]}],
+    [.36,{HP:[0,-.06,-.05],h:[2,-12,0],sp:[2,-4,0],ch:[0,-6,0],hd:[-8,8,0],gL:[.36,1.3,.32],jw:[.2]}],
     [.9,{}]],'Blow to the face: her head snaps back, the free hand flies up');
   KC('Hit 2',1.1,[[0,{}],
-    [.12,{HP:[.06,-.08,0],h:[6,8,-10],sp:[4,4,-6],ch:[0,6,-8],hd:[-10,24,-12],gL:[.5,1.3,.24],wl:[-10,0,-30],fist:[10,95],oL:[.1],jw:[.5]}],
-    [.32,{HP:[.08,-.1,0],h:[6,0,-6],sp:[5,0,-4],ch:[2,0,-6],hd:[-2,16,-6],FL:[.17,.12,2,0,0],gL:[.44,1.24,.32],oL:[.2],jw:[.2]}],
+    [.12,{HP:[.06,-.08,0],h:[6,8,-10],sp:[4,4,-6],ch:[0,6,-8],hd:[-10,24,-12],gL:[.5,1.3,.24],wl:[-10,0,-30],fist:[10,95],jw:[.5]}],
+    [.32,{HP:[.08,-.1,0],h:[6,0,-6],sp:[5,0,-4],ch:[2,0,-6],hd:[-2,16,-6],FL:[.17,.12,2,0,0],gL:[.44,1.24,.32],jw:[.2]}],
     [.62,{HP:[.05,-.08,0],FL:[.17,.12,2,0,0]}],
     [1.1,{}]],'Struck from the right: twists away and catches herself with a step, then turns back');
   KC('Heavy hit',2.5,[[0,{}],
-    [.12,{HP:[0,-.08,-.1],h:[-8,-12,0],sp:[-10,-4,0],ch:[-14,-6,0],nk:[-8,0,0],hd:[-26,6,6],gL:[.46,1.38,.2],wl:[-10,0,-30],fist:[5,95],oL:[.001],jw:[.7]}],
-    [.36,{HP:[0,-.24,-.12],h:[8,-12,0],sp:[2,-4,0],ch:[0,-6,0],hd:[-8,8,4],FL:[.12,-.04,-4,.06,30],gL:[.4,1.0,.26],oL:[.001],jw:[.4]}],
-    [.64,{HP:[0,-.41,-.12],h:[18,-12,0],sp:[10,-4,0],ch:[8,-6,0],hd:[6,8,0],FL:[.12,-.38,-4,0,70],FR:[-.12,-.06,-30,0,0],gR:[-.34,.9,.44],dR:[0,.8,.6],gL:[.3,.7,.3],wl:[0,0,-40],fist:[25,95],oL:[.001],jw:[.2]}],
-    [1.35,{HP:[0,-.41,-.12],h:[20,-12,0],sp:[11,-4,0],ch:[9,-6,0],hd:[-6,14,0],FL:[.12,-.38,-4,0,70],FR:[-.12,-.06,-30,0,0],gR:[-.34,.9,.45],dR:[0,.8,.6],gL:[.3,.69,.31],wl:[0,0,-40],fist:[25,95],oL:[.001],jw:[.3]}],
-    [1.75,{HP:[0,-.3,-.08],h:[22,-12,0],sp:[10,-4,0],ch:[8,-6,0],hd:[-4,10,0],FL:[.12,-.3,-4,0,42],FR:[-.12,-.08,-30,0,0],gR:[-.36,.98,.4],dR:[0,.9,.4],gL:[.32,.86,.3],fist:[25,95],oL:[.1],jw:[.1]}],
-    [2.05,{HP:[0,-.1,-.02],h:[8,-14,0],FL:[.12,.0,-4,.05,10],oL:[.3]}],
+    [.12,{HP:[0,-.08,-.1],h:[-8,-12,0],sp:[-10,-4,0],ch:[-14,-6,0],nk:[-8,0,0],hd:[-26,6,6],gL:[.46,1.38,.2],wl:[-10,0,-30],fist:[5,95],jw:[.7]}],
+    [.36,{HP:[0,-.24,-.12],h:[8,-12,0],sp:[2,-4,0],ch:[0,-6,0],hd:[-8,8,4],FL:[.12,-.04,-4,.06,30],gL:[.4,1.0,.26],jw:[.4]}],
+    [.64,{HP:[0,-.41,-.12],h:[18,-12,0],sp:[10,-4,0],ch:[8,-6,0],hd:[6,8,0],FL:[.12,-.38,-4,0,70],FR:[-.12,-.06,-30,0,0],gR:[-.34,.9,.44],dR:[0,.8,.6],gL:[.3,.7,.3],wl:[0,0,-40],fist:[25,95],jw:[.2]}],
+    [1.35,{HP:[0,-.41,-.12],h:[20,-12,0],sp:[11,-4,0],ch:[9,-6,0],hd:[-6,14,0],FL:[.12,-.38,-4,0,70],FR:[-.12,-.06,-30,0,0],gR:[-.34,.9,.45],dR:[0,.8,.6],gL:[.3,.69,.31],wl:[0,0,-40],fist:[25,95],jw:[.3]}],
+    [1.75,{HP:[0,-.3,-.08],h:[22,-12,0],sp:[10,-4,0],ch:[8,-6,0],hd:[-4,10,0],FL:[.12,-.3,-4,0,42],FR:[-.12,-.08,-30,0,0],gR:[-.36,.98,.4],dR:[0,.9,.4],gL:[.32,.86,.3],fist:[25,95],jw:[.1]}],
+    [2.05,{HP:[0,-.1,-.02],h:[8,-14,0],FL:[.12,.0,-4,.05,10]}],
     [2.5,{}]],'Knocked down onto her left knee, bracing on it, then rises again');
 
   /* ---- vanish, reappear, death ---- */
   /* Vanish: draws herself up, arms before her, the smoke billows up round her from the ground; she spins and shrinks to nothing
      inside it and the smoke swirls away (held: gone) */
   KC('Vanish',3.4,[[0,{}],
-    [.55,NC_WRAP],[.9,wrP(NC_WRAP,{sm:[.02]})],[1.4,wrP(NC_WRAP,{fl:[.1],sm:[.4]})],
-    [1.62,wrP(NC_WRAP,{fl:[.12],sm:[.47],vb:[.75,160]})],[1.95,wrP(NC_WRAP,{fl:[.14],sm:[.58],vb:[.001,620]})],[3.4,wrP(NC_WRAP,{fl:[.14],sm:[1],vb:[.001,620]})]],
-    'Draws herself up, smoke billowing round her from the ground; she spins and shrinks to nothing inside it, and the smoke swirls away (held: gone)',{smoke:true,hold:true,next:null});
+    [.55,NC_WRAP],[.9,wrP(NC_WRAP,{})],[1.4,wrP(NC_WRAP,{fl:[.1]})],
+    [1.62,wrP(NC_WRAP,{fl:[.12],vb:[.75,160]})],[1.95,wrP(NC_WRAP,{fl:[.14],vb:[.001,620]})],[3.4,wrP(NC_WRAP,{fl:[.14],vb:[.001,620]})]],
+    'Draws herself up, spins and shrinks to nothing (held: gone)',{hold:true,next:null});
   /* Reappear: smoke gathers out of nothing, she grows out of it spinning with her arms spread; the smoke clears and she laughs */
   {const OPEN={fl:[.12],HP:[0,0,0],h:[-2,0,0],sp:[-4,0,0],ch:[-6,0,0],nk:[-2,0,0],hd:[-10,0,0],FL:[.07,.0,6,-.03,30],FR:[-.07,-.02,-6,-.03,28],gR:[-.5,1.3,.12],dR:[-.15,1,0],wr:[0,0,0],gL:[.56,1.36,.08],wl:[-10,0,-30],fist:[5,95],jw:[.2]};
-  KC('Reappear',2.8,[[0,wrP(OPEN,{sm:[1],vb:[.001,-620]})],[.55,wrP(OPEN,{sm:[.6],vb:[.001,-620]})],[.85,wrP(OPEN,{fl:[.14],sm:[.5],vb:[.7,-160]})],[1.05,wrP(OPEN,{fl:[.15],sm:[.44],vb:[1,0]})],
-    [1.6,wrP(OPEN,{fl:[.14],gL:[.57,1.37,.09],hd:[-18,0,0],sm:[.15],jw:[.7]})],[2.0,wrP(OPEN,{fl:[.1],sm:[.002],jw:[.4]})],[2.8,{}]],
-    'Smoke gathers out of nothing and she grows out of it, spinning, arms spread; the smoke clears and she laughs',{smoke:true});}
+  KC('Reappear',2.8,[[0,wrP(OPEN,{vb:[.001,-620]})],[.55,wrP(OPEN,{vb:[.001,-620]})],[.85,wrP(OPEN,{fl:[.14],vb:[.7,-160]})],[1.05,wrP(OPEN,{fl:[.15],vb:[1,0]})],
+    [1.6,wrP(OPEN,{fl:[.14],gL:[.57,1.37,.09],hd:[-18,0,0],jw:[.7]})],[2.0,wrP(OPEN,{fl:[.1],jw:[.4]})],[2.8,{}]],
+    'Grows out of nothing, spinning, arms spread, and laughs',{});}
   /* Death: reels from the blow and sinks onto her knees leaning on the staff, throws her head back and screams; the souls she held
      burst out of her as smoke and she crumbles into it (held: gone) */
   {const KN={HP:[0,-.41,-.08],h:[14,-6,0],sp:[6,-2,0],ch:[4,-2,0],nk:[2,0,0],hd:[4,4,0],FL:[.11,-.3,-4,0,72],FR:[-.11,-.32,-14,0,74],gR:[-.32,.78,.42],dR:[0,.75,.66],wr:[0,0,0],gL:[.34,.74,.26],wl:[0,0,-30],fist:[30,95]};
   KC('Death',4.0,[[0,{}],
-    [.14,{HP:[0,-.08,-.12],h:[-10,-12,0],sp:[-10,-4,0],ch:[-14,-6,0],nk:[-8,0,0],hd:[-26,6,6],gL:[.46,1.38,.2],wl:[-10,0,-30],fist:[5,95],oL:[.001],jw:[.7]}],
-    [.5,{HP:[0,-.2,-.1],h:[6,-10,0],sp:[2,-4,0],ch:[0,-4,0],hd:[-4,4,4],FL:[.11,.02,-4,.06,20],gL:[.4,1.0,.28],oL:[.001],jw:[.3]}],
-    [.95,wrP(KN,{oL:[.001],jw:[.2]})],
-    [1.5,wrP(KN,{h:[4,-6,0],sp:[-4,-2,0],ch:[-10,-2,0],nk:[-8,0,0],hd:[-30,0,0],gL:[.4,.9,.2],wl:[-20,0,-30],fist:[0,95],oL:[.001],jw:[1]})],
-    [1.9,wrP(KN,{h:[4,-6,0],sp:[-4,-2,0],ch:[-11,-2,0],nk:[-8,0,0],hd:[-32,0,0],gL:[.41,.91,.2],wl:[-20,0,-30],fist:[0,95],oL:[.001],sm:[.3],jw:[1]})],
-    [2.15,wrP(KN,{h:[4,-6,0],sp:[-4,-2,0],ch:[-11,-2,0],nk:[-8,0,0],hd:[-32,0,0],gL:[.41,.91,.2],wl:[-20,0,-30],fist:[0,95],oL:[.001],sm:[.48],vb:[.7,0],jw:[1]})],
-    [2.45,wrP(KN,{h:[4,-6,0],sp:[-4,-2,0],ch:[-11,-2,0],nk:[-8,0,0],hd:[-32,0,0],gL:[.41,.91,.2],wl:[-20,0,-30],fist:[0,95],oL:[.001],sm:[.6],vb:[.001,0],jw:[1]})],
-    [4.0,wrP(KN,{h:[4,-6,0],sp:[-4,-2,0],ch:[-11,-2,0],nk:[-8,0,0],hd:[-32,0,0],gL:[.41,.91,.2],wl:[-20,0,-30],fist:[0,95],oL:[.001],sm:[1],vb:[.001,0],jw:[1]})]],
-    'Reels from the blow and sinks onto her knees, throws her head back and screams; the souls burst out of her as smoke and she crumbles into it (held: gone)',{smoke:true,hold:true,next:null});}
+    [.14,{HP:[0,-.08,-.12],h:[-10,-12,0],sp:[-10,-4,0],ch:[-14,-6,0],nk:[-8,0,0],hd:[-26,6,6],gL:[.46,1.38,.2],wl:[-10,0,-30],fist:[5,95],jw:[.7]}],
+    [.5,{HP:[0,-.2,-.1],h:[6,-10,0],sp:[2,-4,0],ch:[0,-4,0],hd:[-4,4,4],FL:[.11,.02,-4,.06,20],gL:[.4,1.0,.28],jw:[.3]}],
+    [.95,wrP(KN,{jw:[.2]})],
+    [1.5,wrP(KN,{h:[4,-6,0],sp:[-4,-2,0],ch:[-10,-2,0],nk:[-8,0,0],hd:[-30,0,0],gL:[.4,.9,.2],wl:[-20,0,-30],fist:[0,95],jw:[1]})],
+    [1.9,wrP(KN,{h:[4,-6,0],sp:[-4,-2,0],ch:[-11,-2,0],nk:[-8,0,0],hd:[-32,0,0],gL:[.41,.91,.2],wl:[-20,0,-30],fist:[0,95],jw:[1]})],
+    [2.15,wrP(KN,{h:[4,-6,0],sp:[-4,-2,0],ch:[-11,-2,0],nk:[-8,0,0],hd:[-32,0,0],gL:[.41,.91,.2],wl:[-20,0,-30],fist:[0,95],vb:[.7,0],jw:[1]})],
+    [2.45,wrP(KN,{h:[4,-6,0],sp:[-4,-2,0],ch:[-11,-2,0],nk:[-8,0,0],hd:[-32,0,0],gL:[.41,.91,.2],wl:[-20,0,-30],fist:[0,95],vb:[.001,0],jw:[1]})],
+    [4.0,wrP(KN,{h:[4,-6,0],sp:[-4,-2,0],ch:[-11,-2,0],nk:[-8,0,0],hd:[-32,0,0],gL:[.41,.91,.2],wl:[-20,0,-30],fist:[0,95],vb:[.001,0],jw:[1]})]],
+    'Reels from the blow and sinks onto her knees, throws her head back and screams; then shrinks to nothing (held: gone)',{smoke:true,hold:true,next:null});}
   return L;}
 
 ASSETS.push({id:'necromancer',folder:'characters/enemies/undead',name:'Necromancer',kind:'character',variants:true,defaultSeed:1,groundR:2.0,build:(s,o)=>buildNecromancer(s,o||{}),
@@ -399,4 +379,4 @@ ASSETS.push({id:'necromancer',folder:'characters/enemies/undead',name:'Necromanc
     {key:'gown',label:'Gown',choices:[['random','Random'],...Object.entries(NC_GOWN).map(([k,v])=>[k,v[1].charAt(0).toUpperCase()+v[1].slice(1)])],def:'random'},
     {key:'head',label:'Headpiece',choices:[['random','Random'],['horns','Horns'],['thorns','Crown of thorns'],['skull','Skull diadem']],def:'random'},
     {key:'staff',label:'Staff',choices:[['random','Random'],['horned','Horned skull'],['caged','Caged skull'],['crescent','Skull and crescent']],def:'random'}],
-  desc:'Necromancer (boss): a tall, pale gothic sorceress of about 1.8 m with long straight hair and a blunt fringe, glowing eyes in smoky make-up, dark lips and black veins; a black corset over a long gown slit up the right leg, thigh-high heeled boots, long black gloves with silver nails, a spiked bone pauldron, a choker with a glowing gem, and horns, a crown of thorns or a skull diadem. Carries a two-metre staff topped by a skull. The gown and the hair move with every step. Clips: Idle, Walk, war-mode Idle and Walk, Spell 1 (soul bolt), Spell 2 (raise the dead: drives the staff into the ground in a circle of runes), Spell 3 (drain life), Spell 4 (death nova: rises and sends a ring of soul fire along the ground), Kiss of death, Staff strike, Taunt (beckon), Hit 1, Hit 2, Heavy hit, Vanish and Reappear (in smoke) and Death (crumbles into smoke).'});
+  desc:'Necromancer (boss): a tall, pale gothic sorceress of about 1.8 m with long straight hair and a blunt fringe, glowing eyes in smoky make-up, dark lips and black veins; a black corset over a long gown slit up the right leg, thigh-high heeled boots, long black gloves with silver nails, a spiked bone pauldron, a choker with a glowing gem, and horns, a crown of thorns or a skull diadem. Carries a two-metre staff topped by a skull. The gown and the hair move with every step. Clips: Idle, Walk, war-mode Idle and Walk, Spell 1 (soul bolt), Spell 2 (raise the dead: drives the staff into the ground), Spell 3 (drain life), Spell 4 (death nova: rises with arms flung wide), Kiss of death, Staff strike, Taunt (beckon), Hit 1, Hit 2, Heavy hit, Vanish and Reappear, and Death (sinks to her knees, screams and vanishes). Spell effects are added separately.'});
