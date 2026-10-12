@@ -4,7 +4,7 @@ The vampire lord (`vampire`, Characters → Enemies → Undead), a mini boss. Co
 
 Open it: `http://localhost:<port>/#/a/vampire`
 
-Phase 1 of the boss fight: he never touches the ground, summons vampire spawn (`vampire-spawn`, its clip Rise from the ground), casts spells and, at the end of the phase, wraps himself in his cape and vanishes in smoke. Reappear brings him back for the next phase.
+Phase 1 of the boss fight: he never touches the ground, summons vampire spawn (`vampire-spawn`, its clip Rise from the ground), casts spells and, at the end of the phase, wraps himself in his cape and vanishes in smoke. Reappear brings him back for the next phase, or play the beast form's Appear (`vampire-beast`, docs/VAMPIRE_BEAST.md) in the same place for phase 2.
 
 ## Options
 
