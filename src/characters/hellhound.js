@@ -80,8 +80,8 @@ function buildHellhound(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x
 const HHCLIPS={};
 /* gait IK: paws follow a flat stance line and a lifted swing arc; each leg is solved in the body's side plane so the paw lands flat and
    stays planted, and the body keeps an even height (no pendulum bob). o: stride time T, speed v, stance share beta, lift, phases,
-   slack (share of the leg length used at the neutral stance, sets the crouch), flex (paw fold in swing, degrees), extra(u) (other joints; pitch, drop, lift) */
-function hhGaitFn(o){const F=HHL.F,B=HHL.B,D=180/Math.PI,R=(th,y,z)=>[y*Math.cos(th)-z*Math.sin(th),y*Math.sin(th)+z*Math.cos(th)],dir=f=>[-Math.cos(f),-Math.sin(f)],ang=(y,z)=>Math.atan2(-z,-y);
+   slack (share of the leg length used at the neutral stance, sets the crouch), flex (paw fold in swing, degrees), extra(u) (other joints; pitch, drop, lift), L (leg layout, default HHL) */
+function hhGaitFn(o){const F=(o.L||HHL).F,B=(o.L||HHL).B,D=180/Math.PI,R=(th,y,z)=>[y*Math.cos(th)-z*Math.sin(th),y*Math.sin(th)+z*Math.cos(th)],dir=f=>[-Math.cos(f),-Math.sin(f)],ang=(y,z)=>Math.atan2(-z,-y);
   const two=(P,T,a,b,sg)=>{const dy=T[0]-P[0],dz=T[1]-P[1],d=Math.min(Math.hypot(dy,dz),(a+b)*.999),c=Math.max(-1,Math.min(1,(a*a+d*d-b*b)/(2*a*d))),f1=ang(dy,dz)+sg*Math.acos(c),e=dir(f1),E=[P[0]+a*e[0],P[1]+a*e[1]];return[f1,ang(T[0]-E[0],T[1]-E[1])];};
   const pivots=(th,c,h)=>{const cf=R(th,0,F.o),pf=R(th+c,...F.p),cb=R(th,0,B.o),pb=R(th+h,...B.p);return[[cf[0]+pf[0],cf[1]+pf[1]],[cb[0]+pb[0],cb[1]+pb[1]]];};
   /* body pitch and height so that the front and the hind legs both stand at the requested slack */

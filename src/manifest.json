@@ -51,6 +51,7 @@
     "src/characters/oni.js",
     "src/characters/fiend.js",
     "src/characters/hellhound.js",
+    "src/characters/cerberus.js",
     "src/buildings/fences.js",
     "src/scenes/scenes.js",
     "src/scenes/scenes2.js",
