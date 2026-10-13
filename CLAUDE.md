@@ -40,6 +40,7 @@ Read this file first in every session, then open only the doc you need:
 | The hellhound (Hell): hunched hound after the owner's reference, massive chest and shoulder hump, huge head and jaws, fire glowing through throat, chest, belly and mouth; warg clips plus fire breath | `docs/HELLHOUND.md` |
 | The efreet (Hell): 3.4 m fire genie floating on a whirling tail of fire instead of legs, open vest and sash, hair topknot, turban or horns; flame-bladed scimitar or none; fire bolt, eruption and fire breath gestures, burns out in Death, whirls up in Appear | `docs/EFREET.md` |
 | The Devil Lord (Hell): 2.2 m winged devil lord after the owner's reference: near-black skin with glowing cracks, bald, stern, big crescent horns, black spiked armour with runes, tattered loincloth, wings and tail; staff in the left hand, scimitar in the right; wings half closed on the ground, spread in flight; four spells (effects added separately) | `docs/DEVIL_LORD.md` |
+| The Demon Prince (Hell): a 4.2 m balrog after the films: charred rock skin with lava cracks, great horns, a mane of square fire, huge wings, spined tail; a simulated whip of fire in the left hand, a burning curved sword, fiery axe or burning flail in the right; falls face down in Death and smoulders in black smoke | `docs/DEMON_PRINCE.md` |
 
 ## Run it
 

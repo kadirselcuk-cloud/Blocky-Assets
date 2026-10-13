@@ -1,0 +1,83 @@
+# Demon Prince
+
+A balrog-like fire demon, the owner's request: "basically a balrog, made to look like the balrog from the Lord of the Rings" (`demon-prince`, Characters → Enemies → Hell). Code: `src/characters/demon_prince.js`.
+
+Open it: `http://localhost:<port>/#/a/demon-prince` (default seed 14: charred black skin, orange fire, great horns, burning sword).
+
+About **4.2 m** to the top of the head (4.7 m to the horn tips), hunched and massive, a whip of fire in the left hand and a burning weapon in the right. He walks; he does not fly (the wings stay half closed on the ground and spread in Roar, Flame burst and Wing buffet).
+
+## Options
+
+| Option | Choices (default first) | Notes |
+|---|---|---|
+| Right hand | Random, Burning curved sword, Fiery axe, Burning flail | Random rolls the sword twice as often |
+| Skin | Random, Charred black, Ash grey, Smouldering brown | Random rolls charred twice as often |
+| Fire | Random, Orange, Crimson, Hellfire green | Emissive: eyes, lava cracks, the mouth, the mane, the whip, the weapon's edge and fire. Random rolls orange most often |
+| Horns | Random, Great (forward), Ram, Swept back | Black and ridged; great horns sweep out and forward like a bull's (the film look) |
+
+## Body
+
+`VB.dprince`: the devil lord's proportions x `DP_F` 1.9 with broader shoulders, on the villager's 25 joints in a body group `vbody`, in real metres (meshes are authored in devil-lord units and scaled, no group scale). The warrior's IK (`wrSolve`) fits unchanged and the devil lord's clip keys carry over (they are in units of `legS`). A hunch (`DP_HUNCH`: spine, chest and neck pitched forward, head levelled) is added to every pose.
+
+- **Skin**: rock-black plates (lighter and darker boxes) crossed by glowing lava cracks on the chest, waist, back, arms, legs and face.
+- **Head**: skull with a crown plate, a heavy brow slanting down to the middle over deep sockets with glowing eyes (white-hot pupils), a broad low upper jaw with nostrils, a glowing line of fire along the mouth, upper fangs, cheek spikes swept back; the jaw `g_jaw` opens onto fire inside.
+- **Spikes**: on the shoulders (angled out), elbows, forearms, and down the back (pointing back).
+- **Hands and feet**: big clawed hands; beast feet with three clawed toes and a heel spur.
+- **Wings** `dwing_L/R` / `dwingO_L/R`: the devil lord's tattered wing x 1.15 (about 8 m span spread), a dark membrane with ember-glow edges.
+- **Tail** `dptail_0..13`: 1.7 m, tapering, spined, a glowing tip.
+- **Fire mane** (`DP_MANE`, cubes `dpf_*`): the efreet's square smoke: 104 cubes in three fire shades on the head, neck, shoulders, upper back, waist and the tail tip, born on the body, swelling, then shrinking and darkening as they rise and drift. `fi` scales them (Idle 1, war 1.15, Roar about 2, Flame burst 2.6, Death down to embers).
+- **Black smoke** (`DP_SMOKE`, cubes `dps_*`): 44 big dark cubes rising slowly from the body, growing as they go; `sm` scales them (only in Death and Dead).
+- Effect cubes are flagged `userData.gear` (not body).
+
+## Weapons
+
+| Weapon | Build |
+|---|---|
+| Whip (left) | Leather handle with glowing bands and an iron pommel; a 4.5 m lash of 14 tapering glowing segments `dpw_0..13` with braid bands, a hot tip; 20 fire cubes `dpz_*` rise off it |
+| Burning curved sword | About 2.2 m: black iron curved blade with a molten edge and glowing runes in the fuller, eight-sided guard (no cross); 30 fire cubes `dpq_*` rise off the blade |
+| Fiery axe | 2.5 m haft with iron bands, a crescent bit with a molten edge, back spike and top spike; 24 fire cubes on the head |
+| Burning flail | Banded handle, a chain of five links `dpc_0..4` and the ball's stem `dpc_5` carrying a spiked iron ball with glowing seams and a hot core; 24 fire cubes on the ball |
+
+### Ropes (the lash and the chain)
+
+Simulated while the clips are made and baked into quaternion tracks (`DP_ROPE`, `ropeStep`): verlet points from the anchor at the end of the handle, 240 Hz substeps, fixed segment lengths, gravity and damping, a light pull of the first segment along the handle, no sharp folds (points two apart stay 1.2 segment lengths apart), the ground with friction (in the gaits the ground slides back at the walking speed, so the lash trails behind), capsules round the torso, head, legs, feet, arms and tail. Then every frame is smoothed (two [1,2,1] passes), loops are bent so the last frame meets the first, one-shot clips start from the rope at rest in their first pose and blend back to it in the last half second, and each frame is rebuilt from the anchor with exact lengths, bends of at most 110° and every point above its ground height.
+
+## Clips (18)
+
+| Clip | Length | Loop | What it does |
+|---|---|---|---|
+| Idle | 5.0 s | loop | Stands hunched and heavy, the lash lying out before him, the weapon low; breathes and looks round, the mane flickering |
+| Walk | 1.5 s | loop | Slow heavy stride, the lash dragging behind (about 1 m/s) |
+| Idle (war mode) | 2.6 s | loop | Left foot forward, whip held out, weapon raised, wings half open, fire higher |
+| Walk (war mode) | 1.4 s | loop | Advances, whip and weapon ready |
+| Whip crack | 2.0 s | once | Raises the whip high over his head, then snaps it forward and down: the lash flies over and cracks out before him |
+| Whip lash | 1.9 s | once | Draws the whip across to his right, then lashes it out to the left at waist height |
+| Attack 1 | 1.5 s | once | Weapon raised beside the right shoulder, cut down and across with a step in |
+| Attack 2 | 2.1 s | once | The same cut, then a backhand cut out to the right |
+| Heavy attack | 2.4 s | once | Rears up with the weapon high over his head and smashes it into the ground before him |
+| Wing buffet | 1.6 s | once | Wings high and back, slammed forward |
+| Tail lash | 1.6 s | once | Turns away and whips the tail round his right side |
+| Roar | 2.8 s | once | Arms and wings spread wide, roars, the mane flares up |
+| Flame burst | 3.2 s | once | Crouches with the fire sinking low, rears up with arms and wings flung wide as the fire bursts out (burst at 1.2 s; the effect is added separately) |
+| Hit 1 | 0.9 s | once | Blow to the face |
+| Hit 2 | 1.1 s | once | Struck from the right, catches himself with a step |
+| Heavy hit | 2.5 s | once | Knocked onto his left knee, rises |
+| Death | 3.2 s | once → Dead | Reels, sinks onto his knees and lets go of the whip and the weapon (they fall and lie flat beside him), roars, pitches forward and falls face down, the wings laid out flat on the ground and the tail along it; the fire dies to embers and black smoke rises |
+| Dead (smouldering) | 4.0 s | loop | Lies still, the embers flickering, black smoke rising |
+
+One-shot clips are followed by Idle (war mode); Death by Dead (smouldering) (`clip.nextAlways`, so the viewer plays it after a Death clip too).
+
+## How the clips are built (`dpClips`)
+
+- Standing clips: the devil lord's machinery (the succubus's arms with a carried prop in each hand, elbow poles by a cost search, clamped wrists, a prop that would go below the ground lifts its hand), the wing beat and the tail with ground lift. One-shot clips at 60 fps, loops at 30.
+- Death and Dead: keyed joint angles (the fiend's way, `gbDeathKeys`) on the rig, the feet anchored while they stand, the body dropped onto its lowest point every frame (`solveFK`); the weapons are let go at 1.0 s (right) and 1.12 s (left), fall under gravity and lie flat 0.95 m out from where they were held (tracks on `weapon_L/R`); lying, a wing that would go into the ground eases off its downward tilt. Made per weapon and horns (the head rests on them); the other clips per weapon.
+- Extra tracks: wings, tail, jaw, body group, the ropes, the weapon groups, the fire and smoke cubes (whole cycles per clip, so loops close).
+
+## Checks done
+
+- `node tools/check-character.mjs demon-prince` for every weapon (seed 14) and the other horns and skins (seed 2, ram; Death for all three horns): every clip passes jumps, twists and the ground, except **Death: PILE TOO HIGH (1.22 m)**: a 4.2 m giant lying face down is that thick (chest, back plates, horns, wings laid over the back), like the fiend (1.05 m) and the oni (0.92 m).
+- Viewer: the head close up, Idle, war Idle, the whip crack from the side, Roar at Night, Death and Dead from two angles.
+
+## Possible extras (not added)
+
+Flight clips (Take off, Fly, Land), fire effects for the whip crack and Flame burst, a multi-tailed whip.
