@@ -136,7 +136,7 @@ _Imps and other fiends_
 | id | name | kind | options | v |
 |---|---|---|---|---|
 | `imp` | Imp | character | skin = **Random** / Crimson / Dark red / Ember orange / Soot black<br>eyes = **Random** / Yellow glow / Orange glow / Green glow<br>horns = **Random** / Short / Swept back / Curved | ✓ |
-| `lemure` | Lemure | character | flesh = **Random** / Raw pink / Blood red / Pallid grey / Bruised purple<br>eyes = **Random** / Dull yellow / Milky / Ember glow | ✓ |
+| `hell-mound` | Hell Mound | character | flesh = **Random** / Raw pink / Blood red / Pallid grey / Bruised purple<br>eyes = **Random** / Dull yellow / Milky / Ember glow | ✓ |
 
 ## Buildings  `buildings`
 
