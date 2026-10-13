@@ -35,6 +35,7 @@ Read this file first in every session, then open only the doc you need:
 | The Hell Mound (Hell, after the D&D lemure): fat legless mound of tormented flesh that slides like a snail, one long and one short arm; claws, slam, smother, melts into a puddle and reforms | `docs/HELL_MOUND.md` |
 | The succubus (Hell): seductive winged demoness, 1.8 m, bat wings and heart-tipped tail; walks and flies, charm spells (gestures, effects added separately), draining kiss | `docs/SUCCUBUS.md` |
 | The oni (Hell): 3 m muscular Japanese demon, horns, wild mane, tiger-skin loincloth; kanabō, spiked or barbed club in one hand; shiko stamp taunt | `docs/ONI.md` |
+| The fiend (Hell): 2.5 m strong horned devil, no wings, goat legs and cloven hooves, bull, ram or swept-back horns; a long sword, double axe or flail in each hand (simulated flail chain), bull-paw taunt | `docs/FIEND.md` |
 
 ## Run it
 

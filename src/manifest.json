@@ -49,6 +49,7 @@
     "src/characters/hell_mound.js",
     "src/characters/succubus.js",
     "src/characters/oni.js",
+    "src/characters/fiend.js",
     "src/buildings/fences.js",
     "src/scenes/scenes.js",
     "src/scenes/scenes2.js",
