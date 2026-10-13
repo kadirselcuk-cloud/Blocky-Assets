@@ -19,20 +19,24 @@ function efGlow(hex,k=1){const key=hex+k;return EFM[key]||(EFM[key]=new THREE.Me
 
 /* scimitar: grip at the origin, the blade along +y (about 1.35 m), the edge towards +x and curving back towards -x near the tip,
    flat sides towards ±z; an eight-sided gold disc guard (no cross) and a gold pommel */
-/* the blade flames: groups pivoting at their base (named <pre>0..), each with its resting lean (rz) and phase; the clips sway and stretch them */
-const EF_TG=[];
-function efScimitar(F,pre='efb_'){const w=new THREE.Group(),gold=bm('#c8a050','plain'),goldD=bm('#9a7838','plain'),grip=bm('#3a2016','leather'),
+/* square smoke rising off the blade (after the owner's voxel-fire reference): small cubes in the blade's fire colours, named <pre>0..
+   (efp_ on the hand blade, efq_ on the dropped one). Each is born on the blade, swells, then shrinks as it rises: the hot (bright) ones
+   stay low, the deep (dark) ones are smallest and rise highest. A fixed set: where along the blade (u) and across it (sd), type,
+   period, phase, size, rise and drift */
+const EF_PT=[];{const r=mulberry32(77);for(let k=0;k<36;k++){const ty=k%3;EF_PT.push({u:.06+.94*r(),sd:r()-.5,fz:(r()<.5?-1:1)*(.03+.04*r()),ty,P:[.55,.75,.95][ty]*(.85+.3*r()),ph:r(),sz:[.1,.07,.045][ty]*(.85+.3*r()),rise:[.16,.3,.46][ty]*(.8+.4*r()),dx:(r()-.5)*.24,dz:(r()-.5)*.24});}}
+const efPtAt=P=>{const wd=.1+.07*Math.sin(Math.min(1,P.u*1.15)*Math.PI*.55);return new THREE.Vector3(-.22*P.u*P.u+P.sd*wd*.8,.2+1.3*P.u,P.fz);};
+function efScimitar(F,pre='efp_'){const w=new THREE.Group(),gold=bm('#c8a050','plain'),goldD=bm('#9a7838','plain'),grip=bm('#3a2016','leather'),
     bl=efGlow(F[0],.9),ed=efGlow(F[1],1.3),fu=efGlow(F[2],.8);
   bx(w,.07,.3,.07,grip,0,-.02,0);for(const y of[-.12,-.02,.08])bx(w,.08,.02,.08,goldD,0,y,0);
   bx(w,.09,.07,.09,gold,0,-.19,0);bx(w,.09,.07,.09,gold,0,-.19,0,0,Math.PI/4,0);bx(w,.045,.03,.045,goldD,0,-.235,0);
   bx(w,.17,.04,.17,gold,0,.155,0);bx(w,.17,.04,.17,gold,0,.155,0,0,Math.PI/4,0);bx(w,.12,.05,.06,goldD,0,.19,0);
-  /* the blade is flame: eight pieces widening towards the tip and curving back, a deep core line, a hot edge, small flickering tongues along the spine (the inner side of the curve) and at the tip */
-  const n=8,y0=.2,Lb=1.3,fill=!EF_TG.length;let nt=0;
-  const tongue=(g,x,y,rz,tw,L,m)=>{const t=new THREE.Group();t.name=pre+nt;put(g,t,x,y,0,0,0,rz);bx(t,tw,L,tw*.6,m,0,L/2,0);bx(t,tw*.55,L*.4,tw*.4,ed,0,L*.95,0);if(fill)EF_TG.push({rz,ph:nt*2.39});nt++;};
+  /* the blade is flame: eight pieces widening towards the tip and curving back, a deep core line, a hot edge; square smoke rises off it */
+  const n=8,y0=.2,Lb=1.3;
   for(let i=0;i<n;i++){const u=(i+.5)/n,wd=.1+.07*Math.sin(Math.min(1,u*1.15)*Math.PI*.55),x=-.22*u*u,a=Math.atan(-.44*u*.9),h=Lb/n,cy=y0+h*(i+.5),g=new THREE.Group();
     put(w,g,x,cy,0,0,0,-a);const tip=i===n-1;
-    if(!tip){bx(g,wd,h*1.08,.03,bl,0,0,0);bx(g,.02,h*1.08,.034,fu,-wd*.18,0,0);bx(g,.025,h*1.08,.032,ed,wd/2-.008,0,0);tongue(g,-wd/2+.01,-h*.2,.5,.065,h*1.2*.5,i%2?fu:bl);}
-    else{bx(g,wd*.75,h*.6,.03,bl,-wd*.12,-h*.2,0);bx(g,wd*.5,h*.4,.03,bl,-wd*.25,h*.25,0,0,0,.5);bx(g,.025,h*.7,.032,ed,wd*.25,-.01,0,0,0,.45);tongue(g,-wd*.25,h*.3,.5,.055,h*1.1*.5,bl);}}
+    if(!tip){bx(g,wd,h*1.08,.03,bl,0,0,0);bx(g,.02,h*1.08,.034,fu,-wd*.18,0,0);bx(g,.025,h*1.08,.032,ed,wd/2-.008,0,0);}
+    else{bx(g,wd*.75,h*.6,.03,bl,-wd*.12,-h*.2,0);bx(g,wd*.5,h*.4,.03,bl,-wd*.25,h*.25,0,0,0,.5);bx(g,.025,h*.7,.032,ed,wd*.25,-.01,0,0,0,.45);}}
+  EF_PT.forEach((P,k)=>{const g=new THREE.Group();g.name=pre+k;g.position.copy(efPtAt(P));g.scale.setScalar(P.sz*.5);w.add(g);bx(g,1,1,1,[ed,bl,fu][P.ty]);});
   w.userData.len=y0+Lb;return w;}
 
 function buildEfreet(seed,o={}){const B=VB.efreet,r=mulberry32(((seed*2654435761)>>>0)^0x0ef1),pick=a=>a[Math.floor(r()*a.length)],root=new THREE.Group();root.userData.lights=[];
@@ -119,8 +123,8 @@ function buildEfreet(seed,o={}){const B=VB.efreet,r=mulberry32(((seed*2654435761
      (ef_drop) is shown only when Death lets the blade fall */
   const Jn=n=>root.getObjectByName(n),wr=new THREE.Group();wr.name='ef_wpn_R';wr.userData.gear=true;Jn('socket_R').add(wr);
   const WB=new THREE.Matrix4().makeBasis(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,1),new THREE.Vector3(-1,0,0)),dr=new THREE.Group();dr.name='ef_drop';dr.userData.gear=true;root.add(dr);dr.scale.set(0,0,0);
-  if(wpn!=='none')for(const[g,pre]of[[wr,'efb_'],[dr,'efd_']]){const wp=efScimitar(F,pre);wp.quaternion.setFromRotationMatrix(WB);g.add(wp);}
-  else{efScimitar(F);for(const[g,pre]of[[wr,'efb_'],[dr,'efd_']])EF_TG.forEach((_,k)=>{const t=new THREE.Group();t.name=pre+k;g.add(t);});}
+  if(wpn!=='none')for(const[g,pre]of[[wr,'efp_'],[dr,'efq_']]){const wp=efScimitar(F,pre);wp.quaternion.setFromRotationMatrix(WB);g.add(wp);}
+  else{for(const[g,pre]of[[wr,'efp_'],[dr,'efq_']])EF_PT.forEach((_,k)=>{const t=new THREE.Group();t.name=pre+k;g.add(t);});}
   /* the right fist stays closed round the grip */
   const D2=Math.PI/180;root.userData.post=()=>{Jn('fingers_R').rotation.set(0,0,95*D2);Jn('fingerTips_R').rotation.set(0,0,90*D2);Jn('thumb_R').rotation.set(14*D2,0,33*D2);};
   const joints=[];root.traverse(q=>{if(q.userData.joint&&!q.userData.socket)joints.push(q);});root.userData.joints=joints;
@@ -168,6 +172,11 @@ function efreetClips(){if(EF_ALL)return EF_ALL;const B=VB.efreet,k=B.legS,D=Math
     const probe=WG.clone(),list=[];probe.position.set(p0.x,0,p0.z).addScaledVector(out,.45);probe.quaternion.copy(q);probe.updateMatrixWorld(true);probe.traverse(z=>{if(z.isMesh)list.push(z);});
     probe.position.y+=.003-cornersLow(list);probe.updateMatrix();return probe.matrix.clone();};
   const ss=x=>x*x*(3-2*x);
+  /* the square smoke of a blade whose holder (ef_wpn_R or ef_drop) has world matrix Hw: born on the blade, rising straight up in the
+     world and drifting, kept above the ground, given back in the blade's own frame; whole cycles per clip, so loops close */
+  const WBm=new M4().makeBasis(new V(0,-1,0),new V(0,0,1),new V(-1,0,0)),smoke=(Hw,t,dur)=>{const W=Hw.clone().multiply(WBm),Wi=W.clone().invert();
+    return EF_PT.map(P=>{const n=Math.max(1,Math.round(dur/P.P)),tau=((t/dur*n+P.ph)%1+1)%1,sz=Math.max(.0005,P.sz*(tau<.15?tau/.15:(1-tau)/.85)),w=efPtAt(P).applyMatrix4(W);
+      w.x+=P.dx*tau;w.z+=P.dz*tau;w.y+=P.rise*Math.pow(tau,.8);w.y=Math.max(w.y,sz*.9+.003);w.applyMatrix4(Wi);return[w.x,w.y,w.z,sz];});};
   /* per-frame extras: the tail curve from the hips down to a point above the ground (swirling, streaming back with ts), the head
      flames, the jaw, the body group (scale about a point 0.3 m above the ground under the hips, and spin) and the dropped blade.
      Phases use whole cycles per clip, so loops close */
@@ -180,18 +189,19 @@ function efreetClips(){if(EF_ALL)return EF_ALL;const B=VB.efreet,k=B.legS,D=Math
       q.multiply(new Q().setFromAxisAngle(new V(0,1,0),(i>1?1:0)*(ph*1+i*.7)));const fl=1+.07*S(fq+i*1.3);tail.push([...a.clone().add(b).multiplyScalar(.5).toArray(),q.x,q.y,q.z,q.w,fl,len,fl]);}
     const bs=Math.max(.0005,p.bs[0]),qb=new Q().setFromAxisAngle(new V(0,1,0),p.sn[0]*D2R),pv=new V(Ph.x,.3,Ph.z),ep=pv.clone().sub(pv.clone().multiplyScalar(bs).applyQuaternion(qb));
     const x={tail,jw:p.jw[0],eb:[...ep.toArray(),qb.x,qb.y,qb.z,qb.w,bs]};
-    if(o.drop!==undefined){const Mh=poseM(s);if(t<o.drop){x.w=1;x.d=Mh;x.ds=0;}else{if(!o._A){o._A=Mh;o._R=restOf(Mh);}x.w=0;x.ds=1;
+    const Mh=poseM(s);x.pt=smoke(Mh,t,dur);
+    if(o.drop!==undefined){if(t<o.drop){x.w=1;x.d=Mh;x.ds=0;}else{if(!o._A){o._A=Mh;o._R=restOf(Mh);}x.w=0;x.ds=1;
       const A0=o._A,R0=o._R,pa=new V(),qa=new Q(),pb=new V(),qbb=new Q(),sc=new V();A0.decompose(pa,qa,sc);R0.decompose(pb,qbb,sc);const tl=Math.max(.2,Math.sqrt(2*Math.max(0,pa.y-pb.y)/9.8)),tau=t-o.drop,u=Math.min(1,tau/tl);
-      const pp=pa.clone().lerp(pb,ss(u));pp.y=Math.max(pb.y,pa.y-4.9*tau*tau);x.d=new M4().compose(pp,qa.clone().slerp(qbb,ss(u)),new V(1,1,1));}}
+      const pp=pa.clone().lerp(pb,ss(u));pp.y=Math.max(pb.y,pa.y-4.9*tau*tau);x.d=new M4().compose(pp,qa.clone().slerp(qbb,ss(u)),new V(1,1,1));x.pq=smoke(x.d,t,dur);}}
     return x;};
   const bake=(c,X,o)=>{const T=Array.from(c.tracks[0].times),q=new Q(),e=new THREE.Euler(),TR=[];
     for(let i=0;i<EF_TAIL;i++){const P=[],QQ=[],SC=[];for(const x of X){const v=x.tail[i];P.push(v[0],v[1],v[2]);QQ.push(v[3],v[4],v[5],v[6]);SC.push(v[7],v[8],v[9]);}
       TR.push(new THREE.VectorKeyframeTrack(`etail_${i}.position`,T,P),new THREE.QuaternionKeyframeTrack(`etail_${i}.quaternion`,T,QQ),new THREE.VectorKeyframeTrack(`etail_${i}.scale`,T,SC));}
     const JQ=[],EP=[],EQ=[],ES=[];for(const x of X){q.setFromEuler(e.set(x.jw*D2R,0,0));JQ.push(q.x,q.y,q.z,q.w);EP.push(x.eb[0],x.eb[1],x.eb[2]);EQ.push(x.eb[3],x.eb[4],x.eb[5],x.eb[6]);ES.push(x.eb[7],x.eb[7],x.eb[7]);}
     TR.push(new THREE.QuaternionKeyframeTrack('g_jaw.quaternion',T,JQ),new THREE.VectorKeyframeTrack('ebody.position',T,EP),new THREE.QuaternionKeyframeTrack('ebody.quaternion',T,EQ),new THREE.VectorKeyframeTrack('ebody.scale',T,ES));
-    /* the blade flames flicker: sway about their lean and stretch, whole cycles per clip (both blades, the hand's and the dropped one) */
-    {const nf=Math.max(1,Math.round(c.duration/.3)),w0=2*Math.PI*nf/c.duration;EF_TG.forEach((tg,k)=>{const QQ=[],SC=[];for(const t of T){const a=w0*t+tg.ph;q.setFromEuler(e.set(0,0,tg.rz+.32*Math.sin(a)+.1*Math.sin(2*a+1)));QQ.push(q.x,q.y,q.z,q.w);const sy=1+.4*Math.sin(2*a+.7)+.12*Math.sin(3*a),sx=1-.15*Math.sin(2*a+.7);SC.push(sx,sy,sx);}
-      for(const pre of['efb_','efd_'])TR.push(new THREE.QuaternionKeyframeTrack(pre+k+'.quaternion',T,QQ),new THREE.VectorKeyframeTrack(pre+k+'.scale',T,SC));});}
+    /* the square smoke: the hand blade's in every clip, the dropped blade's in Death once it falls */
+    EF_PT.forEach((_,k)=>{for(const[pre,key]of[['efp_','pt'],['efq_','pq']]){if(key==='pq'&&o.drop===undefined)continue;const P=[],SC=[];for(const x of X){const v=x[key]?x[key][k]:[0,0,0,.0005];P.push(v[0],v[1],v[2]);SC.push(v[3],v[3],v[3]);}
+      TR.push(new THREE.VectorKeyframeTrack(pre+k+'.position',T,P),new THREE.VectorKeyframeTrack(pre+k+'.scale',T,SC));}});
     const T2=[0,c.duration];
     if(o.drop!==undefined){const WS=[],DP=[],DQ=[],DS=[],pp=new V(),qq=new Q(),sc=new V();for(const x of X){WS.push(x.w,x.w,x.w);x.d.decompose(pp,qq,sc);DP.push(pp.x,pp.y,pp.z);DQ.push(qq.x,qq.y,qq.z,qq.w);DS.push(x.ds,x.ds,x.ds);}
       TR.push(new THREE.VectorKeyframeTrack('ef_wpn_R.scale',T,WS),new THREE.VectorKeyframeTrack('ef_drop.position',T,DP),new THREE.QuaternionKeyframeTrack('ef_drop.quaternion',T,DQ),new THREE.VectorKeyframeTrack('ef_drop.scale',T,DS));}
