@@ -140,7 +140,7 @@ _Imps and other fiends_
 | `succubus` | Succubus | character | skin = **Random** / Crimson / Rose / Lilac / Fair<br>hair = **Random** / Jet black / Crimson / Platinum / Violet<br>eyes = **Random** / Pink glow / Violet glow / Gold glow / Red glow<br>outfit = **Random** / Black leather / Crimson leather / Purple leather<br>horns = **Random** / Curved back / Ram / Tall<br>wings = **Random** / Dark (skin) / Black / Crimson | ✓ |
 | `oni` | Oni | character | skin = **Random** / Red (aka-oni) / Blue (ao-oni) / Yellow (ki-oni) / Green (midori-oni) / Black (kuro-oni)<br>horns = **Random** / Two / One<br>weapon = **Kanabō (iron club)** / Spiked club / Barbed club | ✓ |
 | `fiend` | Fiend | character | weaponR = **Random** / Long sword / Double axe / Flail<br>weaponL = **Random** / Long sword / Double axe / Flail<br>horns = **Random** / Bull / Ram / Swept back<br>skin = **Random** / Crimson / Dark red / Charcoal / Violet | ✓ |
-| `hellhound` | Hellhound | character | hide = **Random** / Charcoal / Obsidian / Ash grey / Rust red<br>glow = **Random** / Ember orange / Blood red / Hellfire green / Blue flame<br>back = **Random** / Flame mane / Bony spines<br>horns = **Random** / None / Short / Curved<br>gear = **None** / Spiked collar | ✓ |
+| `hellhound` | Hellhound | character | fur = **Random** / Blue-black / Charcoal / Dark brown / Ash grey<br>glow = **Random** / Ember red / Fire orange / Hellfire green / Blue flame<br>mane = **Random** / Shaggy / Short<br>scars = **Random** / Yes / No<br>gear = **None** / Spiked collar | ✓ |
 
 ## Buildings  `buildings`
 

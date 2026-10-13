@@ -78,21 +78,18 @@ function buildWarg(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x3a91)
 /* clips depend only on the shape (mane, gear, ears), so they are shared between looks */
 const WGCLIPS={};
 function wgLow(L){let lo=1e9;for(const[m,c]of L){const e=m.matrixWorld.elements;for(const v of c){const y=e[1]*v.x+e[5]*v.y+e[9]*v.z+e[13];if(y<lo)lo=y;}}return lo;}
-/* sampler: fn(u,t) returns joint angles in degrees and _pos [x, lift, z]; o.level (bool or fn(u)) pitches the body so both halves touch; o.fps or U.fps overrides 30 fps.
-   Opt-in: U.fx(name,u,t,dur) poses the extra joints U.fxJ (rotation and scale) before grounding; they are baked as tracks too (hellhound flames) */
+/* sampler: fn(u,t) returns joint angles in degrees and _pos [x, lift, z]; o.level (bool or fn(u)) pitches the body so both halves touch; o.fps or U.fps overrides 30 fps */
 function wgClip(m,name,dur,loop,fn,o={}){const U=m.userData.wg,J=m.userData.ajoints,body=U.J.body,bp=U.bp,fps=o.fps||U.fps||30,n=Math.max(2,Math.round(dur*fps)+1),times=[],vals={},pos=[],D=Math.PI/180;
-  for(const j of J)vals[j]=[];const FX=U.fxJ||[],fq=FX.map(()=>[]),fs=FX.map(()=>[]);
+  for(const j of J)vals[j]=[];
   for(let i=0;i<n;i++){const t=i/(n-1)*dur,u=t/dur,p=fn(u,t)||{},P=p._pos||[0,0,0];
-    for(const j of J){const a=p[j]||[0,0,0];U.J[j].rotation.set(a[0]*D,a[1]*D,a[2]*D);}body.position.set(bp.x+P[0],bp.y,bp.z+P[2]);if(U.fx)U.fx(name,u,t,dur);
+    for(const j of J){const a=p[j]||[0,0,0];U.J[j].rotation.set(a[0]*D,a[1]*D,a[2]*D);}body.position.set(bp.x+P[0],bp.y,bp.z+P[2]);
     const lv=typeof o.level==='function'?o.level(u):o.level!==false;
     if(lv){const x0=body.rotation.x,f=d=>{body.rotation.x=x0+d;m.updateMatrixWorld(true);return wgLow(U.F)-wgLow(U.B);};let d0=0,f0=f(0),d1=.03,f1=f(d1);
       for(let k=0;k<8&&Math.abs(f1)>2e-4;k++){const d2=Math.abs(f1-f0)<1e-8?d1:d1-f1*(d1-d0)/(f1-f0);d0=d1;f0=f1;d1=Math.max(-.9,Math.min(.9,d2));f1=f(d1);}body.rotation.x=x0+d1;}
     m.updateMatrixWorld(true);body.position.y+=P[1]-wgLow(U.A);
-    times.push(t);for(const j of J){const q=U.J[j].quaternion;vals[j].push(q.x,q.y,q.z,q.w);}pos.push(body.position.x,body.position.y,body.position.z);
-    FX.forEach((q,k)=>{fq[k].push(q.quaternion.x,q.quaternion.y,q.quaternion.z,q.quaternion.w);fs[k].push(q.scale.x,q.scale.y,q.scale.z);});}
-  for(const j of J)U.J[j].rotation.set(0,0,0);for(const q of FX){q.rotation.set(0,0,0);q.scale.set(1,1,1);}body.position.copy(bp);m.updateMatrixWorld(true);
+    times.push(t);for(const j of J){const q=U.J[j].quaternion;vals[j].push(q.x,q.y,q.z,q.w);}pos.push(body.position.x,body.position.y,body.position.z);}
+  for(const j of J)U.J[j].rotation.set(0,0,0);body.position.copy(bp);m.updateMatrixWorld(true);
   const tracks=J.map(j=>new THREE.QuaternionKeyframeTrack(j+'.quaternion',times,vals[j]));tracks.push(new THREE.VectorKeyframeTrack('body.position',times,pos));
-  FX.forEach((q,k)=>tracks.push(new THREE.QuaternionKeyframeTrack(q.name+'.quaternion',times,fq[k]),new THREE.VectorKeyframeTrack(q.name+'.scale',times,fs[k])));
   const c=new THREE.AnimationClip(name,dur,tracks);c.loopMode=loop;return c;}
 
 /* pose tools: blend two poses, eased segments, keep paws planted while the body shifts */

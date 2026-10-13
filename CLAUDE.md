@@ -36,7 +36,7 @@ Read this file first in every session, then open only the doc you need:
 | The succubus (Hell): seductive winged demoness, 1.8 m, bat wings and heart-tipped tail; walks and flies, charm spells (gestures, effects added separately), draining kiss | `docs/SUCCUBUS.md` |
 | The oni (Hell): 3 m muscular Japanese demon, horns, wild mane, tiger-skin loincloth; kanabō, spiked or barbed club in one hand; shiko stamp taunt | `docs/ONI.md` |
 | The fiend (Hell): 3 m strong horned devil, no wings, long goat legs bending back at the hock to cloven hooves, bull, ram or swept-back horns; a long sword, double axe or flail in each hand (simulated flail chain), bull-paw taunt | `docs/FIEND.md` |
-| The hellhound (Hell): lean fire hound on the warg rig, 1.25 m at the withers, ember cracks, flame mane or bony spines, horns; fire breath and the warg clips | `docs/HELLHOUND.md` |
+| The hellhound (Hell): hunched hound after the owner's reference, massive chest and shoulder hump, huge head and jaws, fire glowing through throat, chest, belly and mouth; warg clips plus fire breath | `docs/HELLHOUND.md` |
 
 ## Run it
 
