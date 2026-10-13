@@ -19,17 +19,20 @@ function efGlow(hex,k=1){const key=hex+k;return EFM[key]||(EFM[key]=new THREE.Me
 
 /* scimitar: grip at the origin, the blade along +y (about 1.35 m), the edge towards +x and curving back towards -x near the tip,
    flat sides towards ±z; an eight-sided gold disc guard (no cross) and a gold pommel */
-function efScimitar(F){const w=new THREE.Group(),gold=bm('#c8a050','plain'),goldD=bm('#9a7838','plain'),grip=bm('#3a2016','leather'),
+/* the blade flames: groups pivoting at their base (named <pre>0..), each with its resting lean (rz) and phase; the clips sway and stretch them */
+const EF_TG=[];
+function efScimitar(F,pre='efb_'){const w=new THREE.Group(),gold=bm('#c8a050','plain'),goldD=bm('#9a7838','plain'),grip=bm('#3a2016','leather'),
     bl=efGlow(F[0],.9),ed=efGlow(F[1],1.3),fu=efGlow(F[2],.8);
   bx(w,.07,.3,.07,grip,0,-.02,0);for(const y of[-.12,-.02,.08])bx(w,.08,.02,.08,goldD,0,y,0);
   bx(w,.09,.07,.09,gold,0,-.19,0);bx(w,.09,.07,.09,gold,0,-.19,0,0,Math.PI/4,0);bx(w,.045,.03,.045,goldD,0,-.235,0);
   bx(w,.17,.04,.17,gold,0,.155,0);bx(w,.17,.04,.17,gold,0,.155,0,0,Math.PI/4,0);bx(w,.12,.05,.06,goldD,0,.19,0);
-  /* the blade is flame: eight pieces widening towards the tip and curving back, a deep core line, a hot edge, tongues licking back off the spine */
-  const n=8,y0=.2,Lb=1.3;
+  /* the blade is flame: eight pieces widening towards the tip and curving back, a deep core line, a hot edge, flickering tongues licking back off the spine, a few off the edge and the tip */
+  const n=8,y0=.2,Lb=1.3,fill=!EF_TG.length;let nt=0;
+  const tongue=(g,x,y,rz,tw,L,m)=>{const t=new THREE.Group();t.name=pre+nt;put(g,t,x,y,0,0,0,rz);bx(t,tw,L,tw*.6,m,0,L/2,0);bx(t,tw*.55,L*.4,tw*.4,ed,0,L*.95,0);if(fill)EF_TG.push({rz,ph:nt*2.39});nt++;};
   for(let i=0;i<n;i++){const u=(i+.5)/n,wd=.1+.07*Math.sin(Math.min(1,u*1.15)*Math.PI*.55),x=-.22*u*u,a=Math.atan(-.44*u*.9),h=Lb/n,cy=y0+h*(i+.5),g=new THREE.Group();
     put(w,g,x,cy,0,0,0,-a);const tip=i===n-1;
-    if(!tip){bx(g,wd,h*1.08,.03,bl,0,0,0);bx(g,.02,h*1.08,.034,fu,-wd*.18,0,0);bx(g,.025,h*1.08,.032,ed,wd/2-.008,0,0);bx(g,.045,h*.75,.026,i%2?ed:bl,-wd/2-.012,h*.2,0,0,0,.4);if(i%3===1)bx(g,.03,h*.45,.02,ed,wd/2+.01,h*.25,0,0,0,-.35);}
-    else{bx(g,wd*.75,h*.6,.03,bl,-wd*.12,-h*.2,0);bx(g,wd*.5,h*.4,.03,bl,-wd*.25,h*.25,0,0,0,.5);bx(g,.025,h*.7,.032,ed,wd*.25,-.01,0,0,0,.45);bx(g,.03,h*.5,.022,ed,-wd*.3,h*.55,0,0,0,.7);}}
+    if(!tip){bx(g,wd,h*1.08,.03,bl,0,0,0);bx(g,.02,h*1.08,.034,fu,-wd*.18,0,0);bx(g,.025,h*1.08,.032,ed,wd/2-.008,0,0);tongue(g,-wd/2+.01,-h*.2,.5,.065,h*1.2,i%2?fu:bl);if(i%2===1)tongue(g,wd/2-.01,0,-.4,.045,h*.75,bl);}
+    else{bx(g,wd*.75,h*.6,.03,bl,-wd*.12,-h*.2,0);bx(g,wd*.5,h*.4,.03,bl,-wd*.25,h*.25,0,0,0,.5);bx(g,.025,h*.7,.032,ed,wd*.25,-.01,0,0,0,.45);tongue(g,-wd*.25,h*.3,.5,.055,h*1.1,bl);}}
   w.userData.len=y0+Lb;return w;}
 
 function buildEfreet(seed,o={}){const B=VB.efreet,r=mulberry32(((seed*2654435761)>>>0)^0x0ef1),pick=a=>a[Math.floor(r()*a.length)],root=new THREE.Group();root.userData.lights=[];
@@ -116,7 +119,8 @@ function buildEfreet(seed,o={}){const B=VB.efreet,r=mulberry32(((seed*2654435761
      (ef_drop) is shown only when Death lets the blade fall */
   const Jn=n=>root.getObjectByName(n),wr=new THREE.Group();wr.name='ef_wpn_R';wr.userData.gear=true;Jn('socket_R').add(wr);
   const WB=new THREE.Matrix4().makeBasis(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,1),new THREE.Vector3(-1,0,0)),dr=new THREE.Group();dr.name='ef_drop';dr.userData.gear=true;root.add(dr);dr.scale.set(0,0,0);
-  if(wpn!=='none')for(const g of[wr,dr]){const wp=efScimitar(F);wp.quaternion.setFromRotationMatrix(WB);g.add(wp);}
+  if(wpn!=='none')for(const[g,pre]of[[wr,'efb_'],[dr,'efd_']]){const wp=efScimitar(F,pre);wp.quaternion.setFromRotationMatrix(WB);g.add(wp);}
+  else{efScimitar(F);for(const[g,pre]of[[wr,'efb_'],[dr,'efd_']])EF_TG.forEach((_,k)=>{const t=new THREE.Group();t.name=pre+k;g.add(t);});}
   /* the right fist stays closed round the grip */
   const D2=Math.PI/180;root.userData.post=()=>{Jn('fingers_R').rotation.set(0,0,95*D2);Jn('fingerTips_R').rotation.set(0,0,90*D2);Jn('thumb_R').rotation.set(14*D2,0,33*D2);};
   const joints=[];root.traverse(q=>{if(q.userData.joint&&!q.userData.socket)joints.push(q);});root.userData.joints=joints;
@@ -185,6 +189,9 @@ function efreetClips(){if(EF_ALL)return EF_ALL;const B=VB.efreet,k=B.legS,D=Math
       TR.push(new THREE.VectorKeyframeTrack(`etail_${i}.position`,T,P),new THREE.QuaternionKeyframeTrack(`etail_${i}.quaternion`,T,QQ),new THREE.VectorKeyframeTrack(`etail_${i}.scale`,T,SC));}
     const JQ=[],EP=[],EQ=[],ES=[];for(const x of X){q.setFromEuler(e.set(x.jw*D2R,0,0));JQ.push(q.x,q.y,q.z,q.w);EP.push(x.eb[0],x.eb[1],x.eb[2]);EQ.push(x.eb[3],x.eb[4],x.eb[5],x.eb[6]);ES.push(x.eb[7],x.eb[7],x.eb[7]);}
     TR.push(new THREE.QuaternionKeyframeTrack('g_jaw.quaternion',T,JQ),new THREE.VectorKeyframeTrack('ebody.position',T,EP),new THREE.QuaternionKeyframeTrack('ebody.quaternion',T,EQ),new THREE.VectorKeyframeTrack('ebody.scale',T,ES));
+    /* the blade flames flicker: sway about their lean and stretch, whole cycles per clip (both blades, the hand's and the dropped one) */
+    {const nf=Math.max(1,Math.round(c.duration/.3)),w0=2*Math.PI*nf/c.duration;EF_TG.forEach((tg,k)=>{const QQ=[],SC=[];for(const t of T){const a=w0*t+tg.ph;q.setFromEuler(e.set(0,0,tg.rz+.32*Math.sin(a)+.1*Math.sin(2*a+1)));QQ.push(q.x,q.y,q.z,q.w);const sy=1+.4*Math.sin(2*a+.7)+.12*Math.sin(3*a),sx=1-.15*Math.sin(2*a+.7);SC.push(sx,sy,sx);}
+      for(const pre of['efb_','efd_'])TR.push(new THREE.QuaternionKeyframeTrack(pre+k+'.quaternion',T,QQ),new THREE.VectorKeyframeTrack(pre+k+'.scale',T,SC));});}
     const T2=[0,c.duration];
     if(o.drop!==undefined){const WS=[],DP=[],DQ=[],DS=[],pp=new V(),qq=new Q(),sc=new V();for(const x of X){WS.push(x.w,x.w,x.w);x.d.decompose(pp,qq,sc);DP.push(pp.x,pp.y,pp.z);DQ.push(qq.x,qq.y,qq.z,qq.w);DS.push(x.ds,x.ds,x.ds);}
       TR.push(new THREE.VectorKeyframeTrack('ef_wpn_R.scale',T,WS),new THREE.VectorKeyframeTrack('ef_drop.position',T,DP),new THREE.QuaternionKeyframeTrack('ef_drop.quaternion',T,DQ),new THREE.VectorKeyframeTrack('ef_drop.scale',T,DS));}

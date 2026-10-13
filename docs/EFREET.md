@@ -30,7 +30,7 @@ A fire genie, about **3.4 m** to the top of the head, who never touches the grou
 
 ## Weapon (`efScimitar`)
 
-`ef_wpn_R` in the right hand socket (the revenant's frame: grip through the fist, the blade along the thumb side, the edge leading). A 1.3 m curved blade made of flame in eight pieces, widening towards a clipped tip and curving back: fire-coloured body, a deep core line, a hot edge and tongues of flame licking back off the spine and the tip; an eight-sided gold disc guard (no cross), leather grip with gold bands, gold pommel. `ef_drop` is a copy at the root, shown only when Death lets the blade fall.
+`ef_wpn_R` in the right hand socket (the revenant's frame: grip through the fist, the blade along the thumb side, the edge leading). A 1.3 m curved blade made of flame in eight pieces, widening towards a clipped tip and curving back: fire-coloured body, a deep core line, a hot edge and tongues of flame (groups `efb_0..`, `efd_0..` on the dropped copy) licking back off the spine, off the edge and from the tip; an eight-sided gold disc guard (no cross), leather grip with gold bands, gold pommel. `ef_drop` is a copy at the root, shown only when Death lets the blade fall.
 
 ## Clips (17)
 
@@ -60,7 +60,7 @@ One-shot clips are followed by Idle (war mode); Death is held (`clip.hold`). The
 
 - **The revenant's solver** (`rvSolver`) on the efreet's rig (`efRig`) with the oni's ground tilt for the blade (`efSolver`): hand targets from the shoulders, elbow poles by cost search, wrists in closed form, clamped and rate-limited. Keys in body units (metres / `legS`); HP y 0.2 floats the hips 0.29 m above the oni's standing height. The attacks and hits are the oni's keys, floating, gliding instead of stepping.
 - Extra keyed channels: `jw` (jaw), `bs` (body scale), `sn` (body spin), `ts` (tail stream: 1 trails it back in Float, negative swings it forward when knocked back).
-- **Extras baked every frame**: the tail curve runs from under the trousers (following the hips) down to a point above the ground, swirling in a spiral and streaming with `ts`; each segment is placed, turned, spun about its own axis and stretched between two points. The jaw; `ebody` position, rotation and scale (it shrinks about a point 0.3 m above the ground under the hips and spins). Phases use whole cycles per clip, so loops close; loops are pre-rolled and their last frame is the first.
+- **Extras baked every frame**: the tail curve runs from under the trousers (following the hips) down to a point above the ground, swirling in a spiral and streaming with `ts`; each segment is placed, turned, spun about its own axis and stretched between two points. Every clip also flickers the blade flames: each tongue sways about its lean and stretches (about 3 flickers a second, whole cycles per clip), on both the hand blade and the dropped one (empty groups keep the tracks bound when there is no weapon). The jaw; `ebody` position, rotation and scale (it shrinks about a point 0.3 m above the ground under the hips and spins). Phases use whole cycles per clip, so loops close; loops are pre-rolled and their last frame is the first.
 - **Death** (60 fps): the hand blade's world matrix is taken from a bare efreet posed like the clip (`poseM`); at 0.72 s `ef_wpn_R` is hidden and `ef_drop` takes over, falling under gravity and turning to lie flat, a flat side down, 0.45 m out from the body (the oni's `restOf`).
 
 ## Checks done
