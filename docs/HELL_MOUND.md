@@ -1,6 +1,6 @@
 # Hell Mound
 
-A slow, mindless mound of tormented flesh (`hell-mound`, Characters → Enemies → **Hell**). Code: `src/characters/hell_mound.js`. The D&D hell mound's counterpart.
+A slow, mindless mound of tormented flesh (`hell-mound`, Characters → Enemies → **Hell**). Code: `src/characters/hell_mound.js`. Modelled on the D&D lemure.
 
 Open it: `http://localhost:<port>/#/a/hell-mound`
 
