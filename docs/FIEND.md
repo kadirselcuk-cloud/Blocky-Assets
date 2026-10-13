@@ -4,7 +4,7 @@ The fiend (`fiend`, Characters → Enemies → Hell). Code: `src/characters/fien
 
 Open it: `http://localhost:<port>/#/a/fiend`
 
-A strong horned devil with no wings, about **2.5 m** to the top of the head (2.7 m to the tips of ram horns, 2.85 m swept back, 3.1 m bull), with a weapon in each hand.
+A strong horned devil with no wings, about **3 m** to the top of the head (3.2 m to the tips of ram horns, 3.35 m swept back, 3.6 m bull), with a weapon in each hand.
 
 ## Options
 
@@ -19,14 +19,15 @@ A strong horned devil with no wings, about **2.5 m** to the top of the head (2.7
 
 ## Body
 
-`VB.fiend` is built in real metres (no group scale, so the 5 cm texture pixels stay the same) on the villager's 25 joints, so the warrior's leg and arm IK (`wrSolve`) fits unchanged. Hips at 1.16 m, thigh 0.5, shin 0.48, upper arm 0.52, forearm 0.47, shoulders 1.28 m apart. The torso and head use the oni's measures scaled down (`b()`, × 0.84; the head × 1.1 on top of that, `hb()`).
+`VB.fiend` is built in real metres (no group scale, so the 5 cm texture pixels stay the same) on the villager's 25 joints, so the warrior's leg and arm IK (`wrSolve`) fits unchanged. Hips at 1.52 m, thigh 0.62, shin 0.6, hock 0.58 m above the sole, upper arm 0.6, forearm 0.54, shoulders 1.4 m apart. The torso uses the oni's measures × 0.9 (`b()`), the head × 1.18 (`hb()`).
 
 - **Torso**: narrow waist with a six-pack and obliques, a broad chest with big pecs, lats and traps; three short bony spikes down the back of the waist.
 - **Head**: long pointed face and chin, sharp cheekbones, a heavy brow slanting down to the middle over glowing eyes in dark sockets (emissive), a hooked nose, a sly grin with upturned corners and two fangs, long ears swept back and up. The head sits a little forward of the chest (a brute's posture).
 - **Horns**: tapering segments along a curve from the temples, ringed at the root, lighter towards the tip. Bull: out to the sides, then up and a little forward. Ram: back, down and curling forward round the ears. Swept back: long, rising backwards.
 - **Arms**: deltoids, biceps and triceps, thick forearms in iron bracers with two spikes on the outside; big clawed hands, both fists closed (`userData.post`). On the left shoulder a spiked iron pauldron: a domed cap, three lames stepping down the arm and three tall spikes.
 - **Gear**: a leather baldric from the right shoulder (front and back) with an iron ring, a dark red cloth wrap with a ragged hem under a broad studded belt with a horned skull buckle.
-- **Legs**: goat legs in shaggy fur with darker tufts, a fetlock tuft, and cloven hooves (two toes with lighter rims and tips, dewclaws behind). The hoof stays inside the IK foot (heel and toe points), and the soles sit 5 mm above the IK sole.
+- **Legs**: long, strong goat legs (digitigrade) in shaggy fur with darker tufts: a heavy haunch with big quads and hamstrings, the knee bending forward, a thick-muscled shin running back down to a pointed hock, a long cannon bone down to the fetlock (feathering and dewclaws behind), and a cloven hoof standing on its toes: two wedge-shaped claws stepping up towards the heel, lighter tips and heel bulbs, a dark cleft.
+- **How the legs work with the IK**: the hips stand lower than the straight leg reaches (`FD_HIP` 1.52 m against 1.8 m), so the knee is always bent forward; the IK "ankle" is the hock (`ankle` 0.5, 0.58 m up) and the IK foot is the cannon bone and hoof. The warrior IK's automatic heel lift is turned off for this rig (`R.noHeel`), so the cannon stays upright. The hoof stays inside the IK foot (heel and toe points) and its sole sits 5 mm above the IK sole. The bind pose has the legs bent so the hooves stand on the ground.
 
 ## Weapons (`fdWeapon`)
 
@@ -85,9 +86,9 @@ Every one-shot clip names `Idle (war mode)` as `clip.next` (Death is held). Comb
 
 ## Checks done
 
-- `node tools/check-character.mjs fiend` for all 9 weapon pairs × 3 horns × seeds 1–3: every clip passes jumps, twists and the ground, except **Death: PILE TOO HIGH (0.81–0.86 m)**. This is the fiend's own size, not a heap: lying flat, its chest and back are about 0.66 m thick, plus the pauldron and baldric (the oni is 0.92 m). The 0.55 m limit is for human-sized bodies.
-- Weapons against the body every frame (sampled points inside body boxes, 20 fps): grips and pommels at most 3 cm into their own bracer at strong wrist bends; a flail's chain links (not the ball) graze an arm or the head for a frame or two while swinging, up to 8 cm.
-- Viewer: contact sheets of the attacks, the taunt (front and side), the gaits and Death (side and above); all three horns, crimson, dark red, charcoal and violet skin, every weapon (two flails too); Day, Dusk and Night (the eyes and the sword's fuller glow).
+- `node tools/check-character.mjs fiend` for all 9 weapon pairs × 3 horns × seeds 1–3: every clip passes jumps, twists and the ground, except **Death: PILE TOO HIGH (1.04–1.05 m)**. This is the fiend's own size, not a heap: lying flat, its chest and back are about 0.7 m thick, plus the pauldron and baldric, and the long legs fold up a little (the oni is 0.92 m). The 0.55 m limit is for human-sized bodies.
+- Weapons against the body every frame (sampled points inside body boxes, 20 fps): grips and pommels at most 3–4 cm into their own bracer at strong wrist bends; a flail's chain links (not the ball) graze an arm or the head for a frame or two while swinging, up to 9 cm.
+- Viewer: contact sheets of the attacks, the taunt (front and side), the gaits the legs close up from the side and front, and Death (side and above); all three horns, crimson, dark red, charcoal and violet skin, every weapon (two flails too); Day, Dusk and Night (the eyes and the sword's fuller glow).
 
 ## Possible extras (not added)
 

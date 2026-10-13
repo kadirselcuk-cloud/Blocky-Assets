@@ -84,7 +84,7 @@ function wrSolve(R,p){const{m,J,B}=R,D=Math.PI/180,V=THREE.Vector3,Q=THREE.Quate
       const tq=basis(new V().crossVectors(Y,Z),Y,Z),tl=th.parent.getWorldQuaternion(new Q()).invert().multiply(tq),kn=Math.PI-Math.acos(cl((a*a+b*b-d*d)/(2*a*b))),kq=new Q().setFromEuler(new THREE.Euler(kn,0,0));
       const fl=tq.clone().multiply(kq).invert().multiply(f.q);th.quaternion.copy(tl);J['shin_'+sd].quaternion.copy(kq);J['foot_'+sd].quaternion.copy(fl);
       out['t'+sd]=deg(tl);out['k'+sd]=[kn/D,0,0];out['a'+sd]=deg(fl);
-      const K=H.clone().addScaledVector(t,a),tilt=Math.atan2(K.clone().sub(f.A).dot(fw),K.y-f.A.y)/D,want=R.heelFade?Math.min(50,(tilt-30)*1.3)*Math.max(0,1-f.lift/R.heelFade)/* R.heelFade (m): the heel lift fades out as the foot rises instead of stopping at once */:f.air?0:Math.min(50,(tilt-30)*1.3);if(want>heel[sd]+.5){heel[sd]=want;again=true;}}
+      const K=H.clone().addScaledVector(t,a),tilt=Math.atan2(K.clone().sub(f.A).dot(fw),K.y-f.A.y)/D,want=R.heelFade?Math.min(50,(tilt-30)*1.3)*Math.max(0,1-f.lift/R.heelFade)/* R.heelFade (m): the heel lift fades out as the foot rises instead of stopping at once */:f.air?0:Math.min(50,(tilt-30)*1.3);if(!R.noHeel&&want>heel[sd]+.5)/* R.noHeel: digitigrade legs (the fiend) keep the foot as keyed */{heel[sd]=want;again=true;}}
     if(!again)break;}
   out.pos=[hp[0]/k,hy/k,hp[2]/k];
   m.updateMatrixWorld(true);

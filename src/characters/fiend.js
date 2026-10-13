@@ -1,14 +1,17 @@
-/* ======================= FIEND: a strong horned devil, about 2.5 m tall, with a weapon in each hand =======================
+/* ======================= FIEND: a strong horned devil, about 3 m tall, with a weapon in each hand =======================
    Built in real metres on the villager's 25 joints (no group scale, so the 5 cm texture pixels stay the same), the oni's body plan
-   scaled down: a narrow waist with a six-pack, a broad chest, traps and lats, thick arms with iron bracers, a spiked iron pauldron on
-   the left shoulder and a leather baldric. Goat legs in shaggy fur ending in cloven hooves. A devil's head: long pointed face, a sly
+   scaled to 0.9: a narrow waist with a six-pack, a broad chest, traps and lats, thick arms with iron bracers, a spiked iron pauldron on
+   the left shoulder and a leather baldric. Long, strong goat legs in shaggy fur: the knee bends forward, the shin runs back to a raised hock, and a long cannon bone goes down to a cloven hoof standing on its toes. A devil's head: long pointed face, a sly
    grin with fangs, glowing eyes under a heavy brow, long swept-back ears and big horns (bull, ram or swept back).
    Each hand holds its own weapon: a long sword with a glowing fuller, a double-bitted axe or a flail, all with about the same reach
    (1.3–1.5 m from the fist). Clips use the revenant's solver (rvSolver on the fiend's own rig) with both wrists keyed; after each solve
    a weapon below the ground is tilted up. A flail's chain and ball are simulated (a damped pendulum on the end of the handle, kept
    above the ground, out of the torso and within a cone round the handle) and baked into a track on fd_chain_R/L. */
-VB.fiend=Object.assign({},VB.ogre,{thigh:.5,shin:.48,ankle:.1,hipOff:.08,spine:.25,chest:.25,neck:.34,headY:.14,shW:.64,ua:.52,fa:.47,g:1.7,hipW:.2,hand:1.75});
-{const b=VB.fiend;b.key='fiend';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
+VB.fiend=Object.assign({},VB.ogre,{thigh:.62,shin:.6,ankle:.5,hipOff:.08,spine:.27,chest:.27,neck:.36,headY:.16,shW:.7,ua:.6,fa:.54,g:1.45,hipW:.26,hand:1.9});
+/* goat legs: the hips stand lower than the straight leg reaches (FD_HIP), so the knee always bends forward and the shin runs back down
+   to a raised hock; the IK 'ankle' is the hock (0.58 m up), and the foot is the cannon bone and the hoof standing on its toes */
+const FD_HIP=1.52;
+{const b=VB.fiend;b.key='fiend';b.hipH=FD_HIP;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 const FD_SKIN={crimson:['#a8302a','crimson'],blood:['#6e1c1e','dark red'],charcoal:['#3a3234','charcoal'],violet:['#55304e','violet']};
 const FD_FUR=[['#1e1614','black'],['#1e1614','black'],['#3e2618','dark brown'],['#5a2a1a','russet']];
 const FD_EYES={yellow:['#fff4c0','#ffc81e','yellow'],orange:['#ffe0b0','#ff7a14','orange'],red:['#ffc8b8','#ff2a10','red']};
@@ -64,18 +67,18 @@ function buildFiend(seed,o={}){const B=VB.fiend,r=mulberry32(((seed*2654435761)>
     cloth=bm('#4a1210','cloth'),clothD=bm('#2e0a08','cloth'),nail=bm('#1a1210','plain'),ey=FD_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.8,pxTex('plain')),
     hornA=darkHorn?bm('#2a2422','plain'):bm('#cfc3a2','plain'),hornB=darkHorn?bm('#4a4038','plain'):bm('#e2d8bc','plain'),hornC=darkHorn?bm('#b8ac90','plain'):bm('#f2ead6','plain'),hornR=darkHorn?bm('#1a1614','plain'):bm('#a49878','plain');
   /* b: the oni's torso and head measures, scaled down to the fiend */
-  const F=.84,b=(par,w,h,d,m,x=0,y=0,z=0,rx,ry,rz)=>bx(par,w*F,h*F,d*F,m,x*F,y*F,z*F,rx,ry,rz);
+  const F=.9,b=(par,w,h,d,m,x=0,y=0,z=0,rx,ry,rz)=>bx(par,w*F,h*F,d*F,m,x*F,y*F,z*F,rx,ry,rz);
   /* joints: same names, offsets and order as buildVillager */
   const hips=J('hips',root,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
-  const aw=.31,lw=.13*B.g,fk=B.ankle/.06,hk=B.hand,g=B.g;
+  const D2=Math.PI/180,aw=.34,lw=.13*B.g,fk=B.ankle/.06,hk=B.hand,g=B.g;
   /* ragged hem: teeth of random length hanging below y around a w x d garment */
   const hem=(par,w,d,y,m,n,L0,L1)=>{for(const[f,s]of[[1,1],[1,-1],[0,1],[0,-1]]){const span=f?w:d;for(let i=0;i<n;i++){if(r()<.3)continue;const tw=span/n*(.55+.35*r()),L=L0+(L1-L0)*r(),c=-span/2+(i+.5)*span/n;
     if(f)bx(par,tw,L,.026,m,c,y-L/2+.005,s*(d/2+.005));else bx(par,.026,L,tw,m,s*(w/2+.005),y-L/2+.005,c);}}};
   /* hips: a dark red cloth wrap with a ragged hem, a broad studded leather belt, a horned skull buckle */
-  bx(hips,.8,.3,.56,cloth,0,-.04,0);hem(hips,.8,.56,-.19,clothD,6,.03,.08);
-  bx(hips,.84,.12,.6,lth,0,.12,0);for(let i=0;i<8;i++){const x=-.35+i*.1;if(Math.abs(x)<.1)continue;bx(hips,.04,.04,.02,irL,x,.12,.305);bx(hips,.04,.04,.02,irL,x,.12,-.305);}
-  for(const s of[-1,1])for(let i=0;i<4;i++)bx(hips,.02,.04,.04,irL,s*.425,.12,-.2+i*.13);
-  bx(hips,.14,.13,.05,bone,0,.12,.32);bx(hips,.1,.04,.04,bone,0,.05,.32);for(const s of[-1,1]){bx(hips,.035,.035,.02,dark,s*.03,.13,.346);bx(hips,.03,.08,.03,boneD,s*.075,.2,.32,0,0,-s*.5);}
+  bx(hips,.96,.32,.64,cloth,0,-.04,0);hem(hips,.96,.64,-.2,clothD,7,.03,.09);
+  bx(hips,1.0,.13,.68,lth,0,.12,0);for(let i=0;i<9;i++){const x=-.42+i*.105;if(Math.abs(x)<.1)continue;bx(hips,.04,.04,.02,irL,x,.12,.345);bx(hips,.04,.04,.02,irL,x,.12,-.345);}
+  for(const s of[-1,1])for(let i=0;i<4;i++)bx(hips,.02,.04,.04,irL,s*.505,.12,-.24+i*.16);
+  bx(hips,.14,.13,.05,bone,0,.12,.36);bx(hips,.1,.04,.04,bone,0,.05,.36);for(const s of[-1,1]){bx(hips,.035,.035,.02,dark,s*.03,.13,.386);bx(hips,.03,.08,.03,boneD,s*.075,.2,.36,0,0,-s*.5);}
   /* waist: narrow, a six-pack, obliques, a navel; a row of short bony spikes down the back */
   b(spine,.84,.52,.56,skin,0,0,0);b(spine,.06,.38,.4,skin,.43,-.02,.02);b(spine,.06,.38,.4,skin,-.43,-.02,.02);
   for(const y of[-.12,0,.12])for(const s of[-1,1])b(spine,.15,.1,.05,skin,s*.085,y,.29);b(spine,.02,.36,.02,skinM,0,0,.295);for(const y of[-.06,.06])b(spine,.32,.02,.02,skinM,0,y,.295);
@@ -89,7 +92,7 @@ function buildFiend(seed,o={}){const B=VB.fiend,r=mulberry32(((seed*2654435761)>
   for(const z of[.39,-.39])b(chest,.12,.86,.03,lth,.02,.2,z,0,0,-1.0);
   b(chest,.1,.1,.03,irL,.06,.24,.405);b(chest,.05,.05,.035,irD,.06,.24,.41);
   /* head: long pointed face, a sly grin with fangs, glowing eyes under a heavy brow, a hooked nose, long swept-back ears, big horns */
-  const hg=new THREE.Group();head.add(hg);hg.position.z=.12;const H=1.1,hb=(par,w,h,d,m,x=0,y=0,z=0,rx,ry,rz)=>bx(par,w*H,h*H,d*H,m,x*H,y*H,z*H,rx,ry,rz);
+  const hg=new THREE.Group();head.add(hg);hg.position.z=.12;const H=1.18,hb=(par,w,h,d,m,x=0,y=0,z=0,rx,ry,rz)=>bx(par,w*H,h*H,d*H,m,x*H,y*H,z*H,rx,ry,rz);
   hb(hg,.4,.32,.42,skin,0,.2,-.02);hb(hg,.36,.14,.36,skin,0,.02,.04);hb(hg,.22,.1,.22,skin,0,-.07,.09);hb(hg,.11,.06,.12,skin,0,-.13,.14);
   for(const s of[-1,1]){hb(hg,.08,.07,.12,skinD,s*.165,.12,.12);
     /* glowing eyes in dark sockets under a heavy brow slanting down to the middle */
@@ -128,19 +131,31 @@ function buildFiend(seed,o={}){const B=VB.fiend,r=mulberry32(((seed*2654435761)>
     bx(fg,hw*.85,.04*hk,hw*.98,skin,s*.005,-.016*hk,0);bx(ft,hw*.75,.03*hk,hw*.92,skin,s*.005,-.012*hk,0);bx(th,.03*hk,.05*hk,.03*hk,skin,0,-.018*hk,.006);
     for(let i=-1;i<=1;i++)bx(ft,.03,.05,.035,nail,s*.005,-.042*hk,i*hw*.32);bx(th,.035,.04,.035,nail,0,-.054*hk,.006);
     const so=J('socket_'+sd,hd,-s*.012*hk,-.088*hk,0);so.userData.socket=true;}
-  /* goat legs: thighs and shins in shaggy fur, tufts at the knee and a long fetlock tuft; cloven hooves with dewclaws (the soles
-     5 mm above the IK sole, so fast heel strikes sampled between frames never dip in) */
+  /* goat legs: a furry thigh forward to the knee, a slender shin back down to a pointed hock, a long cannon bone down to the fetlock
+     (a tuft of feathering and dewclaws behind) and a cloven hoof on its toes: two wedge-shaped claws stepping up towards the heel. The
+     hoof stays inside the IK foot (heel and toe points) and its sole sits 5 mm above the IK sole. Rest pose: legs bent so the hooves
+     stand on the ground (the clips set every joint anyway) */
+  const restT=-42.5,restK=86.7;
   for(const[sd,s]of[['L',1],['R',-1]]){const th=J('thigh_'+sd,hips,s*B.hipW,-(B.hipOff+.01),0),sn=J('shin_'+sd,th,0,-B.thigh,0),ft=J('foot_'+sd,sn,0,-B.shin,0);
-    bx(th,.38,B.thigh+.14,.4,fur,0,-B.thigh/2+.05,0);bx(th,.3,.24,.06,fur,0,-.36,.22);bx(th,.06,.26,.3,fur,s*.2,-.32,.02);
-    for(const[x,y,z]of[[.1,-.18,.21],[-.08,-.28,.21],[s*.2,-.12,-.08],[0,-.2,-.21],[-s*.18,-.4,.1]])bx(th,.08,.12,.05,furD,x,y,z,0,0,(r()-.5)*.6);
-    bx(th,.34,.08,.36,furD,0,-B.thigh+.02,0);
-    bx(sn,.3,B.shin-.04,.32,fur,0,-B.shin/2+.02,0);bx(sn,.26,.24,.07,fur,0,-.17,-.18);
-    for(const[x,y,z]of[[.08,-.12,.16],[-.1,-.26,.16],[s*.16,-.2,-.04]])bx(sn,.07,.11,.05,furD,x,y,z,0,0,(r()-.5)*.6);
-    const f0=.005,sole=-.07*fk+f0;bx(ft,.28,.1,.3,furD,0,.0,.0);bx(ft,.31,.04,.32,furD,0,-.05,-.01);
-    for(const t of[-1,1]){const x=t*.072;bx(ft,.12,.1,.3,hoof,x,sole+.05,.07);bx(ft,.11,.05,.22,hoof,x,sole+.12,.04);bx(ft,.12,.025,.3,hoofL,x,sole+.0125,.07);
-      bx(ft,.09,.05,.05,hoofL,x,sole+.035,.198);bx(ft,.07,.04,.05,hoof,x,sole+.075,.19);bx(ft,.05,.05,.05,hoof,t*.08,sole+.08,-.115);}}
+    th.rotation.x=restT*D2;sn.rotation.x=restK*D2;ft.rotation.x=-(restT+restK)*D2;
+    /* thigh: a heavy haunch, big quads in front, a hamstring bulge behind */
+    bx(th,.46,B.thigh+.16,.5,fur,0,-B.thigh/2+.05,0);bx(th,.38,.32,.07,fur,0,-.42,.27);bx(th,.07,.34,.38,fur,s*.25,-.38,.02);bx(th,.36,.3,.07,fur,0,-.26,-.27);
+    for(const[x,y,z]of[[.12,-.2,.26],[-.1,-.34,.26],[s*.25,-.14,-.1],[0,-.24,-.31],[-s*.22,-.48,.12]])bx(th,.09,.13,.05,furD,x,y,z,0,0,(r()-.5)*.6);
+    bx(th,.38,.12,.4,furD,0,-B.thigh+.03,.02);
+    /* shin: a thick muscled upper half, a strong tendon down the back to the pointed hock */
+    bx(sn,.34,.3,.36,fur,0,-.14,-.01);bx(sn,.27,.34,.27,fur,0,-.42,-.01);bx(sn,.26,.14,.15,furD,0,-.26,-.15);
+    for(const[x,y,z]of[[.08,-.1,.19],[-.08,-.24,.19],[s*.18,-.18,-.02],[0,-.36,-.15]])bx(sn,.07,.11,.05,furD,x,y,z,0,0,(r()-.5)*.6);
+    /* hock, cannon bone, fetlock with feathering and dewclaws, cloven hoof */
+    const S=-.07*fk+.005;
+    bx(ft,.22,.2,.22,fur,0,-.01,-.01);bx(ft,.12,.12,.1,furD,0,0,-.15);
+    const cn=new THREE.Group();put(ft,cn,0,-.05,-.01,-.12,0,0);bx(cn,.15,.3,.15,fur,0,-.15,0);
+    bx(ft,.23,.1,.23,furD,0,S+.21,0);bx(ft,.18,.06,.18,fur,0,S+.155,.02);
+    bx(ft,.018,.11,.24,dark,0,S+.06,.05);
+    for(const t of[-1,1]){const x=t*.06;
+      bx(ft,.1,.06,.28,hoof,x,S+.03,.05);bx(ft,.095,.06,.21,hoof,x,S+.085,.02);bx(ft,.09,.05,.13,hoof,x,S+.135,-.015);
+      bx(ft,.085,.035,.05,hoofL,x,S+.0175,.16);bx(ft,.09,.06,.05,hoofL,x,S+.035,-.075);bx(ft,.05,.05,.05,hoof,t*.055,S+.21,-.12);}}
   /* weapons: one in each hand, along the thumb side (the socket's z), as the revenant's */
-  const D2=Math.PI/180,Jn=n=>root.getObjectByName(n);
+  const Jn=n=>root.getObjectByName(n);
   for(const sd of['R','L']){const wg=new THREE.Group();wg.name='fd_wpn_'+sd;wg.userData.gear=true;Jn('socket_'+sd).add(wg);const wp=fdWeapon(sd==='R'?wR:wL);wp.name='fd_wp_'+sd;
     wp.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,1),new THREE.Vector3(-1,0,0)));wg.add(wp);
     const ch=wp.getObjectByName('fd_chain');if(ch)ch.name='fd_chain_'+sd;}
@@ -166,7 +181,7 @@ const FD_W=wrP(FD_N,{HP:[0,-.1,0],h:[4,-18,0],sp:[5,-4,0],ch:[3,-6,0],FL:[.2,.22
 /* a flail in the right hand is not raised by the shoulder (its chain would hang on the shoulder) but held low in front in guard, as the left */
 const FD_RF={gR:{s:[-.08,-.36,.52]},dR:[-.12,.6,.8]},fdWar=wR=>wR==='flail'?wrP(FD_W,FD_RF):FD_W;
 function fdRig(wR,wL){const k=wR+'|'+wL;if(FD_RIG[k])return FD_RIG[k];const B=VB.fiend,m=buildFiend(1,{bare:true,weaponR:wR,weaponL:wL,horns:'bull'}),J={};m.traverse(q=>{if(q.userData.joint)J[q.name]=q;});
-  const R={m,J,B,two:false,W:{R:[],L:[]},wp:{R:m.getObjectByName('fd_wp_R'),L:m.getObjectByName('fd_wp_L')}},v=new THREE.Vector3();
+  const R={m,J,B,two:false,noHeel:true,W:{R:[],L:[]},wp:{R:m.getObjectByName('fd_wp_R'),L:m.getObjectByName('fd_wp_L')}},v=new THREE.Vector3();
   /* weapon meshes for the ground check: everything but a flail's chain and ball (the chain simulation keeps those up) */
   const inChain=q=>{while(q){if(/^fd_chain/.test(q.name))return true;q=q.parent;}return false;};
   for(const sd of['R','L'])R.wp[sd].traverse(q=>{if(q.isMesh&&!inChain(q))R.W[sd].push(q);});
@@ -424,4 +439,4 @@ ASSETS.push({id:'fiend',folder:'characters/enemies/hell',name:'Fiend',kind:'char
     {key:'weaponL',label:'Left hand',choices:[['random','Random'],['sword','Long sword'],['axe','Double axe'],['flail','Flail']],def:'random'},
     {key:'horns',label:'Horns',choices:[['random','Random'],['bull','Bull'],['ram','Ram'],['swept','Swept back']],def:'random'},
     {key:'skin',label:'Skin',choices:[['random','Random'],['crimson','Crimson'],['blood','Dark red'],['charcoal','Charcoal'],['violet','Violet']],def:'random'}],
-  desc:'Fiend: a strong horned devil, about 2.5 m tall, with no wings: a muscular body (crimson, dark red, charcoal or violet skin), a spiked iron pauldron on the left shoulder, a leather baldric, iron bracers, a dark red loin wrap under a studded belt with a horned skull buckle, goat legs in shaggy fur and cloven hooves. A devil\'s head with a long pointed face, a sly fanged grin, glowing eyes, long swept-back ears and big horns (bull, ram or swept back), sometimes a goatee and slicked-back hair. A weapon in each hand, chosen per hand, all with about the same reach: a long sword with a glowing fuller, a double axe or a flail with a swinging chain and spiked ball. Clips: Idle, Walk, Run, war-mode Idle, Walk and Run, Attack 1 (right chop), Attack 2 (left chop), Attack 3 (both chopped down), Attack 4 (both swept in from the sides), Heavy attack (leaps and smashes both into the ground), Block, Roar, Taunt (paws the ground like a bull), Hit 1, Hit 2, Heavy hit and Death.'});
+  desc:'Fiend: a strong horned devil, about 3 m tall, with no wings: a muscular body (crimson, dark red, charcoal or violet skin), a spiked iron pauldron on the left shoulder, a leather baldric, iron bracers, a dark red loin wrap under a studded belt with a horned skull buckle, goat legs in shaggy fur, bending back at the hock, and cloven hooves. A devil\'s head with a long pointed face, a sly fanged grin, glowing eyes, long swept-back ears and big horns (bull, ram or swept back), sometimes a goatee and slicked-back hair. A weapon in each hand, chosen per hand, all with about the same reach: a long sword with a glowing fuller, a double axe or a flail with a swinging chain and spiked ball. Clips: Idle, Walk, Run, war-mode Idle, Walk and Run, Attack 1 (right chop), Attack 2 (left chop), Attack 3 (both chopped down), Attack 4 (both swept in from the sides), Heavy attack (leaps and smashes both into the ground), Block, Roar, Taunt (paws the ground like a bull), Hit 1, Hit 2, Heavy hit and Death.'});
