@@ -143,7 +143,7 @@ _Imps and other fiends_
 | `hellhound` | Hellhound | character | fur = **Random** / Blue-black / Charcoal / Dark brown / Ash grey<br>glow = **Random** / Ember red / Fire orange / Hellfire green / Blue flame<br>mane = **Random** / Shaggy / Short<br>scars = **Random** / Yes / No<br>gear = **None** / Spiked collar | ✓ |
 | `cerberus` | Cerberus | character | fur = **Random** / Blue-black / Charcoal / Dark brown / Ash grey<br>glow = **Random** / Ember red / Fire orange / Hellfire green / Blue flame<br>mane = **Random** / Shaggy / Short<br>scars = **Random** / Yes / No<br>gear = **None** / Spiked collars | ✓ |
 | `efreet` | Efreet | character | skin = **Random** / Crimson red / Ember orange / Bronze / Charcoal<br>fire = **Random** / Orange / Crimson / Blue / Green<br>head = **Random** / Topknot / Jewelled turban / Horns<br>weapon = **Flame scimitar** / None | ✓ |
-| `devil-lord` | Devil Lord | character | skin = **Random** / Crimson / Scarlet / Dark red / Charcoal<br>glow = **Random** / Gold glow / Red glow / Green glow / Violet glow<br>garb = **Random** / Black / Crimson / Royal purple<br>horns = **Random** / Swept back / Ram / Great<br>staff = **Random** / Horned orb / Goat skull / Caged gem<br>blade = **Random** / Steel / Obsidian, glowing edge | ✓ |
+| `devil-lord` | Devil Lord | character | skin = **Random** / Obsidian black / Ash grey / Blood dark<br>glow = **Random** / Red / Orange / Violet / Green<br>horns = **Random** / Crescent / Ram / Swept back<br>staff = **Random** / Horned orb / Horned skull / Caged shard<br>blade = **Random** / Black iron, glowing runes / Dark steel | ✓ |
 
 ## Buildings  `buildings`
 

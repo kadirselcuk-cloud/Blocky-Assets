@@ -39,7 +39,7 @@ Read this file first in every session, then open only the doc you need:
 | Cerberus (Hell): the three-headed guardian hound, the hellhound's build at 1.35x (2.2 m at the hump) with a wider front and three big heads on splayed necks; side bites, triple bite, triple fire breath | `docs/CERBERUS.md` |
 | The hellhound (Hell): hunched hound after the owner's reference, massive chest and shoulder hump, huge head and jaws, fire glowing through throat, chest, belly and mouth; warg clips plus fire breath | `docs/HELLHOUND.md` |
 | The efreet (Hell): 3.4 m fire genie floating on a whirling tail of fire instead of legs, open vest and sash, hair topknot, turban or horns; flame-bladed scimitar or none; fire bolt, eruption and fire breath gestures, burns out in Death, whirls up in Appear | `docs/EFREET.md` |
-| The Devil Lord (Hell): charismatic 2.2 m winged devil, mainly a spellcaster; staff in the left hand, scimitar in the right; wings half closed on the ground, spread in flight; walks and flies, four spells (effects added separately) | `docs/DEVIL_LORD.md` |
+| The Devil Lord (Hell): 2.2 m winged devil lord after the owner's reference: near-black skin with glowing cracks, bald, stern, big crescent horns, black spiked armour with runes, tattered loincloth, wings and tail; staff in the left hand, scimitar in the right; wings half closed on the ground, spread in flight; four spells (effects added separately) | `docs/DEVIL_LORD.md` |
 
 ## Run it
 
