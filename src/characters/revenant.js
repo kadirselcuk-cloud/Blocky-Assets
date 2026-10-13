@@ -115,7 +115,7 @@ function rvRig(){if(RV_RIG)return RV_RIG;const B=VB.revenant,m=buildRevenant(1,{
 /* solver: wight-style. Hand targets turn with the torso's yaw; poles from a cost search round the shoulder-hand line (how near the
    wrist can point the weapon from that elbow, upper-arm roll, elbow into the body, up, far out or forward, distance from last frame's
    elbow); then the wrists are solved for the keyed weapon directions */
-function rvSolver(){const B=VB.revenant,R=rvRig(),V=THREE.Vector3,Q=THREE.Quaternion,M4=new THREE.Matrix4();
+function rvSolver(R=rvRig()){const B=R.B,V=THREE.Vector3,Q=THREE.Quaternion,M4=new THREE.Matrix4();
   const yawF=p=>{const y=(p.h[1]+p.sp[1]+p.ch[1])*Math.PI/180,c=Math.cos(y),sn=Math.sin(y),rt=v=>[v[0]*c+v[2]*sn,v[1],-v[0]*sn+v[2]*c],o=Object.assign({},p);for(const k of['gR','gL','dR','dL'])o[k]=rt(p[k]);return o;};
   const restQ={L:new Q().setFromEuler(new THREE.Euler(0,0,BASEPOSE.upperArm_L[2]*Math.PI/180)),R:new Q().setFromEuler(new THREE.Euler(0,0,BASEPOSE.upperArm_R[2]*Math.PI/180))};
   const D2R=Math.PI/180,cl=(v,a,b)=>Math.max(a,Math.min(b,v)),fit=(l,x,y)=>Math.sin(y*D2R)*l.x-Math.sin(x*D2R)*Math.cos(y*D2R)*l.y+Math.cos(x*D2R)*Math.cos(y*D2R)*l.z;
