@@ -3,7 +3,7 @@
    no legs: below a wide sash and baggy trousers the body turns into a tail of fire (etail_0..7) that whirls down to a point just
    above the ground. Muscular bare chest and belly under an open vest with gold trim, gold arm rings and wide bracers; a big head
    with glowing eyes, a hooked nose, a grinning mouth (the jaw g_jaw opens onto fire), pointed ears with gold hoops, a pointed
-   beard and moustache; a flaming topknot, a jewelled turban with a flame plume, or big horns. Scimitar (steel or flaming) in the
+   beard and moustache; a black topknot, a jewelled turban or big horns. A scimitar with a blade of flame in the
    right hand, or none. Clips use the revenant's solver (rvSolver on the efreet's own rig, the oni's ground tilt for the blade);
    the hidden legs just hang. The tail, the head flames, the jaw, the body group (Death and Appear shrink and spin it) and the
    dropped scimitar are baked into tracks every frame. */
@@ -13,24 +13,23 @@ const EF_SKIN={red:['#a8382a','crimson red'],ember:['#c0602e','ember orange'],br
 const EF_FIRE={orange:['#ff7a1a','#ffd25a','#c43a10','orange'],red:['#e8301c','#ff9a4a','#8a1410','crimson'],blue:['#2a8cff','#c4f0ff','#1a3ab0','blue'],green:['#3ccf3a','#d8ff8a','#1a7a2a','green']};
 /* vest (and turban), sash */
 const EF_CLOTH=[['#4a1830','#c8a050','wine vest, gold sash'],['#24245a','#a82a2a','indigo vest, crimson sash'],['#1c1a1a','#a82a2a','black vest, crimson sash'],['#1e4a36','#c8a050','emerald vest, gold sash']];
-const EF_HEAD={topknot:'flaming topknot',turban:'jewelled turban',horns:'horns'},EF_WPN={scimitar:'scimitar',flaming:'flaming scimitar',none:'no weapon'};
+const EF_HEAD={topknot:'black topknot',turban:'jewelled turban',horns:'horns'},EF_WPN={scimitar:'flame scimitar',none:'no weapon'};
 const EF_TAIL=8,EFM={};
 function efGlow(hex,k=1){const key=hex+k;return EFM[key]||(EFM[key]=new THREE.MeshStandardMaterial({color:new THREE.Color(hex).convertSRGBToLinear(),emissive:new THREE.Color(hex).convertSRGBToLinear(),emissiveIntensity:k,roughness:.6}));}
 
 /* scimitar: grip at the origin, the blade along +y (about 1.35 m), the edge towards +x and curving back towards -x near the tip,
    flat sides towards ±z; an eight-sided gold disc guard (no cross) and a gold pommel */
-function efScimitar(flaming,F){const w=new THREE.Group(),steel=bm('#b8bec4','plain'),steelD=bm('#7a8088','plain'),gold=bm('#c8a050','plain'),goldD=bm('#9a7838','plain'),grip=bm('#3a2016','leather'),
-    bl=flaming?efGlow(F[0],.9):steel,ed=flaming?efGlow(F[1],1.3):bm('#e2e6ea','plain'),fu=flaming?efGlow(F[2],.8):steelD;
+function efScimitar(F){const w=new THREE.Group(),gold=bm('#c8a050','plain'),goldD=bm('#9a7838','plain'),grip=bm('#3a2016','leather'),
+    bl=efGlow(F[0],.9),ed=efGlow(F[1],1.3),fu=efGlow(F[2],.8);
   bx(w,.07,.3,.07,grip,0,-.02,0);for(const y of[-.12,-.02,.08])bx(w,.08,.02,.08,goldD,0,y,0);
   bx(w,.09,.07,.09,gold,0,-.19,0);bx(w,.09,.07,.09,gold,0,-.19,0,0,Math.PI/4,0);bx(w,.045,.03,.045,goldD,0,-.235,0);
   bx(w,.17,.04,.17,gold,0,.155,0);bx(w,.17,.04,.17,gold,0,.155,0,0,Math.PI/4,0);bx(w,.12,.05,.06,goldD,0,.19,0);
-  /* the blade in eight pieces, widening towards the tip and curving back; a fuller along the spine, a bright edge */
-  const n=8,y0=.2,Lb=1.3;let px=0,py=y0;
+  /* the blade is flame: eight pieces widening towards the tip and curving back, a deep core line, a hot edge, tongues licking back off the spine */
+  const n=8,y0=.2,Lb=1.3;
   for(let i=0;i<n;i++){const u=(i+.5)/n,wd=.1+.07*Math.sin(Math.min(1,u*1.15)*Math.PI*.55),x=-.22*u*u,a=Math.atan(-.44*u*.9),h=Lb/n,cy=y0+h*(i+.5),g=new THREE.Group();
     put(w,g,x,cy,0,0,0,-a);const tip=i===n-1;
-    if(!tip){bx(g,wd,h*1.08,.03,bl,0,0,0);bx(g,.02,h*1.08,.034,fu,-wd*.18,0,0);bx(g,.025,h*1.08,.032,ed,wd/2-.008,0,0);}
-    else{bx(g,wd*.75,h*.6,.03,bl,-wd*.12,-h*.2,0);bx(g,wd*.5,h*.4,.03,bl,-wd*.25,h*.25,0,0,0,.5);bx(g,.025,h*.7,.032,ed,wd*.25,-.01,0,0,0,.45);}}
-  if(flaming)for(const[x,y]of[[-.06,.5],[-.1,.85],[-.16,1.15]]){bx(w,.04,.12,.04,efGlow(F[1],1.3),x-.03,y+.06,0);}
+    if(!tip){bx(g,wd,h*1.08,.03,bl,0,0,0);bx(g,.02,h*1.08,.034,fu,-wd*.18,0,0);bx(g,.025,h*1.08,.032,ed,wd/2-.008,0,0);bx(g,.045,h*.75,.026,i%2?ed:bl,-wd/2-.012,h*.2,0,0,0,.4);if(i%3===1)bx(g,.03,h*.45,.02,ed,wd/2+.01,h*.25,0,0,0,-.35);}
+    else{bx(g,wd*.75,h*.6,.03,bl,-wd*.12,-h*.2,0);bx(g,wd*.5,h*.4,.03,bl,-wd*.25,h*.25,0,0,0,.5);bx(g,.025,h*.7,.032,ed,wd*.25,-.01,0,0,0,.45);bx(g,.03,h*.5,.022,ed,-wd*.3,h*.55,0,0,0,.7);}}
   w.userData.len=y0+Lb;return w;}
 
 function buildEfreet(seed,o={}){const B=VB.efreet,r=mulberry32(((seed*2654435761)>>>0)^0x0ef1),pick=a=>a[Math.floor(r()*a.length)],root=new THREE.Group();root.userData.lights=[];
@@ -49,11 +48,11 @@ function buildEfreet(seed,o={}){const B=VB.efreet,r=mulberry32(((seed*2654435761
   const hips=J('hips',eb,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
   const aw=.36,hk=B.hand;
   /* hips: a wide sash with folds, a knot on the left and two hanging ends, a gold medallion; baggy trousers whose hem burns into the tail */
-  bx(hips,1.0,.2,.72,sash,0,.13,0);for(const y of[.07,.19])bx(hips,1.01,.02,.73,sashD,0,y,0);
-  bx(hips,.13,.13,.03,gold,0,.13,.37,0,0,Math.PI/4);bx(hips,.07,.07,.03,gem,0,.13,.385,0,0,Math.PI/4);
-  bx(hips,.18,.16,.1,sash,.3,.12,.38);bx(hips,.1,.42,.04,sash,.27,-.14,.385,0,0,.08);bx(hips,.1,.36,.04,sashD,.38,-.11,.38,0,0,-.18);
-  bx(hips,.98,.36,.8,pants,0,-.12,0);bx(hips,.88,.24,.72,pantsD,0,-.38,0);for(const s of[-1,1])bx(hips,.02,.3,.6,pantsD,s*.49,-.12,0);
-  for(let i=0;i<10;i++){const a=i/10*Math.PI*2,x=Math.cos(a)*.43,z=Math.sin(a)*.35;bx(hips,.14,.14,.14,i%2?fDeep:fMid,x*.96,-.52,z*.96,0,-a,0);}
+  bx(hips,1.0,.2,.8,sash,0,.13,0);for(const y of[.07,.19])bx(hips,1.01,.02,.81,sashD,0,y,0);
+  bx(hips,.13,.13,.03,gold,0,.13,.41,0,0,Math.PI/4);bx(hips,.07,.07,.03,gem,0,.13,.425,0,0,Math.PI/4);
+  bx(hips,.18,.16,.1,sash,.3,.12,.42);bx(hips,.1,.42,.04,sash,.27,-.14,.425,0,0,.08);bx(hips,.1,.36,.04,sashD,.38,-.11,.42,0,0,-.18);
+  bx(hips,.98,.08,.8,pants,0,-.01,0);bx(hips,.99,.02,.81,pantsD,0,-.045,0);
+  for(let i=0;i<12;i++){const a=i/12*Math.PI*2,x=Math.cos(a)*.45,z=Math.sin(a)*.37;bx(hips,.17,.2,.17,i%2?fDeep:fMid,x,-.1,z,0,-a,0);if(i%2)bx(hips,.08,.12,.08,fHot,x*1.02,-.03,z*1.02,0,-a,0);}
   /* waist: a six-pack, obliques, a navel */
   bx(spine,.84,.52,.56,skin,0,0,0);bx(spine,.06,.38,.4,skin,.43,-.02,.02);bx(spine,.06,.38,.4,skin,-.43,-.02,.02);
   for(const y of[-.12,0,.12])for(const s of[-1,1])bx(spine,.15,.1,.05,skin,s*.085,y,.29);bx(spine,.02,.36,.02,skinM,0,0,.295);for(const y of[-.06,.06])bx(spine,.32,.02,.02,skinM,0,y,.295);
@@ -85,14 +84,11 @@ function buildEfreet(seed,o={}){const B=VB.efreet,r=mulberry32(((seed*2654435761
   if(beard!=='none'){const bm1=beard==='flame'?fMid:hairM,bm2=beard==='flame'?fHot:hairD;
     for(const s of[-1,1]){bx(hg,.16,.035,.04,bm1,s*.1,.16,.29,0,0,-s*.25);bx(hg,.05,.08,.04,bm1,s*.19,.2,.28,0,0,s*.3);}
     bx(jaw,.22,.14,.1,bm1,0,-.18,.2);bx(jaw,.14,.14,.08,bm1,0,-.3,.21);bx(jaw,.07,.12,.06,bm2,0,-.41,.22);}
-  /* head flames (efl_0..2): the topknot, or a smaller plume on the turban; their sway and flicker are tracks */
-  const flame=(i,x,y,z,k)=>{const g=new THREE.Group();g.name='efl_'+i;put(hg,g,x,y,z);
-    bx(g,.16*k,.2*k,.16*k,fDeep,0,.1*k,0);bx(g,.13*k,.2*k,.13*k,fMid,0,.26*k,0);bx(g,.09*k,.18*k,.09*k,fMid,.01*k,.42*k,0);bx(g,.05*k,.14*k,.05*k,fHot,.02*k,.56*k,0);
-    bx(g,.06*k,.12*k,.06*k,fHot,-.06*k,.2*k,.03*k);bx(g,.05*k,.1*k,.05*k,fMid,.07*k,.3*k,-.03*k);};
+  /* headwear: a jewelled turban; or bald with a black topknot (a gold ring round its root, the tail falling back); or bald with horns */
   if(headK==='turban'){bx(hg,.6,.2,.58,turb,0,.48,-.02);bx(hg,.54,.12,.52,turbD,0,.6,-.03);bx(hg,.42,.1,.42,turb,0,.7,-.03);
-    for(let i=0;i<4;i++)bx(hg,.62,.03,.03,turbD,0,.42+i*.05,.27,0,0,.18);bx(hg,.14,.16,.05,gold,0,.52,.29);bx(hg,.08,.1,.04,gem,0,.52,.31);bx(hg,.04,.04,.04,gold,0,.62,.3);
-    flame(0,0,.74,-.03,.8);flame(1,-.08,.72,-.1,.5);flame(2,.08,.72,-.1,.5);}
-  else{bx(hg,.16,.06,.16,gold,0,.53,-.1);bx(hg,.17,.02,.17,goldD,0,.5,-.1);flame(0,0,.55,-.1,1.15);flame(1,-.08,.52,-.14,.7);flame(2,.08,.52,-.14,.7);}
+    for(let i=0;i<4;i++)bx(hg,.62,.03,.03,turbD,0,.42+i*.05,.27,0,0,.18);bx(hg,.14,.16,.05,gold,0,.52,.29);bx(hg,.08,.1,.04,gem,0,.52,.31);bx(hg,.04,.04,.04,gold,0,.62,.3);}
+  else if(headK==='topknot'){const tk=new THREE.Group();put(hg,tk,0,.5,-.1,-.45,0,0);bx(tk,.2,.1,.2,hairM,0,.04,0);bx(tk,.15,.08,.15,gold,0,.12,0);bx(tk,.16,.02,.16,goldD,0,.15,0);bx(tk,.13,.14,.13,hairM,0,.22,0);
+    const tl=new THREE.Group();put(tk,tl,0,.27,0,-2.0,0,0);bx(tl,.12,.2,.1,hairM,0,.1,0);bx(tl,.1,.24,.08,hairM,0,.3,-.02,-.2,0,0);bx(tl,.07,.16,.06,hairD,0,.48,-.06,-.35,0,0);}
   if(headK==='horns')for(const s of[-1,1]){const H=new THREE.Group();put(hg,H,s*.24,.44,.02,0,0,-s*.5);
     bx(H,.13,.16,.13,horn,0,.06,0);bx(H,.14,.02,.14,hornD,0,.12,0);bx(H,.1,.16,.1,horn,s*.04,.2,0,0,0,-s*.35);bx(H,.11,.02,.11,hornD,s*.06,.27,0,0,0,-s*.35);
     bx(H,.075,.14,.075,horn,s*.04,.34,0,0,0,s*.35);bx(H,.045,.12,.045,hornD,0,.45,0,0,0,s*.6);}
@@ -112,15 +108,15 @@ function buildEfreet(seed,o={}){const B=VB.efreet,r=mulberry32(((seed*2654435761
   for(const[sd,s]of[['L',1],['R',-1]]){const th=J('thigh_'+sd,hips,s*B.hipW,-(B.hipOff+.01),0),sn=J('shin_'+sd,th,0,-B.thigh,0);J('foot_'+sd,sn,0,-B.shin,0);}
   /* the tail: eight segments of fire, each a box in the fire colour inside a box turned 45° in the deep colour (alternating), with
      tongues licking up; unit height, so the tracks stretch each one between two points of the tail curve */
-  for(let i=0;i<EF_TAIL;i++){const g=new THREE.Group();g.name='etail_'+i;eb.add(g);const u=(i+.5)/EF_TAIL,w=.78*Math.pow(1-u,.85)+.06,a=i%2?fMid:fDeep,b=i%2?fDeep:fMid;
-    bx(g,w,1.3,w,a);bx(g,w*.94,1.24,w*.94,b,0,0,0,0,Math.PI/4,0);
+  for(let i=0;i<EF_TAIL;i++){const g=new THREE.Group();g.name='etail_'+i;eb.add(g);const u=(i+.5)/EF_TAIL,w=.98*Math.pow(1-u,.75)+.08,a=i%2?fMid:fDeep,b=i%2?fDeep:fMid;
+    bx(g,w,1.3,w*.78,a);bx(g,w*.78,1.24,w*.88,b);
     for(let k=0;k<3;k++){const an=k*2.09+i*1.1,rr=w*.36;bx(g,Math.max(.04,w*.18),.9,Math.max(.04,w*.18),k?fMid:fHot,Math.cos(an)*rr,.45,Math.sin(an)*rr);}
     if(i===EF_TAIL-1)bx(g,w*.55,.7,w*.55,fHot,0,-.6,0);}
   /* scimitar in the right hand: its length along the thumb side (the socket's z), as the revenant's weapons; a copy at the root
      (ef_drop) is shown only when Death lets the blade fall */
   const Jn=n=>root.getObjectByName(n),wr=new THREE.Group();wr.name='ef_wpn_R';wr.userData.gear=true;Jn('socket_R').add(wr);
   const WB=new THREE.Matrix4().makeBasis(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,1),new THREE.Vector3(-1,0,0)),dr=new THREE.Group();dr.name='ef_drop';dr.userData.gear=true;root.add(dr);dr.scale.set(0,0,0);
-  if(wpn!=='none')for(const g of[wr,dr]){const wp=efScimitar(wpn==='flaming',F);wp.quaternion.setFromRotationMatrix(WB);g.add(wp);}
+  if(wpn!=='none')for(const g of[wr,dr]){const wp=efScimitar(F);wp.quaternion.setFromRotationMatrix(WB);g.add(wp);}
   /* the right fist stays closed round the grip */
   const D2=Math.PI/180;root.userData.post=()=>{Jn('fingers_R').rotation.set(0,0,95*D2);Jn('fingerTips_R').rotation.set(0,0,90*D2);Jn('thumb_R').rotation.set(14*D2,0,33*D2);};
   const joints=[];root.traverse(q=>{if(q.userData.joint&&!q.userData.socket)joints.push(q);});root.userData.joints=joints;
@@ -171,16 +167,15 @@ function efreetClips(){if(EF_ALL)return EF_ALL;const B=VB.efreet,k=B.legS,D=Math
   /* per-frame extras: the tail curve from the hips down to a point above the ground (swirling, streaming back with ts), the head
      flames, the jaw, the body group (scale about a point 0.3 m above the ground under the hips, and spin) and the dropped blade.
      Phases use whole cycles per clip, so loops close */
-  const extras=(p,s,t,dur,o)=>{const Ph=R.J.hips.position.clone(),Qh=R.J.hips.quaternion.clone(),top=new V(0,-.34,0).applyQuaternion(Qh).add(Ph);
+  const extras=(p,s,t,dur,o)=>{const Ph=R.J.hips.position.clone(),Qh=R.J.hips.quaternion.clone(),top=new V(0,-.1,0).applyQuaternion(Qh).add(Ph);
     const f=new V(0,0,1).applyQuaternion(Qh).setY(0);if(f.lengthSq()<1e-4)f.set(0,0,1);f.normalize();const sd=new V(f.z,0,-f.x);
     const ns=Math.max(1,Math.round(dur/1.6)),ph=D*ns*t/dur,nf=Math.max(1,Math.round(dur/.4)),fq=D*nf*t/dur,ts=p.ts[0],yT=.32+.04*S(ph)+.3*Math.abs(ts),pts=[];
     for(let i=0;i<=EF_TAIL;i++){const u=i/EF_TAIL,a=.17*Math.pow(u,1.2)*(1+.25*Math.abs(ts)),an=ph-u*D*1.1,bk=-(.08+.85*ts)*Math.pow(u,1.5)+a*.7*C(an),sw=a*S(an);
       pts.push(top.clone().addScaledVector(f,bk).addScaledVector(sd,sw).setY(top.y+(yT-top.y)*u));}
     const tail=[];for(let i=0;i<EF_TAIL;i++){const a=pts[i],b=pts[i+1],d=a.clone().sub(b),len=Math.max(.02,d.length()),q=new Q().setFromUnitVectors(new V(0,1,0),d.normalize());
-      q.multiply(new Q().setFromAxisAngle(new V(0,1,0),(i?1:0)*(ph*1+i*.7)));const fl=1+.07*S(fq+i*1.3);tail.push([...a.clone().add(b).multiplyScalar(.5).toArray(),q.x,q.y,q.z,q.w,fl,len,fl]);}
-    const fls=[];for(let i=0;i<3;i++){const q=new Q().setFromEuler(new THREE.Euler(-.15+.12*S(fq+i*2)-.25*Math.max(0,ts),0,.1*S(fq*2+i)));fls.push([q.x,q.y,q.z,q.w,1,1+.16*S(fq*2+i*1.7),1]);}
+      q.multiply(new Q().setFromAxisAngle(new V(0,1,0),(i>1?1:0)*(ph*1+i*.7)));const fl=1+.07*S(fq+i*1.3);tail.push([...a.clone().add(b).multiplyScalar(.5).toArray(),q.x,q.y,q.z,q.w,fl,len,fl]);}
     const bs=Math.max(.0005,p.bs[0]),qb=new Q().setFromAxisAngle(new V(0,1,0),p.sn[0]*D2R),pv=new V(Ph.x,.3,Ph.z),ep=pv.clone().sub(pv.clone().multiplyScalar(bs).applyQuaternion(qb));
-    const x={tail,fls,jw:p.jw[0],eb:[...ep.toArray(),qb.x,qb.y,qb.z,qb.w,bs]};
+    const x={tail,jw:p.jw[0],eb:[...ep.toArray(),qb.x,qb.y,qb.z,qb.w,bs]};
     if(o.drop!==undefined){const Mh=poseM(s);if(t<o.drop){x.w=1;x.d=Mh;x.ds=0;}else{if(!o._A){o._A=Mh;o._R=restOf(Mh);}x.w=0;x.ds=1;
       const A0=o._A,R0=o._R,pa=new V(),qa=new Q(),pb=new V(),qbb=new Q(),sc=new V();A0.decompose(pa,qa,sc);R0.decompose(pb,qbb,sc);const tl=Math.max(.2,Math.sqrt(2*Math.max(0,pa.y-pb.y)/9.8)),tau=t-o.drop,u=Math.min(1,tau/tl);
       const pp=pa.clone().lerp(pb,ss(u));pp.y=Math.max(pb.y,pa.y-4.9*tau*tau);x.d=new M4().compose(pp,qa.clone().slerp(qbb,ss(u)),new V(1,1,1));}}
@@ -188,7 +183,6 @@ function efreetClips(){if(EF_ALL)return EF_ALL;const B=VB.efreet,k=B.legS,D=Math
   const bake=(c,X,o)=>{const T=Array.from(c.tracks[0].times),q=new Q(),e=new THREE.Euler(),TR=[];
     for(let i=0;i<EF_TAIL;i++){const P=[],QQ=[],SC=[];for(const x of X){const v=x.tail[i];P.push(v[0],v[1],v[2]);QQ.push(v[3],v[4],v[5],v[6]);SC.push(v[7],v[8],v[9]);}
       TR.push(new THREE.VectorKeyframeTrack(`etail_${i}.position`,T,P),new THREE.QuaternionKeyframeTrack(`etail_${i}.quaternion`,T,QQ),new THREE.VectorKeyframeTrack(`etail_${i}.scale`,T,SC));}
-    for(let i=0;i<3;i++){const QQ=[],SC=[];for(const x of X){const v=x.fls[i];QQ.push(v[0],v[1],v[2],v[3]);SC.push(v[4],v[5],v[6]);}TR.push(new THREE.QuaternionKeyframeTrack(`efl_${i}.quaternion`,T,QQ),new THREE.VectorKeyframeTrack(`efl_${i}.scale`,T,SC));}
     const JQ=[],EP=[],EQ=[],ES=[];for(const x of X){q.setFromEuler(e.set(x.jw*D2R,0,0));JQ.push(q.x,q.y,q.z,q.w);EP.push(x.eb[0],x.eb[1],x.eb[2]);EQ.push(x.eb[3],x.eb[4],x.eb[5],x.eb[6]);ES.push(x.eb[7],x.eb[7],x.eb[7]);}
     TR.push(new THREE.QuaternionKeyframeTrack('g_jaw.quaternion',T,JQ),new THREE.VectorKeyframeTrack('ebody.position',T,EP),new THREE.QuaternionKeyframeTrack('ebody.quaternion',T,EQ),new THREE.VectorKeyframeTrack('ebody.scale',T,ES));
     const T2=[0,c.duration];
@@ -307,6 +301,6 @@ function efreetClips(){if(EF_ALL)return EF_ALL;const B=VB.efreet,k=B.legS,D=Math
 ASSETS.push({id:'efreet',folder:'characters/enemies/hell',name:'Efreet',kind:'character',variants:true,defaultSeed:1,groundR:4.2,build:(s,o)=>buildEfreet(s,o||{}),
   opts:[{key:'skin',label:'Skin',choices:[['random','Random'],...Object.entries(EF_SKIN).map(([kk,v])=>[kk,v[1].charAt(0).toUpperCase()+v[1].slice(1)])],def:'random'},
     {key:'fire',label:'Fire',choices:[['random','Random'],...Object.entries(EF_FIRE).map(([kk,v])=>[kk,v[3].charAt(0).toUpperCase()+v[3].slice(1)])],def:'random'},
-    {key:'head',label:'Head',choices:[['random','Random'],['topknot','Flaming topknot'],['turban','Jewelled turban'],['horns','Horns']],def:'random'},
-    {key:'weapon',label:'Weapon',choices:[['scimitar','Scimitar'],['flaming','Flaming scimitar'],['none','None']],def:'scimitar'}],
-  desc:'Efreet: a fire genie of Hell, about 3.4 m, floating on a whirling tail of fire instead of legs. Muscular bare chest under an open vest with gold trim, a wide sash and baggy trousers burning into the tail, gold torc, arm rings and bracers; big head with glowing eyes, a hooked nose, a grin, pointed ears with gold hoops, a pointed beard; a flaming topknot, a jewelled turban or horns. Skin crimson, ember, bronze or charcoal; fire orange, crimson, blue or green. Scimitar, flaming scimitar or none. Idle, float, war-mode idle and float, three attacks, a diving smash, three spells (fire bolt, eruption, fire breath), a laughing taunt, two hits, a heavy hit, death (burns out, the scimitar falls) and appear.'});
+    {key:'head',label:'Head',choices:[['random','Random'],['topknot','Topknot'],['turban','Jewelled turban'],['horns','Horns']],def:'random'},
+    {key:'weapon',label:'Weapon',choices:[['scimitar','Flame scimitar'],['none','None']],def:'scimitar'}],
+  desc:'Efreet: a fire genie of Hell, about 3.4 m, floating on a whirling tail of fire instead of legs. Muscular bare chest under an open vest with gold trim, a wide sash with flames licking up to it from the tail, gold torc, arm rings and bracers; big head with glowing eyes, a hooked nose, a grin, pointed ears with gold hoops, a pointed beard; a black topknot, a jewelled turban or horns. Skin crimson, ember, bronze or charcoal; fire orange, crimson, blue or green. A scimitar with a blade of flame, or none. Idle, float, war-mode idle and float, three attacks, a diving smash, three spells (fire bolt, eruption, fire breath), a laughing taunt, two hits, a heavy hit, death (burns out, the scimitar falls) and appear.'});

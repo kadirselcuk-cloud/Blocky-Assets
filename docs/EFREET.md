@@ -4,16 +4,16 @@ The efreet (`efreet`, Characters → Enemies → Hell). Code: `src/characters/ef
 
 Open it: `http://localhost:<port>/#/a/efreet`
 
-A fire genie, about **3.4 m** to the top of the head (4.1 m to the tip of the topknot flame), who never touches the ground: below a wide sash and baggy trousers his body turns into a whirling tail of fire that ends about 0.3 m above the ground.
+A fire genie, about **3.4 m** to the top of the head, who never touches the ground: right under his wide sash his body turns into a big whirling tail of fire that ends about 0.3 m above the ground.
 
 ## Options
 
 | Option | Choices (default first) | Notes |
 |---|---|---|
 | Skin | Random, Crimson red, Ember orange, Bronze, Charcoal | Random rolls crimson twice as often |
-| Fire | Random, Orange, Crimson, Blue, Green | Tail, trouser hem, head flames, eyes, inside of the mouth, flaming scimitar. Random rolls orange twice as often |
-| Head | Random, Flaming topknot, Jewelled turban, Horns | Topknot: bald with a gold ring and a tall flame. Turban: wrapped turban with a gold-set red gem and a smaller flame plume. Horns: two big dark horns curving out and up, plus the topknot |
-| Weapon | Scimitar, Flaming scimitar, None | |
+| Fire | Random, Orange, Crimson, Blue, Green | Tail, the flames under the sash, eyes, inside of the mouth, the scimitar blade. Random rolls orange twice as often |
+| Head | Random, Topknot, Jewelled turban, Horns | Topknot: bald with a black hair topknot in a gold ring, its tail falling back. Turban: wrapped turban with a gold-set red gem. Horns: bald with two big dark horns curving out and up (no topknot). No flames on the head |
+| Weapon | Flame scimitar, None | |
 
 "New look" also rolls the clothes (wine, indigo, black or emerald vest with a gold or crimson sash), the beard (black, flame or none), gold ear hoops and a scar on the belly.
 
@@ -23,15 +23,14 @@ A fire genie, about **3.4 m** to the top of the head (4.1 m to the tip of the to
 
 - **Torso**: the oni's muscles (six-pack, broad chest, big pecs, traps), an open vest with gold trim over the sides and back, a gold torc.
 - **Head**: big; glowing eyes in dark sockets under slanting brows, a hooked nose, a grin of teeth with fangs, pointed ears swept back (gold hoops). The lower face is the jaw `g_jaw`; it opens onto a glowing mouth. Moustache and pointed beard (the beard is on the jaw).
-- **Head flames** `efl_0..2`: three flame stacks on the crown; their sway and flicker are tracks.
 - **Arms**: the oni's arms with gold arm rings, wide gold bracers set with a red gem, big hands with dark nails.
-- **Hips**: a wide sash with folds, a knot and two hanging ends, a gold medallion; baggy trousers in a dark shade of the sash, the hem ringed with flames.
+- **Hips**: a wide sash with folds, a knot and two hanging ends, a gold medallion; below it only a thin band of trousers, hidden by a ring of flames that licks up to just under the sash.
 - **Legs**: joints only, nothing drawn. The clips keep the feet under the hips (so the IK never pulls the hips down) and then let the legs hang straight.
-- **Tail** `etail_0..7`: eight fire segments, each a box in one fire shade inside a box turned 45° in another (alternating), with tongues licking up, the last one ending in a hot point. Built at unit height; the tracks stretch each segment between two points of the tail curve.
+- **Tail** `etail_0..7`: eight fire segments starting just under the sash, about 1 m wide at the top (a box in one fire shade crossed by a narrower, deeper box in another, alternating), with tongues licking up, the last one ending in a hot point. The top two segments keep the hips' facing; the lower ones spin. Built at unit height; the tracks stretch each segment between two points of the tail curve.
 
 ## Weapon (`efScimitar`)
 
-`ef_wpn_R` in the right hand socket (the revenant's frame: grip through the fist, the blade along the thumb side, the edge leading). A 1.3 m curved blade in eight pieces, widening towards a clipped tip and curving back, a fuller and a bright edge; an eight-sided gold disc guard (no cross), leather grip with gold bands, gold pommel. The flaming scimitar has a glowing blade and edge with small flames along the spine. `ef_drop` is a copy at the root, shown only when Death lets the blade fall.
+`ef_wpn_R` in the right hand socket (the revenant's frame: grip through the fist, the blade along the thumb side, the edge leading). A 1.3 m curved blade made of flame in eight pieces, widening towards a clipped tip and curving back: fire-coloured body, a deep core line, a hot edge and tongues of flame licking back off the spine and the tip; an eight-sided gold disc guard (no cross), leather grip with gold bands, gold pommel. `ef_drop` is a copy at the root, shown only when Death lets the blade fall.
 
 ## Clips (17)
 
@@ -61,11 +60,11 @@ One-shot clips are followed by Idle (war mode); Death is held (`clip.hold`). The
 
 - **The revenant's solver** (`rvSolver`) on the efreet's rig (`efRig`) with the oni's ground tilt for the blade (`efSolver`): hand targets from the shoulders, elbow poles by cost search, wrists in closed form, clamped and rate-limited. Keys in body units (metres / `legS`); HP y 0.2 floats the hips 0.29 m above the oni's standing height. The attacks and hits are the oni's keys, floating, gliding instead of stepping.
 - Extra keyed channels: `jw` (jaw), `bs` (body scale), `sn` (body spin), `ts` (tail stream: 1 trails it back in Float, negative swings it forward when knocked back).
-- **Extras baked every frame**: the tail curve runs from under the trousers (following the hips) down to a point above the ground, swirling in a spiral and streaming with `ts`; each segment is placed, turned, spun about its own axis and stretched between two points. Head flames sway and flicker; the jaw; `ebody` position, rotation and scale (it shrinks about a point 0.3 m above the ground under the hips and spins). Phases use whole cycles per clip, so loops close; loops are pre-rolled and their last frame is the first.
+- **Extras baked every frame**: the tail curve runs from under the trousers (following the hips) down to a point above the ground, swirling in a spiral and streaming with `ts`; each segment is placed, turned, spun about its own axis and stretched between two points. The jaw; `ebody` position, rotation and scale (it shrinks about a point 0.3 m above the ground under the hips and spins). Phases use whole cycles per clip, so loops close; loops are pre-rolled and their last frame is the first.
 - **Death** (60 fps): the hand blade's world matrix is taken from a bare efreet posed like the clip (`poseM`); at 0.72 s `ef_wpn_R` is hidden and `ef_drop` takes over, falling under gravity and turning to lie flat, a flat side down, 0.45 m out from the body (the oni's `restOf`).
 
 ## Checks done
 
-- `node tools/check-character.mjs efreet` for all three weapons × three heads × seeds 1–3: every clip passes (largest per-frame joint turn 20°, largest arm twist 86°, nothing below the ground; the Death pile is empty, he burns out).
+- `node tools/check-character.mjs efreet` for both weapon options × three heads × seeds 1–3: every clip passes (largest per-frame joint turn 20°, largest arm twist 86°, nothing below the ground; the Death pile is empty, he burns out).
 - Blade against the body boxes, every clip at 20 fps: at most 12 mm (the pommel against the end of the bracer when the wrist bends); never the head or torso.
 - Viewer: contact sheets of the stances, attacks, spells, taunt, Death and Appear from the front, sides and quarter; a lineup of skins, fires, heads and weapons; Day, Dusk and Night (fire, eyes and gems glow).

@@ -142,7 +142,7 @@ _Imps and other fiends_
 | `fiend` | Fiend | character | weaponR = **Random** / Long sword / Double axe / Flail<br>weaponL = **Random** / Long sword / Double axe / Flail<br>horns = **Random** / Bull / Ram / Swept back<br>skin = **Random** / Crimson / Dark red / Charcoal / Violet | ✓ |
 | `hellhound` | Hellhound | character | fur = **Random** / Blue-black / Charcoal / Dark brown / Ash grey<br>glow = **Random** / Ember red / Fire orange / Hellfire green / Blue flame<br>mane = **Random** / Shaggy / Short<br>scars = **Random** / Yes / No<br>gear = **None** / Spiked collar | ✓ |
 | `cerberus` | Cerberus | character | fur = **Random** / Blue-black / Charcoal / Dark brown / Ash grey<br>glow = **Random** / Ember red / Fire orange / Hellfire green / Blue flame<br>mane = **Random** / Shaggy / Short<br>scars = **Random** / Yes / No<br>gear = **None** / Spiked collars | ✓ |
-| `efreet` | Efreet | character | skin = **Random** / Crimson red / Ember orange / Bronze / Charcoal<br>fire = **Random** / Orange / Crimson / Blue / Green<br>head = **Random** / Flaming topknot / Jewelled turban / Horns<br>weapon = **Scimitar** / Flaming scimitar / None | ✓ |
+| `efreet` | Efreet | character | skin = **Random** / Crimson red / Ember orange / Bronze / Charcoal<br>fire = **Random** / Orange / Crimson / Blue / Green<br>head = **Random** / Topknot / Jewelled turban / Horns<br>weapon = **Flame scimitar** / None | ✓ |
 
 ## Buildings  `buildings`
 
