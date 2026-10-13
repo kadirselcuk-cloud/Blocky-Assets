@@ -53,6 +53,7 @@
     "src/characters/hellhound.js",
     "src/characters/cerberus.js",
     "src/characters/efreet.js",
+    "src/characters/devil_lord.js",
     "src/buildings/fences.js",
     "src/scenes/scenes.js",
     "src/scenes/scenes2.js",
