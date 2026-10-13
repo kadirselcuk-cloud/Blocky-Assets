@@ -33,6 +33,7 @@ Read this file first in every session, then open only the doc you need:
 | The vampire beast form (mini boss, phase 2): 2.2 m bald grey creature with bat-wing arms; always flying, talon kicks, wraps the enemy in his wings to drink, appears out of the phase 1 smoke | `docs/VAMPIRE_BEAST.md` |
 | The imp (Hell): small winged fiend, always flying, fast and dodgy; barrel rolls, backflip, claws, scorpion tail sting | `docs/IMP.md` |
 | The Hell Mound (Hell, after the D&D lemure): fat legless mound of tormented flesh that slides like a snail, one long and one short arm; claws, slam, smother, melts into a puddle and reforms | `docs/HELL_MOUND.md` |
+| The succubus (Hell): seductive winged demoness, 1.8 m, bat wings and heart-tipped tail; walks and flies, charm spells (gestures, effects added separately), draining kiss | `docs/SUCCUBUS.md` |
 
 ## Run it
 

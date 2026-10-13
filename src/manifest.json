@@ -47,6 +47,7 @@
     "src/characters/necromancer.js",
     "src/characters/imp.js",
     "src/characters/hell_mound.js",
+    "src/characters/succubus.js",
     "src/buildings/fences.js",
     "src/scenes/scenes.js",
     "src/scenes/scenes2.js",
