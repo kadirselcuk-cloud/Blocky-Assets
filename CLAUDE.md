@@ -38,6 +38,7 @@ Read this file first in every session, then open only the doc you need:
 | The fiend (Hell): 3 m strong horned devil, no wings, long goat legs bending back at the hock to cloven hooves, bull, ram or swept-back horns; a long sword, double axe or flail in each hand (simulated flail chain), bull-paw taunt | `docs/FIEND.md` |
 | Cerberus (Hell): the three-headed guardian hound, the hellhound's build at 1.35x (2.2 m at the hump) with a wider front and three big heads on splayed necks; side bites, triple bite, triple fire breath | `docs/CERBERUS.md` |
 | The hellhound (Hell): hunched hound after the owner's reference, massive chest and shoulder hump, huge head and jaws, fire glowing through throat, chest, belly and mouth; warg clips plus fire breath | `docs/HELLHOUND.md` |
+| The efreet (Hell): 3.4 m fire genie floating on a whirling tail of fire instead of legs, open vest and sash, flaming topknot, turban or horns; scimitar (steel or flaming) or none; fire bolt, eruption and fire breath gestures, burns out in Death, whirls up in Appear | `docs/EFREET.md` |
 
 ## Run it
 
