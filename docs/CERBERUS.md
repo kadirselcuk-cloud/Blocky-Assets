@@ -39,12 +39,12 @@ Rig: 34 joints. The warg's 24, where `neck`, `head`, `jaw`, `ear_L/R` are the ce
 | Claw swipe | The right foreleg rakes across |
 | Fire breath | All three heads breathe in raised, then thrust low with the jaws wide; the centre sweeps left to right, the side heads sweep their own flanks. The fire is left to a separate effect |
 | Hit | The centre head snaps back, the side heads flinch outwards |
-| Death | Rears back, the legs buckle and it slumps onto its belly with the forelegs stretched forward; the centre head drops to the ground, the side heads lay their chins on the forelegs, jaws slack (3 s, holds) |
+| Death | Rears back, the legs buckle and it slumps onto its belly with the forelegs stretched forward; the centre head drops to the ground, the side heads lay their chins on the forelegs, the tail arcs back to rest its tip on the ground, jaws slack (3 s, holds) |
 
 Growl, the bites, Pounce, Claw swipe, Fire breath and Hit go on to Idle (war mode).
 
 ## Checks done
 
-- `tools/check-character.mjs` for both manes, with and without collars, seeds 1–3: every clip passes except the Death pile height (1.76–1.93 m: the hump of the beast lying on its belly).
+- `tools/check-character.mjs` for both manes, with and without collars, seeds 1–3: every clip passes except the Death pile height (1.70–1.85 m: the hump of the beast lying on its belly).
 - A head-overlap check (each head's boxes against the other heads, the other necks and the forelegs, every frame): the heads stay clear of each other in every clip.
 - Viewer in Day and Night.

@@ -158,8 +158,8 @@ function cerberusClips(m){
       {neck:[10*k,0,0],head:[6*k,14*k,-6*k],jaw:[-8*k,0,0]},{neck:[10*k,0,0],head:[6*k,-14*k,6*k],jaw:[-8*k,0,0]},true),dz/K);});
   /* death: rears back from the blow, the legs buckle and it slumps onto its belly, leaning onto the right; the three heads drop to the ground fanned out, jaws slack */
   add('Death',3,false,u=>{const hit=wgSeg(u,0,.1)*(1-wgSeg(u,.15,.35)),drop=wgSeg(u,.16,.5),slump=wgSeg(u,.4,.72),settle=wgSeg(u,.68,.85),bob=Math.sin(wgSeg(u,.6,.75)*Math.PI)*.03*K;
-    const p=wgAdd(wgMix(WAR,LIE,drop),{leg_FL:[0,0,10*drop],leg_FR:[0,0,-10*drop],body:[0,0,3*slump],chest:[-6*hit,0,0],tail:[-30*slump,0,0],tail2:[20*slump,0,0],_pos:[0,bob,-.12*hit*K]});
-    const hd=(s,ph)=>{const fl=wgSeg(u,.42+ph,.74+ph);return{neck:[-22*hit+(s?76:38)*fl,0,-s*10*fl],head:[-14*hit+10*drop-(s?65:22)*fl,0,0],jaw:[16*hit+24*wgSeg(u,.7+ph,.86+ph),0,0],ear_L:[25*settle,0,0],ear_R:[25*settle,0,0]};};
+    const p=wgAdd(wgMix(WAR,LIE,drop),{leg_FL:[0,0,10*drop],leg_FR:[0,0,-10*drop],body:[0,0,3*slump],chest:[-6*hit,0,0],tail:[65*slump,0,0],tail2:[-74*slump,0,0],_pos:[0,bob,-.12*hit*K]});
+    const hd=(s,ph)=>{const fl=wgSeg(u,.42+ph,.74+ph);return{neck:[-22*hit+(s?76:56)*fl,0,-s*10*fl],head:[-14*hit+10*drop-(s?65:22)*fl,0,0],jaw:[16*hit+24*wgSeg(u,.7+ph,.86+ph),0,0],ear_L:[25*settle,0,0],ear_R:[25*settle,0,0]};};
     const base={neck:[WAR.neck[0]*(1-drop)+LIE.neck[0]*drop,0,0],head:[WAR.head[0]*(1-drop)+LIE.head[0]*drop,0,0]};
     return cbTri(wgAdd(Object.assign(p,base),hd(0,0)),wgAdd(base,hd(1,.04)),wgAdd(base,hd(-1,-.02)),false);});
   for(const n of['Growl','Bite','Bite left','Bite right','Triple bite','Pounce','Claw swipe','Fire breath','Hit'])C1.find(c=>c.name===n).next='Idle (war mode)';
