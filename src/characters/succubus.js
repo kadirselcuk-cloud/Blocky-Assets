@@ -37,9 +37,11 @@ function buildSuccubus(seed,o={}){const B=VB.succ,r=mulberry32(((seed*2654435761
   for(const s of[-1,1])bx(hips,.006,.11,.004,leaL,s*.1,-.04,.106);
   /* bare midriff with a gold waist chain */
   col(bx(spine,.2,.2,.15,skin,0,.06,0));bx(spine,.012,.016,.006,skinD,0,.04,.076);bx(spine,.205,.012,.155,gold,0,.0,0,0,0,-.05);
-  /* chest: the leather bodice with a sweetheart top, gold lacing up the front (bars only), bare shoulders above */
-  col(bx(chest,.25,.15,.17,lea,0,.035,0));bx(chest,.012,.12,.006,dark,0,.045,.087);for(let i=0;i<4;i++)bx(chest,.04,.008,.006,gold,0,-.02+i*.035,.09);bx(chest,.25,.016,.172,gold,0,-.035,0);
-  for(const s of[-1,1]){bx(chest,.11,.08,.064,lea,s*.056,.128,.07);bx(chest,.1,.026,.05,leaL,s*.058,.168,.07,0,0,-s*.25);bx(chest,.008,.13,.004,leaL,s*.09,.05,.087);}
+  /* chest: a full bust held in a small leather bustier (low cups with a gold rim), gold lacing up the front (bars only), bare
+     shoulders and upper chest above */
+  col(bx(chest,.235,.12,.16,skin,0,.13,-.005));col(bx(chest,.25,.13,.17,lea,0,.025,0));bx(chest,.012,.1,.006,dark,0,.03,.087);for(let i=0;i<3;i++)bx(chest,.04,.008,.006,gold,0,-.02+i*.035,.09);bx(chest,.25,.016,.172,gold,0,-.035,0);
+  for(const s of[-1,1]){col(bx(chest,.112,.1,.09,skin,s*.059,.128,.075));bx(chest,.1,.03,.03,skin,s*.058,.158,.06);
+    col(bx(chest,.12,.07,.096,lea,s*.06,.1,.078));bx(chest,.122,.014,.098,gold,s*.06,.136,.078,0,0,-s*.12);bx(chest,.008,.1,.004,leaL,s*.09,.035,.087);}
   col(bx(chest,.24,.08,.15,skin,0,.18,-.01));bx(chest,.2,.04,.04,skin,0,.172,.07);for(const s of[-1,1]){col(bx(chest,.08,.06,.13,skin,s*.105,.19,-.005));bx(chest,.07,.006,.008,skinD,s*.05,.205,.06,0,0,s*.15);}
   /* neck: a black choker with a glowing gem */
   col(bx(neck,.07,.12,.075,skin,0,.03,0));bx(neck,.08,.024,.084,dark,0,.03,0);bx(neck,.022,.022,.012,gemM,0,.03,.045,0,0,Math.PI/4);bx(neck,.012,.02,.012,gold,0,.008,.044);
@@ -85,15 +87,21 @@ function buildSuccubus(seed,o={}){const B=VB.succ,r=mulberry32(((seed*2654435761
     bx(sn,.1,.07,.11,boot,0,-.01,.003);bx(sn,.094,.37,.1,boot,0,-.2,0);bx(sn,.008,.3,.004,bootD,0,-.2,.051);
     bx(ft,.085,.06,.09,boot,0,-.02,-.015);bx(ft,.075,.03,.11,boot,0,-.035,.05);bx(ft,.07,.016,.075,bootD,0,-.057,.075);bx(ft,.04,.02,.03,boot,0,-.05,.11);
     bx(ft,.032,.034,.028,bootD,0,-.048,-.05);bx(ft,.08,.012,.07,bootD,0,-.03,-.03);}
-  /* wings on the shoulder blades: an inner arm bone and membrane, then the folding outer half with three finger bones and a stepped
-     membrane with a scalloped edge (local x outwards, the membrane hanging down from the leading edge; the clips pitch it back) */
+  /* wings on the shoulder blades: an inner arm bone and membrane, then the folding outer half with three finger bones, a long lower
+     finger hanging from the tip (the lower part) ending in a talon, a hooked thumb claw and spines along the leading edge; the
+     membrane grows longer towards the tip and ends in a ragged edge of sharp points (local x outwards, the membrane hanging down
+     from the leading edge; the clips pitch it back) */
+  const spike=(par,x,y,w,len,m,rz=0)=>{const g=new THREE.Group();g.position.set(x,y,0);g.rotation.z=rz;g.scale.set(1,len/w,1);par.add(g);bx(g,w*.7071,w*.7071,.01,m,0,0,0,0,0,Math.PI/4);return g;};
   for(const[sd,s]of[['L',1],['R',-1]]){const w=new THREE.Group();w.name='swing_'+sd;w.position.set(s*.1,.13,-.1);chest.add(w);
-    const a=.4,b=.55;col(bx(w,.06,.06,.06,wingB,0,0,0));bx(w,a,.034,.034,wingB,s*a/2,0,0);
-    [[.3,.07],[.36,.2],[.42,.33]].forEach(([h,x])=>{bx(w,.135,h,.01,memb,s*x,-h/2,0);bx(w,.06,.03,.008,membD,s*(x+.03),-h-.01,0);});
-    const wo=new THREE.Group();wo.name='swingO_'+sd;wo.position.set(s*a,0,0);w.add(wo);bx(wo,.05,.05,.05,wingB,0,0,0);
-    bx(wo,b,.03,.03,wingB,s*b/2,0,0);bx(wo,.03,.05,.04,claw,s*(b+.015),.02,0,0,0,s*.6);
-    [[.48,-.5],[.44,-1.0],[.4,-1.45]].forEach(([L,an])=>bx(wo,L,.02,.02,wingB,s*Math.cos(an)*L/2,Math.sin(an)*L/2,.008,0,0,s*an));
-    [[.42,.045],[.38,.135],[.34,.225],[.28,.315],[.21,.405],[.12,.495]].forEach(([h,x],i)=>{bx(wo,.092,h,.01,memb,s*x,-h/2,0);if(i<5)bx(wo,.05,.03,.008,membD,s*(x+.03),-h+.005,0);});}
+    const a=.4,b=.55;col(bx(w,.065,.065,.065,wingB,0,0,0));bx(w,a,.038,.038,wingB,s*a/2,0,0);spike(w,s*.06,.05,.03,.08,claw,-s*.3);
+    [[.4,.07],[.46,.2],[.52,.33]].forEach(([h,x])=>{bx(w,.135,h,.01,memb,s*x,-h/2,0);spike(w,s*(x+.02),-h-.06,.07,.16,memb);});
+    const wo=new THREE.Group();wo.name='swingO_'+sd;wo.position.set(s*a,0,0);w.add(wo);bx(wo,.055,.055,.055,wingB,0,0,0);
+    ncHorn(wo,[[0,.02,0],[s*.01,.09,.01],[-s*.015,.15,.03]],.032,.012,claw,claw);
+    bx(wo,b,.034,.034,wingB,s*b/2,0,0);spike(wo,s*(b+.04),.03,.045,.12,claw,-s*1.0);for(const x of[.18,.36])spike(wo,s*x,.04,.024,.06,claw,-s*.4);
+    /* finger bones from the wrist to the points of the trailing edge, and the lower part: a long finger hanging from the tip */
+    const bone=(x0,y0,x1,y1,t)=>{const L=Math.hypot(x1-x0,y1-y0),an=Math.atan2(y1-y0,x1-x0);bx(wo,L,t,t,wingB,s*(x0+x1)/2,(y0+y1)/2,.008,0,0,s*an);};
+    bone(0,0,.135,-.6,.022);bone(0,0,.315,-.72,.022);bone(.02,0,.05,-.54,.022);bone(b,0,.495,-.84,.026);spike(wo,s*.494,-.93,.04,.2,claw);
+    [[.54,.045],[.6,.135],[.66,.225],[.72,.315],[.78,.405],[.84,.495]].forEach(([h,x],i)=>{bx(wo,.092,h,.01,memb,s*x,-h/2,0);if(i<5)spike(wo,s*(x+.01),-h-.07,.07,.18,i%2?membD:memb);});}
   /* tail: ten thin segments from the base of the spine, each curls about x and sways about y; a heart-shaped spade at the tip */
   {let p=hips;for(let i=0;i<SU_TAIL;i++){const g=new THREE.Group();g.name='stail_'+i;g.position.set(0,i?0:-.05,i?-SU_TL:-.1);p.add(g);const t=.03-i*.0016;
     bx(g,t,t,SU_TL+.01,i%2?skinD:skin,0,0,-SU_TL/2);p=g;}

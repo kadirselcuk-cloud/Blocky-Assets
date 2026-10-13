@@ -23,10 +23,10 @@ She walks with a swaying catwalk, takes off and flies on big bat wings, and figh
 
 - **Head**: the necromancer's face with glowing eyes in smoky make-up, winged liner, lashes, arched brows, full lips; the lower face is the jaw `g_jaw`. Small gold earrings. A swept fringe and a side parting.
 - **Hair**: back curtain `hair_B_*` (0.62 m, narrow so it hangs between the wings) and two locks `hair_L_*`/`hair_R_*` over the front of the shoulders, laid every frame by the wight's `wtHairTracks` (pushed out of the head, torso, arms and the wing roots).
-- Choker with a glowing gem. **Bodice**: leather with a sweetheart top, gold lacing (bars only, no crossing laces) and a gold lower edge; bare shoulders. **Bare midriff** with a gold waist chain. **Low leather briefs** with a gold chain belt, a small gem at the front and a short chain hanging on the left.
+- Choker with a glowing gem. **Bustier**: a full bust in a small leather bustier with low cups and a gold rim, gold lacing (bars only, no crossing laces) and a gold lower edge; bare shoulders and upper chest. **Bare midriff** with a gold waist chain. **Low leather briefs** with a gold chain belt, a small gem at the front and a short chain hanging on the left.
 - Arms: bare upper arms with a gold armlet, long fingerless leather gloves from above the elbow with gold cuffs, slender fingers with long dark nails, a gold ring with the eye-coloured gem on the left.
 - Legs: bare thighs, thigh-high heeled boots with a gold clasp (the necromancer's boots).
-- **Wings** `swing_L/R` on the shoulder blades: an inner arm bone (0.4 m) with three membrane panels, then the folding outer half `swingO_L/R` (0.55 m) with three finger bones, six stepped membrane panels with a scalloped edge and a claw at the tip. Span about 2.2 m.
+- **Wings** `swing_L/R` on the shoulder blades, demonic: an inner arm bone (0.4 m) with a spine at the root and three membrane panels, then the folding outer half `swingO_L/R` (0.55 m) with a hooked thumb claw, spines along the leading edge, a hooked claw at the tip, three finger bones and the **lower part**: a long finger hanging from the tip (0.84 m) ending in a talon. The membrane grows longer towards the tip and ends in a ragged edge of sharp points. Span about 2.2 m; it reaches about 1 m below the leading edge.
 - **Tail**: ten segments `stail_0..9` (1.1 m) from the base of the spine, tapering, ending in a heart-shaped spade.
 
 ## Clips (20)
