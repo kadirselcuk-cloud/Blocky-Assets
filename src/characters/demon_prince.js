@@ -23,7 +23,17 @@ const DP_SKIN={charred:['#1e1a1a','charred black'],ash:['#363032','ash grey'],em
 const DP_FIRE={orange:['#ffe07a','#ff7a1a','#c4380e','#ff6a12','orange'],crimson:['#ffb08a','#e8301c','#8a1410','#ff3a1a','crimson'],green:['#e0ff9a','#3ccf3a','#1a7a2a','#50ff50','green']};
 const DP_HORN={great:'great horns sweeping out and forward like a bull\'s',ram:'curling ram horns',swept:'long horns swept back'};
 const DP_WPN={sword:'a burning curved sword',axe:'a fiery axe',flail:'a burning flail'};
-const DP_BEND=110*Math.PI/180,DP_WS=1.6*DP_F*1.15,DP_TAIL=14,DP_TL=.12*DP_F;
+const DP_BEND=110*Math.PI/180,DP_WS=1.6*DP_F*1.15,DP_TAIL=18,DP_TL=.14*DP_F;
+/* the balrog wing (after the film: huge bat wings held raised and half open, long fanned fingers, a torn membrane of shadow whose
+   edges dissolve into smoke): four fingers from the wrist [angle° from straight out, length] in wing units, and the membrane between
+   them in fan slices (3 per sector), each with its scalloped, ragged edge radius Re */
+const DP_FING=[[20,.95],[-12,1.0],[-42,.9],[-72,.75]];
+function dpWingSlices(){const out=[],S=[[20,.95,-12,1.0],[-12,1.0,-42,.9],[-42,.9,-72,.75],[-72,.75,-108,.5]];
+  S.forEach(([a1,R1,a2,R2],si)=>{for(let k=0;k<3;k++){const u=(k+.5)/3;out.push({si,k,th:(a1+(a2-a1)*u)*Math.PI/180,dth:Math.abs(a2-a1)/3*Math.PI/180,Re:(R1+(R2-R1)*u)*(1-.26*Math.sin(Math.PI*u))*(.9+.1*Math.sin(si*7.3+k*3.1))});}});return out;}
+const DP_WSL=dpWingSlices(),DP_WA=.45;
+/* smoke always drifting off the wings' edges (dark, a few embers), on the outer wing dwingO_{L,R}; base points in wing units / DP_F */
+const DP_WSMOKE=(()=>{const r=mulberry32(909),L=[];for(const[sd,s]of[['L',1],['R',-1]])DP_WSL.forEach(sl=>{for(let k=0;k<2;k++){const rr=sl.Re*(.9+.1*r()),th=sl.th+(r()-.5)*sl.dth,ty=k?(r()<.3?0:1):2;
+    L.push({par:'dwingO_'+sd,p:[s*rr*Math.cos(th)/DP_F,rr*Math.sin(th)/DP_F,0],ty,P:[1.4,1.8,2.2][ty]*(.85+.3*r()),ph:r(),sz:[.07,.11,.14][ty]*(.8+.4*r()),rise:[.6,.9,1.2][ty]*(.8+.4*r()),dx:(r()-.5)*.5,dz:(r()-.5)*.5-.15,smoke:true,wing:true});}});return L;})();
 /* rope specs: the whip's lash (14 segments, about 4.5 m) and the flail's chain (5 links and the ball's stem). L segment lengths, th
    thickness, w inverse mass per point (0 = the anchor), ymin lowest centre height per point, rad collision radius per point, kh pull
    of the first segment along the handle, kb bending stiffness */
@@ -38,7 +48,7 @@ function dpFx(seed,list){const r=mulberry32(seed),L=[];for(const[par,n,c,s,k]of 
     L.push({par,p:[c[0]+(r()-.5)*s[0],c[1]+(r()-.5)*s[1],c[2]+(r()-.5)*s[2]],ty,P:[.6,.8,1.0][ty]*(.85+.3*r()),ph:r(),sz:[.075,.052,.034][ty]*(.8+.4*r())*kk,rise:[.22,.42,.66][ty]*(.8+.4*r())*kk,dx:(r()-.5)*.2,dz:(r()-.5)*.2});}
   return L;}
 const DP_MANE=dpFx(4242,[['head',24,[0,.31,-.06],[.24,.05,.24],1.7],['neck',10,[0,.08,-.12],[.2,.12,.04],1.5],['chest',20,[0,.33,-.04],[.5,.05,.24],1.5],['chest',14,[0,.18,-.19],[.4,.24,.03],1.3],
-  ['spine',8,[0,.12,-.15],[.2,.2,.03],1.1],['upperArm_L',6,[.04,.1,0],[.14,.03,.18],1.1],['upperArm_R',6,[-.04,.1,0],[.14,.03,.18],1.1],['dptail_13',10,[0,0,-.06],[.06,.06,.12],1.0]]);
+  ['spine',8,[0,.12,-.15],[.2,.2,.03],1.1],['upperArm_L',6,[.04,.1,0],[.14,.03,.18],1.1],['upperArm_R',6,[-.04,.1,0],[.14,.03,.18],1.1]]);
 /* black smoke for Death: big dark cubes rising slowly from the body, growing as they go (sm scales them) */
 const DP_SMOKE=dpFx(777,[['chest',14,[0,.18,0],[.5,.3,.3]],['spine',8,[0,.1,0],[.36,.3,.24]],['hips',5,[0,-.04,0],[.4,.2,.28]],['head',5,[0,.2,0],[.24,.2,.24]],
   ['upperArm_L',3,[0,-.15,0],[.15,.3,.15]],['upperArm_R',3,[0,-.15,0],[.15,.3,.15]],['thigh_L',3,[0,-.25,0],[.18,.4,.18]],['thigh_R',3,[0,-.25,0],[.18,.4,.18]]]).map(P=>Object.assign(P,{P:P.P*2.8,sz:P.sz*2.2,rise:P.rise*3.2,dx:P.dx*3,dz:P.dz*3,smoke:true}));
@@ -98,7 +108,7 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
   /* boxes and horns in devil-lord units, scaled to metres */
   const X=(par,w,h,d,m,x,y,z,rx,ry,rz)=>bx(par,w*F,h*F,d*F,m,x*F,y*F,z*F,rx,ry,rz),H=(par,P,a,b,m,mD)=>ncHorn(par,P.map(p=>p.map(v=>v*F)),a*F,b*F,m,mD);
   const vb=new THREE.Group();vb.name='vbody';root.add(vb);
-  const hips=J('hips',vb,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
+  const hips=J('hips',vb,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,.1*F,.2*F),head=J('head',neck,0,.02*F,.1*F);
   /* glowing lava cracks: thin glowing bars laid on a surface, in a zigzag */
   const crack=(par,x,y,z,len,rz,ry=0)=>{X(par,.008,len*.55,.006,crackM,x,y+len*.22,z,0,ry,rz);X(par,.008,len*.5,.006,crackM,x+.006,y-len*.22,z,0,ry,rz-.5);};
   /* hips: rocky plates, a dark crotch plate */
@@ -114,7 +124,7 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
   X(chest,.014,.16,.012,skinD,0,.17,.201);crack(chest,.13,.18,.201,.14,.7);crack(chest,.18,.12,.201,.08,-.4);crack(chest,-.08,.2,.201,.1,-.9);crack(chest,-.16,.15,.201,.12,.3);crack(chest,.03,.04,.171,.1,.2);
   crack(chest,.2,.1,-.201,.12,.5);crack(chest,-.18,.2,-.211,.1,-.4);
   /* neck: thick, a rock plate at the back */
-  X(neck,.26,.2,.26,skin,0,.04,-.01);X(neck,.05,.16,.02,skinD,0,.03,.121);X(neck,.2,.14,.04,skinD,0,.06,-.14);
+  X(neck,.3,.24,.36,skin,0,0,-.08);X(neck,.24,.12,.22,skinL,0,.1,-.12);X(neck,.05,.16,.02,skinD,0,.03,.121);X(neck,.2,.14,.04,skinD,0,.06,-.14);
   /* head: bestial: a skull with a crown plate, a heavy brow slanting down to the middle over deep glowing eyes, a short muzzle with a
      sloping bridge and nostrils, upper fangs, cheek spikes swept back, fire in the mouth; the jaw (g_jaw) opens */
   X(head,.28,.24,.28,skin,0,.2,-.03);X(head,.24,.08,.2,skinD,0,.33,-.05);X(head,.22,.1,.14,skin,0,.08,-.08);
@@ -163,29 +173,32 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
   /* a stronger upper body: the chest, waist, neck, hips and arms made broader and deeper */
   {const bulk=(j,sx,sy,sz)=>{for(const m of j.children)if(m.isMesh){m.position.x*=sx;m.position.y*=sy;m.position.z*=sz;m.scale.x*=sx;m.scale.y*=sy;m.scale.z*=sz;}};
     bulk(chest,1.24,1.08,1.22);for(const sd of['L','R']){const ft=root.getObjectByName('foot_'+sd);bulk(root.getObjectByName('thigh_'+sd),1.12,1,1.12);bulk(root.getObjectByName('shin_'+sd),1.18,1,1.15);bulk(ft,1.45,1,1.15);for(const g of ft.children)if(!g.isMesh)bulk(g,1.5,1,1.4);}bulk(spine,1.16,1,1.16);bulk(neck,1.18,1,1.18);bulk(hips,1.3,1,1.2);for(const sd of['L','R']){bulk(root.getObjectByName('upperArm_'+sd),1.32,1,1.32);bulk(root.getObjectByName('foreArm_'+sd),1.3,1,1.3);}}
-  /* wings on the shoulder blades, huge and tattered, dark membrane with ember edges (the devil lord's wing) */
+  /* wings on the shoulder blades, the film's balrog wing: a thick arm bone (dwing_*) to the wrist, then four long fanned fingers
+     (dwingO_*) with glowing undersides and claws at the tips, a dark torn membrane in fan slices with scalloped edges and holes, a
+     hooked thumb claw; smoke drifts off the edges (DP_WSMOKE) */
   const spike=(par,x,y,w,len,m,rz=0)=>{const g=new THREE.Group();g.position.set(x,y,0);g.rotation.z=rz;g.scale.set(1,len/w,1);par.add(g);bx(g,w*.7071,w*.7071,.01,m,0,0,0,0,0,Math.PI/4);return g;};
-  const strip=(par,x,w,h,m,hole)=>{bx(par,w,.008,.012,crackM,x,-h+.004,0);if(!hole){bx(par,w,h,.008,m,x,-h/2,0);return;}const[h0,h1]=hole;bx(par,w,h0,.008,m,x,-h0/2,0);bx(par,w,h-h1,.008,m,x,-(h1+h)/2,0);};
   for(const[sd,s]of[['L',1],['R',-1]]){const w0=new THREE.Group();w0.name='dwing_'+sd;w0.position.set(s*.17*F,.21*F,-.23*F);chest.add(w0);const w=new THREE.Group();w.scale.setScalar(DP_WS);w0.add(w);
-    const a=.4,b=.55;bx(w,.07,.07,.07,wingB,0,0,0);bx(w,a,.042,.042,wingB,s*a/2,0,0);spike(w,s*.06,.05,.03,.08,claw,-s*.3);
-    [[.38,.07,null],[.46,.2,[.2,.26]],[.5,.33,null]].forEach(([h,x,ho])=>{strip(w,s*x,.135,h,memb,ho);spike(w,s*(x+.02),-h-.05,.06,.12,membD);});
-    const wo=new THREE.Group();wo.name='dwingO_'+sd;wo.position.set(s*a,0,0);w.add(wo);bx(wo,.06,.06,.06,wingB,0,0,0);
-    ncHorn(wo,[[0,.02,0],[s*.01,.09,.01],[-s*.015,.15,.03]],.034,.012,claw,claw);
-    bx(wo,b,.036,.036,wingB,s*b/2,0,0);spike(wo,s*(b+.04),.03,.045,.12,claw,-s*1.0);for(const x of[.18,.36])spike(wo,s*x,.04,.024,.06,claw,-s*.4);
-    const bone=(x0,y0,x1,y1,t)=>{const L=Math.hypot(x1-x0,y1-y0),an=Math.atan2(y1-y0,x1-x0);bx(wo,L,t,t,wingB,s*(x0+x1)/2,(y0+y1)/2,.008,0,0,s*an);};
-    bone(0,0,.135,-.6,.024);bone(0,0,.315,-.72,.024);bone(.02,0,.05,-.54,.024);bone(b,0,.495,-.84,.028);spike(wo,s*.494,-.93,.04,.2,claw);
-    [[.5,.045,null],[.6,.135,[.3,.37]],[.62,.225,null],[.7,.315,[.44,.5]],[.74,.405,null],[.82,.495,null]].forEach(([h,x,ho],i)=>{strip(wo,s*x,.092,h,memb,ho);if(i<5)spike(wo,s*(x+.01),-h-.06,.06,.15+.05*(i%2),membD);});}
-  /* tail: fourteen segments from the base of the spine, tapering, spines along the top, cracks, fire at the tip */
-  {let p=hips;for(let i=0;i<DP_TAIL;i++){const g=new THREE.Group();g.name='dptail_'+i;g.position.set(0,i?0:-.06*F,i?-DP_TL:-.14*F);p.add(g);const t=(.1-i*.0055)*F;
-    bx(g,t,t,DP_TL+.012*F,i%3===1?skinD:skin,0,0,-DP_TL/2);if(i<DP_TAIL-1)bx(g,.018*F,t*.55,.035*F,claw,0,t/2+t*.2,-DP_TL/2,-.5,0,0);if(i%4===2)bx(g,.008*F,.006*F,DP_TL*.6,crackM,t*.3,-t/2-.002,-DP_TL/2);p=g;}
-    const z=-DP_TL;bx(p,.035*F,.035*F,.13*F,claw,0,0,z-.05*F);bx(p,.03*F,.03*F,.05*F,hot,0,0,z*.5);}
+    const a=DP_WA;bx(w,.09,.09,.09,wingB,0,0,0);bx(w,a,.06,.06,wingB,s*a/2,0,0);bx(w,a*.9,.01,.01,crackM,s*a/2,-.031,0);spike(w,s*.08,.06,.035,.1,claw,-s*.3);
+    [[.44,.1],[.5,.22],[.52,.34]].forEach(([h,x],i)=>{bx(w,.125,h,.008,i===1?membD:memb,s*x,-h/2,0);if(i!==1)bx(w,.05,.06,.008,memb,s*(x+.04),-h-.03,0);});
+    const wo=new THREE.Group();wo.name='dwingO_'+sd;wo.position.set(s*a,0,0);w.add(wo);bx(wo,.08,.08,.08,wingB,0,0,0);
+    ncHorn(wo,[[0,.03,0],[s*.01,.11,.01],[-s*.02,.18,.03]],.04,.014,claw,claw);
+    for(const[an,L]of DP_FING){const t=an*Math.PI/180,c=Math.cos(t),sn=Math.sin(t);
+      bx(wo,L*.5,.034,.034,wingB,s*c*L*.25,sn*L*.25,.006,0,0,s*t);bx(wo,L*.5,.024,.024,wingB,s*c*L*.75,sn*L*.75,.006,0,0,s*t);
+      for(const z of[-.018,.018])bx(wo,L*.85,.008,.004,crackM,s*c*L*.45,sn*L*.45,z,0,0,s*t);spike(wo,s*c*(L+.04),sn*(L+.04),.035,.12,claw,s*(t-Math.PI/2));}
+    DP_WSL.forEach(sl=>{const n=4;for(let j=0;j<n;j++){if((sl.si===1&&sl.k===1&&j===2)||(sl.si===2&&sl.k===0&&j===1)||(sl.si===0&&sl.k===2&&j===3))continue;
+      const r0=.03+(sl.Re-.03)*j/n,r1=.03+(sl.Re-.03)*(j+1)/n,rm=(r0+r1)/2;bx(wo,rm*sl.dth*1.12+.012,(r1-r0)*1.06,.008,j===n-1?membD:memb,s*rm*Math.cos(sl.th),rm*Math.sin(sl.th),0,0,0,s*(sl.th-Math.PI/2));}});}
+  /* tail: eighteen segments from the base of the spine, about 4.9 m, very thick at the root and tapering to a thin end; spines along
+     the top, cracks, a claw spike at the end */
+  {let p=hips;for(let i=0;i<DP_TAIL;i++){const g=new THREE.Group();g.name='dptail_'+i;g.position.set(0,i?0:-.06*F,i?-DP_TL:-.17*F);p.add(g);const u=i/(DP_TAIL-1),t=(.2*Math.pow(1-u,1.3)+.025)*F;
+    bx(g,t,t,DP_TL+.014*F,i%3===1?skinD:skin,0,0,-DP_TL/2);if(i<DP_TAIL-1)bx(g,Math.max(.012,t*.18),t*.5,.04*F,claw,0,t/2+t*.18,-DP_TL/2,-.5,0,0);if(i%3===2)bx(g,.008*F,.006*F,DP_TL*.6,crackM,t*.3,-t/2-.002,-DP_TL/2);p=g;}
+    const z=-DP_TL;bx(p,.03*F,.03*F,.12*F,claw,0,0,z-.05*F);}
   const joints=[];root.traverse(q=>{if(q.userData.joint&&!q.userData.socket)joints.push(q);});root.userData.joints=joints;
   /* the whip in the left hand, the weapon in the right */
   const mk=(sd,g)=>{const wg=new THREE.Group();wg.name='weapon_'+sd;wg.userData.gear=true;root.getObjectByName('socket_'+sd).add(wg);const pr=new THREE.Group();pr.name='dp_prop_'+sd;pr.quaternion.copy(SH_BASIS());wg.add(pr);pr.add(g);return pr;};
   mk('L',dpWhip(M));const wp=mk('R',dpWeapon(wpnK,M));if(wpnK==='flail')dpChain(wp.children[0],M);
   /* the fire cubes (named dpf_ on the body, dpq_ on the weapon, dpz_ on the whip) */
   const cubes=(L,pre,mats=FM)=>L.forEach((P,k)=>{const par=root.getObjectByName(P.par),g=new THREE.Group();g.name=pre+k;g.userData.gear=true;g.position.set(P.p[0]*F,P.p[1]*F,P.p[2]*F);g.scale.setScalar(P.sz*F*.5);par.add(g);bx(g,1,1,1,mats[P.ty]);});
-  cubes(DP_MANE,'dpf_');cubes(DP_WFX[wpnK],'dpq_');cubes(DP_WFX.whip,'dpz_');cubes(DP_SMOKE,'dps_',[bm('#121010','plain'),bm('#201c1c','plain'),bm('#2e2828','plain')]);
+  cubes(DP_MANE,'dpf_');cubes(DP_WFX[wpnK],'dpq_');cubes(DP_WFX.whip,'dpz_');cubes(DP_SMOKE,'dps_',[bm('#121010','plain'),bm('#201c1c','plain'),bm('#2e2828','plain')]);cubes(DP_WSMOKE,'dpk_',[deep,bm('#1a1616','plain'),bm('#0e0c0c','plain')]);
   if(o.bare)return root;
   if(!o.noClips){root.userData.clips=demonPrinceClips(wpnK,hornK);const mx=new THREE.AnimationMixer(root);mx.clipAction(root.userData.clips[0]).play();mx.update(0);}
   root.userData.ground=7;
@@ -203,8 +216,8 @@ const DP_CLIPS={};
    weapon low; wings half closed. War (DP_W): wider, left foot forward, the whip handle forward, the weapon raised. */
 const DP_N={fl:[0],HP:[0,-.02,0],h:[0,0,0],sp:[1,0,0],ch:[-2,0,0],nk:[2,0,0],hd:[2,0,0],FL:[.12,.03,6,0,0],FR:[-.12,-.01,-8,0,0],
   gL:[.4,.94,.16],dL:[.15,-.55,.82],pL:[.6,-.3,-.7],gR:[-.38,.92,.1],dR:[0,-.45,.9],pR:[-.6,-.3,-.7],wl:[0,0,0],wr:[0,0,0],fist:[95,95],jw:[0],vb:[1,0],fi:[1],
-  wg:[40,55,10,50,-30],ba:[0],tc:[-40,4,4,4,4,6,6,6,8,8,10,14,18,22],tw:[.4],tsw:[0]};
-const DP_HUNCH={sp:3,ch:7,nk:10,hd:-10};
+  wg:[28,18,10,20,-5],ba:[0],tc:[-40,4,4,4,4,6,6,6,8,8,10,14,18,22],tw:[.4],tsw:[0]};
+const DP_HUNCH={sp:4,ch:12,nk:16,hd:-24};
 function dpRig(wpn,horns){const B=VB.dprince,m=buildDemonPrince(1,{bare:true,weapon:wpn,horns}),J={};m.traverse(q=>{if(q.userData.joint||q.name)J[q.name]=q;});
   const tail=[];for(let i=0;i<DP_TAIL;i++)tail.push(J['dptail_'+i]);return{m,J,B,two:false,lprop:true,noHeel:true,tail};}
 
@@ -255,7 +268,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
   const caps=()=>{const P=n=>R.J[n].getWorldPosition(new V()),c=[],add=(a,b,r,arm)=>c.push({a,b,r,arm});const nk=P('neck');add(P('hips'),nk,.27*F);add(nk,R.J.head.localToWorld(new V(0,.22*F,.04*F)),.2*F);
     for(const sd of['L','R']){add(P('thigh_'+sd),P('shin_'+sd),.17*F);add(P('shin_'+sd),P('foot_'+sd),.13*F);add(P('foot_'+sd),R.J['foot_'+sd].localToWorld(new V(0,-.7,.1)),.08*F);
       add(P('upperArm_'+sd),P('foreArm_'+sd),.13*F,1);add(P('foreArm_'+sd),P('hand_'+sd),.12*F,1);}
-    for(let i=0;i<DP_TAIL-1;i+=2)add(P('dptail_'+i),P('dptail_'+(i+2<DP_TAIL?i+2:DP_TAIL-1)),.07*F);return c;};
+    for(let i=0;i<DP_TAIL-1;i+=2)add(P('dptail_'+i),P('dptail_'+(i+2<DP_TAIL?i+2:DP_TAIL-1)),(.11*Math.pow(1-i/DP_TAIL,1.3)+.015)*F);return c;};
   const t1=new V(),t2=new V(),t3=new V();
   const ropeInit=(rp)=>{const{A,hd}=anchorOf(rp),f=new V(hd.x,0,hd.z);if(f.lengthSq()<1e-4)f.set(0,0,1);f.normalize();const X=[A.clone()];let c=0;
     for(let i=0;i<rp.N;i++){c+=rp.L[i];const p=A.clone().addScaledVector(f,c);p.y=Math.max(rp.ymin[i+1],A.y-c*.2);X.push(p);}return{X,Xp:X.map(v=>v.clone()),A,hd};};
@@ -279,7 +292,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
       c=c.clone().addScaledVector(d,Ls);out.push(c);dp=d.clone();}return out;};
   /* ---- one pose ---- */
   const hq=new Q();let MEM=null,RS=null,SIM=null;
-  const FXPAR=[...new Set([...DP_MANE,...DP_SMOKE,...DP_WFX[wpn]].map(P=>P.par).filter(n=>!/^dpc_/.test(n)))];
+  const FXPAR=[...new Set([...DP_MANE,...DP_SMOKE,...DP_WSMOKE,...DP_WFX[wpn]].map(P=>P.par).filter(n=>!/^dpc_/.test(n)))];
   const solveIK=(p0,t,o)=>{let p=yawF(lift(p0));wrSolve(R,p);p=poles(p);let s=wrSolve(R,p);wrist(s,p,'L');wrist(s,p,'R');
     /* a prop that would go below the ground lifts its hand */
     for(let it=0;it<4;it++){let moved=false;for(const sd of['L','R']){const dy=.012-propLow(sd);if(dy>3e-4){const g=p['g'+sd];p['g'+sd]=[g[0],g[1]+dy/k,g[2]];moved=true;}}
@@ -297,7 +310,8 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
       wing[sd]=[g.quaternion.clone(),go.quaternion.clone()];}
     /* tail: curl and a travelling wave; a segment that would go into the ground curls away from it */
     const ph=D*t/(o.tp||2.6),tq=[];
-    for(let i=0;i<DP_TAIL;i++){const g=R.tail[i];let ax=p.tc[i]+p.tw[0]*4*S(ph-.5*i);const ay=p.tsw[0]/DP_TAIL+p.tw[0]*5*S(ph-.5*i+1.3);
+    const tcAt=i=>{const u=i*(p.tc.length-1)/(DP_TAIL-1),i0=Math.floor(u),i1=Math.min(p.tc.length-1,i0+1),f=u-i0;return(p.tc[i0]*(1-f)+p.tc[i1]*f)*p.tc.length/DP_TAIL;};
+    for(let i=0;i<DP_TAIL;i++){const g=R.tail[i];let ax=tcAt(i)+p.tw[0]*4*S(ph-.5*i);const ay=p.tsw[0]/DP_TAIL+p.tw[0]*5*S(ph-.5*i+1.3);
       const set=a=>g.quaternion.setFromEuler(new E3(a*R2,ay*R2,0,'YXZ'));set(ax);
       if(lowOwn(g)<.012){let ok=null;for(let dd=3;dd<=180&&ok===null;dd+=3)for(const sg of[1,-1]){set(ax+sg*dd);if(lowOwn(g)>=.012){ok=ax+sg*dd;break;}}ax=ok===null?ax:ok;set(ax);}
       tq.push(g.quaternion.clone());}
@@ -310,7 +324,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
   const ss=x=>x*x*(3-2*x);
   /* ---- the fall (Death): keyed joint angles (the fiend's way) on the rig, the feet anchored while they stand, the body dropped onto
      its lowest point every frame; a held weapon that would go into the ground turns up about the grip ---- */
-  const BODY=[];R.m.traverse(q=>{if(!q.isMesh)return;let z=q;while(z){if(z.userData.gear||/^(dwing_|dptail_|dpf_|dps_|dpq_|dpz_)/.test(z.name))return;z=z.parent;}BODY.push(q);});
+  const BODY=[];R.m.traverse(q=>{if(!q.isMesh)return;let z=q;while(z){if(z.userData.gear||/^(dwing_|dptail_|dpf_|dps_|dpq_|dpz_|dpk_)/.test(z.name))return;z=z.parent;}BODY.push(q);});
   const lowB=()=>{let y=1e9;for(const q of BODY){const P=q.geometry.parameters;for(let i=0;i<8;i++){vv.set((i&1?.5:-.5)*P.width,(i&2?.5:-.5)*P.height,(i&4?.5:-.5)*P.depth).applyMatrix4(q.matrixWorld);if(vv.y<y)y=vv.y;}}return y;};
   const fkPose=p=>{const P={};for(const c in p)if(JALIAS[c])P[JALIAS[c]]=p[c];const f=p.fist;P.fingers_L=[0,0,-f[0]];P.fingerTips_L=[0,0,-f[0]*.95];P.thumb_L=[f[0]*.15,0,-f[0]*.35];P.fingers_R=[0,0,f[1]];P.fingerTips_R=[0,0,f[1]*.95];P.thumb_R=[f[1]*.15,0,f[1]*.35];
     for(const j of RIG_JOINTS){const b=BASEPOSE[j]||[0,0,0],v=P[j]||[0,0,0];R.J[j].rotation.set((b[0]+v[0])*R2,(b[1]+v[1])*R2,(b[2]+v[2])*R2);}};
@@ -338,9 +352,9 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
       wq[sd]=wg.quaternion.clone();wp[sd]=wg.position.clone();}
     const s={};for(const c in p)if(JALIAS[c]||c==='fist')s[c]=p[c];s.pos=[X[0]/k,y/k,X[1]/k];finish(p,t,o,s);MEM.wq=wq;MEM.wp=wp;return s;};
   /* ---- tracks every clip carries: wings, tail, jaw, body group, the ropes and the fire cubes ---- */
-    const cubeTrack=(Lst,pre,frames,T,dur,Tr,Vt)=>{const q=new M4(),inv=new M4();Lst.forEach((P,kk)=>{const PP=[],SC=[],key=P.smoke?'sm':'fi';
-      if(!frames.some(fr=>fr[key]>0)){Vt.push(new THREE.VectorKeyframeTrack(pre+kk+'.position',[0,dur],[P.p[0]*F,P.p[1]*F,P.p[2]*F,P.p[0]*F,P.p[1]*F,P.p[2]*F]),new THREE.VectorKeyframeTrack(pre+kk+'.scale',[0,dur],[.0005,.0005,.0005,.0005,.0005,.0005]));return;}
-      frames.forEach((fr,i)=>{const Mw=fr.W[P.par],fi=Math.max(0,fr[key]),t=T[i],n=Math.max(1,Math.round(dur/P.P)),tau=((t/dur*n+P.ph)%1+1)%1,
+    const cubeTrack=(Lst,pre,frames,T,dur,Tr,Vt)=>{const q=new M4(),inv=new M4();Lst.forEach((P,kk)=>{const PP=[],SC=[],key=P.wing?'fi':P.smoke?'sm':'fi';
+      if(!P.wing&&!frames.some(fr=>fr[key]>0)){Vt.push(new THREE.VectorKeyframeTrack(pre+kk+'.position',[0,dur],[P.p[0]*F,P.p[1]*F,P.p[2]*F,P.p[0]*F,P.p[1]*F,P.p[2]*F]),new THREE.VectorKeyframeTrack(pre+kk+'.scale',[0,dur],[.0005,.0005,.0005,.0005,.0005,.0005]));return;}
+      frames.forEach((fr,i)=>{const Mw=fr.W[P.par],fi=P.wing?Math.min(1,Math.max(.3,fr.fi)):Math.max(0,fr[key]),t=T[i],n=Math.max(1,Math.round(dur/P.P)),tau=((t/dur*n+P.ph)%1+1)%1,
           env=P.smoke?Math.pow(Math.sin(Math.PI*tau),.7)*(.45+.55*tau):(tau<.15?tau/.15:(1-tau)/.85),sz=Math.max(.0005,P.sz*F*fi*env);
         const w=new V(P.p[0]*F,P.p[1]*F,P.p[2]*F).applyMatrix4(Mw);w.x+=P.dx*F*tau;w.z+=P.dz*F*tau;w.y+=P.rise*F*(P.smoke?1:Math.pow(Math.max(fi,.001),.7))*Math.pow(tau,.8);w.y=Math.max(w.y,sz*.9+.003);
         inv.copy(Mw).invert();w.applyMatrix4(inv);const sc=new V().setFromMatrixScale(Mw).x||1;PP.push(w.x,w.y,w.z);const z=sz/sc;SC.push(z,z,z);});
@@ -366,7 +380,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
         for(let i=0;i<rp.N;i++){const yw=new V(0,1,0).applyQuaternion(Qp),d=pts[i+1].clone().sub(pts[i]).normalize(),qw=new Q().setFromUnitVectors(yw,d).multiply(Qp),lq=Qp.clone().invert().multiply(qw);
           add(`${rp.pre}${i}.quaternion`,lq.toArray());if(i)Mc=Mc.clone().multiply(new M4().makeTranslation(0,rp.L[i-1],0));Mc=Mc.clone().multiply(new M4().makeRotationFromQuaternion(lq));frames[f].W[rp.pre+i]=Mc;Qp=qw;}});}
     for(const n in Tr)c.tracks.push(new THREE.QuaternionKeyframeTrack(n,T,Tr[n]));for(const n in Vt)c.tracks.push(new THREE.VectorKeyframeTrack(n,T,Vt[n]));
-    const VT=[];cubeTrack(DP_MANE,'dpf_',frames,T,dur,null,VT);cubeTrack(DP_WFX[wpn],'dpq_',frames,T,dur,null,VT);cubeTrack(DP_WFX.whip,'dpz_',frames,T,dur,null,VT);cubeTrack(DP_SMOKE,'dps_',frames,T,dur,null,VT);
+    const VT=[];cubeTrack(DP_MANE,'dpf_',frames,T,dur,null,VT);cubeTrack(DP_WSMOKE,'dpk_',frames,T,dur,null,VT);cubeTrack(DP_WFX[wpn],'dpq_',frames,T,dur,null,VT);cubeTrack(DP_WFX.whip,'dpz_',frames,T,dur,null,VT);cubeTrack(DP_SMOKE,'dps_',frames,T,dur,null,VT);
     /* the weapon groups: turned up about the grip in Death where they would go into the ground, otherwise still */
     for(const sd of['L','R']){if(Mm.some(m=>m.wq)){const A=[],P=[];Mm.forEach(m=>{A.push(...(m.wq?m.wq[sd].toArray():[0,0,0,1]));P.push(...(m.wp?m.wp[sd].toArray():[0,0,0]));});
         VT.push(new THREE.QuaternionKeyframeTrack('weapon_'+sd+'.quaternion',T,A),new THREE.VectorKeyframeTrack('weapon_'+sd+'.position',T,P));}
@@ -380,7 +394,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
     const Mm=[],c=sampleClip(name,dur,t=>{const s=solve(fn(t),t,o);Mm.push(MEM);return s;},Object.assign({autoFeet:false,fps},o),B);extra(c,fn,Mm,o);SIM=null;RS=null;
     if(o.next!==undefined){if(o.next)c.next=o.next;}else if(!o.loop)c.next='Idle (war mode)';if(o.hold)c.hold=true;if(o.speed)c.speed=o.speed;L.push(c);MIN=.4*F;return c;};
   const W=wrP(DP_N,{HP:[0,-.07,0],h:[4,-14,0],sp:[3,-4,0],ch:[3,-6,0],nk:[0,0,0],hd:[-4,14,0],FL:[.14,.17,-4,0,0],FR:[-.14,-.15,-30,0,0],
-    gL:[.44,1.08,.3],dL:[.2,-.25,.95],gR:wpn==='flail'?[-.42,1.02,.4]:[-.38,1.12,.34],dR:wpn==='flail'?[-.1,-.15,.98]:[-.2,.55,.8],wg:[36,48,8,40,-18],tc:[-34,4,6,6,6,6,6,6,6,6,8,10,12,14],tw:[1],fi:[1.15]});
+    gL:[.44,1.08,.3],dL:[.2,-.25,.95],gR:wpn==='flail'?[-.42,1.02,.4]:[-.38,1.12,.34],dR:wpn==='flail'?[-.1,-.15,.98]:[-.2,.55,.8],wg:[24,12,8,10,0],tc:[-34,4,6,6,6,6,6,6,6,6,8,10,12,14],tw:[1],fi:[1.15]});
   const KC=(name,dur,keys,note,o={})=>{const f=wrKeys(keys.map(q=>[q[0],wrP(o.base||W,q[1]||{})]));return CC(name,dur,o.add?t=>o.add(t,f(t)):f,Object.assign({note,fps:60},o));};
   /* in-place IK gait: planted feet slide back at one steady speed, swinging feet come forward lifted; the ground under the ropes slides
      back at the same speed, so the lash trails behind */
@@ -394,7 +408,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
 
   /* ---- on the ground ---- */
   CC('Idle',5,t=>{const p=D*t/5,b=S(p),b2=S(2*p);return wrP(DP_N,{HP:[0,-.02-.005*b2,0],ch:[-2+1*b2,0,0],hd:[2+1.5*S(2*p+1),12*S(p+.6),1.5*S(p)],
-    gL:[.4,.94+.006*b2,.16],gR:[-.38,.92+.01*b2,.1],wg:[40+3*S(p),55,10,50+4*S(2*p),-30],tsw:[24*S(p)],fi:[1+.08*S(2*p)]});},
+    gL:[.4,.94+.006*b2,.16],gR:[-.38,.92+.01*b2,.1],wg:[28+3*S(p),18,10,20+4*S(2*p),-5],tsw:[24*S(p)],fi:[1+.08*S(2*p)]});},
     {loop:true,tp:2.5,note:'Stands hunched and heavy, the whip lying out on the ground before him, the weapon low; breathes and looks slowly round, the fire of his mane flickering, wings half closed, the tail swaying'});
   GAIT('Walk',1.5,{duty:.62,s:.24,lift:.07,toe:12,x:.1,yaw:[4,-4],b:.012,sw:.02,
     body:u=>{const yw=C(D*u),a=C(D*(u-.06));return wrP(DP_N,{HP:[0,-.03,0],h:[3,-5*yw,0],sp:[1,2*yw,0],ch:[-1,4*yw,0],hd:[2,-3*yw,0],
@@ -402,7 +416,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
 
   /* ---- war mode ---- */
   CC('Idle (war mode)',2.6,t=>{const p=D*t/2.6,b=S(p);return wrP(W,{HP:[0,-.07-.008*b,0],ch:[3+1.2*S(2*p),-6,0],hd:[-4+1.5*S(2*p+1),14+5*S(p),0],
-    gL:[.44,1.08+.015*S(p+1.2),.3],gR:[W.gR[0],W.gR[1]+.02*S(p+.4),W.gR[2]],wg:[36+4*S(p),48,8,40,-18],tsw:[-20*S(p)],fi:[1.15+.1*S(2*p)]});},
+    gL:[.44,1.08+.015*S(p+1.2),.3],gR:[W.gR[0],W.gR[1]+.02*S(p+.4),W.gR[2]],wg:[24+4*S(p),12,8,10,0],tsw:[-20*S(p)],fi:[1.15+.1*S(2*p)]});},
     {loop:true,tp:2.6,note:'Wider stance, left foot forward, the whip held out before him, the weapon raised, wings half open, the fire burning higher'});
   GAIT('Walk (war mode)',1.4,{duty:.64,s:.21,lift:.065,toe:12,x:.13,yaw:[-2,-28],b:.01,sw:.016,st:.07,
     body:u=>wrP(W,{h:[6,-14-3*C(D*u),0],gL:[.44,1.08,.3-.03*C(D*u)],dL:[.35,-.3,.89],gR:[W.gR[0],W.gR[1],W.gR[2]+.03*C(D*u)],tsw:[24*C(D*u)]})},'Advances, whip and weapon held ready');
@@ -410,11 +424,11 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
   /* ---- the whip ---- */
   /* Whip crack: raises the whip high over his left shoulder, the lash streaming back, then snaps it forward and down; the lash flies
      over and cracks out before him */
-  KC('Whip crack',2.0,[[0,{}],
-    [.55,{HP:[0,-.04,-.04],h:[-2,-10,0],sp:[-4,-4,0],ch:[-8,-8,0],hd:[-8,12,0],FL:[.14,.12,-4,0,0],gL:[.36,1.85,-.02],dL:[0,.85,-.5],jw:[.3],wg:[44,40,8,36,0]}],
-    [.82,{HP:[0,-.1,.08],h:[12,10,0],sp:[8,4,0],ch:[10,8,0],hd:[2,-6,0],FL:[.14,.28,-4,0,0],gL:[.34,1.36,.72],dL:[0,.15,1],jw:[.7],wg:[30,50,10,46,0]}],
-    [1.0,{HP:[0,-.12,.1],h:[14,12,0],sp:[9,5,0],ch:[11,9,0],hd:[4,-8,0],FL:[.14,.28,-4,0,0],gL:[.32,1.08,.7],dL:[-.05,-.55,.83],jw:[.5],wg:[30,50,10,46,0]}],
-    [2.0,{}]],'Raises the whip high over his head, the lash streaming back, then snaps it forward and down: the lash flies over and cracks out before him');
+  KC('Whip crack',2.1,[[0,{}],
+    [.66,{HP:[0,-.04,-.04],h:[-2,-10,0],sp:[-4,-4,0],ch:[-8,-8,0],hd:[-8,12,0],FL:[.14,.12,-4,0,0],gL:[.46,1.76,.02],dL:[.1,.85,-.5],jw:[.3],wg:[44,40,8,36,0]}],
+    [.92,{HP:[0,-.1,.08],h:[12,10,0],sp:[8,4,0],ch:[10,8,0],hd:[2,-6,0],FL:[.14,.28,-4,0,0],gL:[.34,1.36,.72],dL:[0,.15,1],jw:[.7],wg:[30,50,10,46,0]}],
+    [1.1,{HP:[0,-.12,.1],h:[14,12,0],sp:[9,5,0],ch:[11,9,0],hd:[4,-8,0],FL:[.14,.28,-4,0,0],gL:[.32,1.08,.7],dL:[-.05,-.55,.83],jw:[.5],wg:[30,50,10,46,0]}],
+    [2.1,{}]],'Raises the whip high over his head, the lash streaming back, then snaps it forward and down: the lash flies over and cracks out before him');
   /* Whip lash: draws the whip across to his right, then lashes it out to the left in a wide sweep at waist height */
   KC('Whip lash',1.9,[[0,{}],
     [.5,{h:[4,-24,0],sp:[2,-8,0],ch:[2,-12,0],hd:[0,22,0],gL:[.12,1.25,.62],dL:[-.75,.05,.66],jw:[.2]}],
@@ -483,8 +497,8 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
     [.36,{HP:[0,-.24,-.12],h:[8,-12,0],sp:[2,-4,0],ch:[0,-6,0],hd:[-8,8,4],FL:[.14,-.04,-4,.06,30],gL:[.48,1.0,.3],gR:[-.44,1.0,.3],jw:[.4],wg:[34,44,6,40,0]}],
     [.64,{HP:[0,-.33,-.12],h:[18,-12,0],sp:[10,-4,0],ch:[8,-6,0],hd:[6,8,0],FL:[.14,-.38,-4,0,70],FR:[-.14,-.06,-30,0,0],gL:[.44,.92,.46],dL:[.2,-.5,.84],gR:[-.42,.84,.34],dR:[-.3,-.2,.93],jw:[.2],wg:[24,52,10,56,0],fi:[.8]}],
     [1.35,{HP:[0,-.33,-.12],h:[20,-12,0],sp:[11,-4,0],ch:[9,-6,0],hd:[-6,14,0],FL:[.14,-.38,-4,0,70],FR:[-.14,-.06,-30,0,0],gL:[.44,.92,.47],dL:[.2,-.5,.84],gR:[-.42,.84,.35],dR:[-.3,-.2,.93],jw:[.3],wg:[24,52,10,56,0],fi:[.8]}],
-    [1.75,{HP:[0,-.3,-.08],h:[22,-12,0],sp:[10,-4,0],ch:[8,-6,0],hd:[-4,10,0],FL:[.14,-.3,-4,0,42],FR:[-.14,-.08,-30,0,0],gL:[.44,.98,.42],dL:[.2,-.4,.9],gR:[-.42,.92,.32],dR:[-.3,-.1,.95],jw:[.1],wg:[28,50,10,50,0]}],
-    [2.05,{HP:[0,-.1,-.02],h:[8,-14,0],FL:[.14,.0,-4,.05,10]}],
+    [1.75,{HP:[0,-.3,-.08],h:[22,-12,0],sp:[10,-4,0],ch:[8,-6,0],hd:[-4,10,0],FL:[.14,-.3,-4,0,42],FR:[-.14,-.08,-30,0,0],gL:[.42,.94,.48],dL:[.05,-.55,.83],gR:[-.42,.92,.32],dR:[-.3,-.1,.95],jw:[.1],wg:[28,50,10,50,0]}],
+    [2.12,{HP:[0,-.1,-.02],h:[8,-14,0],FL:[.14,.0,-4,.05,10]}],
     [2.5,{}]],'Knocked down onto his left knee, then rises again');
   /* Death: reels, sinks onto his knees and roars, then pitches forward and falls face down; his fire dies to embers and black smoke
      rises from him; then Dead (smouldering) loops, lying still and smoking */
@@ -498,10 +512,10 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
     [1.1,{h:[16,-4,0]},'out'],
     [1.45,{sp:[6,0,0],ch:[-4,0,0],nk:[-10,0,0],hd:[-24,0,0],uL:[-6,0,24],fL:[-12,0,0],uR:[-6,0,-24],fR:[-12,0,0],jw:[.9],fi:[1.3]}],
     [1.8,{h:[50,-2,-4],sp:[16,0,-4],ch:[14,0,0],nk:[-4,0,0],hd:[-6,14,0],tL:[-30,0,6],kL:[70,0,0],tR:[-26,0,-6],kR:[68,0,0],X:[0,.42],uL:[-80,0,20],fL:[-40,0,0],uR:[-80,0,-20],fR:[-40,0,0],jw:[.4],fi:[.8],wg:[30,40,10,30,0]},'in'],
-    [2.1,{h:[90,0,-4],sp:[2,0,-2],ch:[0,0,0],nk:[-14,0,0],hd:[-12,0,0],tL:[-6,4,6],kL:[14,0,0],tR:[-6,-4,-6],kR:[14,0,0],aL:[50,0,0],aR:[50,0,0],X:[0,1.2],
+    [2.1,{h:[90,0,-4],sp:[2,0,-2],ch:[0,0,0],nk:[-50,0,0],hd:[-20,0,0],tL:[-6,4,6],kL:[14,0,0],tR:[-6,-4,-6],kR:[14,0,0],aL:[-6,0,0],aR:[-6,0,0],X:[0,1.2],
       uL:[-20,0,24],fL:[-20,0,0],uR:[-20,0,-24],fR:[-20,0,0],fi:[.5],sm:[.3],wg:[22,-4,0,-8,0],tc:[60,8,6,4,2,0,0,0,0,0,0,0,0,0],tw:[.2]},'in'],
     [2.2,{h:[87,0,-4]},'out'],
-    [3.0,{h:[90,0,-4],nk:[-6,0,0],hd:[-4,60,0],tL:[-4,4,6],kL:[10,0,0],tR:[-4,-4,-6],kR:[8,0,0],uL:[4,0,30],fL:[-12,0,0],uR:[6,0,-30],fR:[-10,0,0],jw:[.2],fi:[.18],sm:[1],tw:[0],wg:[20,-10,0,-18,0],tc:[84,6,4,2,2,0,0,-2,-2,-2,-2,-2,-2,-2],tsw:[30]},'out']]);
+    [3.0,{h:[90,0,-4],nk:[-55,0,0],hd:[-15,55,0],tL:[-4,4,6],kL:[10,0,0],tR:[-4,-4,-6],kR:[8,0,0],uL:[4,0,30],fL:[-12,0,0],uR:[6,0,-30],fR:[-10,0,0],jw:[.2],fi:[.18],sm:[1],tw:[0],wg:[20,-10,0,-18,0],tc:[84,6,4,2,2,0,0,-2,-2,-2,-2,-2,-2,-2],tsw:[30]},'out']]);
   const dc=CC('Death',3.2,dk,{fk:true,fps:60,noBlend:true,rel:{R:1.0,L:1.12},next:'Dead (smouldering)',note:'Reels, sinks onto his knees and roars, then pitches forward and falls face down; his fire dies to embers and black smoke rises from him'});
   if(dc)dc.nextAlways=true;CC('Dead (smouldering)',4,t=>Object.assign({},dk(3.2),{fi:[.18+.04*S(D*t/2)]}),{fk:true,loop:true,keepDrop:true,rel:{R:-10,L:-10},next:null,note:'Lies face down, still smouldering: embers glow in his mane and black smoke rises from him'});}
   return DP_CLIPS[ck]=L;}

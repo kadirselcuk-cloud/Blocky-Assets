@@ -20,14 +20,16 @@ About **4.2 m** to the top of the head (4.7 m to the horn tips), hunched and mas
 `VB.dprince`: the devil lord's torso and arms x `DP_F` 1.9 with broader shoulders and the fiend's goat legs x `DP_LG` 1.4, on the villager's 25 joints in a body group `vbody`, in real metres (meshes are authored in devil-lord units and scaled, no group scale). The warrior's IK (`wrSolve`) fits unchanged and the devil lord's clip keys carry over (they are in units of `legS`). A hunch (`DP_HUNCH`: spine, chest and neck pitched forward, head levelled) is added to every pose.
 
 - **Skin**: rock-black plates (lighter and darker boxes) crossed by glowing lava cracks on the chest, waist, back, arms, legs and face.
+- **Head position**: like the film's balrog, the head sits at the front, not on top: the neck juts forward from below the shoulder hump (neck joint 0.19 m up and 0.38 m forward of the chest top, the head 0.19 m further forward), and the hunch (`DP_HUNCH`: spine 4°, chest 12°, neck 16° forward, head levelled) brings it down to shoulder height in front of the hump.
 - **Head**: skull with a crown plate, a heavy brow slanting down to the middle over deep sockets with glowing eyes (white-hot pupils), a broad low upper jaw with nostrils, a glowing line of fire along the mouth, upper fangs, cheek spikes swept back; the jaw `g_jaw` opens onto fire inside.
 - **Spikes**: on the shoulders (angled out), elbows, forearms, and down the back (pointing back).
 - **Upper body**: chest, waist, neck, hips and arms made broader and deeper (a bulk pass after building: chest x 1.24 wide, 1.22 deep; upper arms x 1.32, forearms x 1.3).
 - **Hands**: big clawed hands.
 - **Legs and hooves** (the owner asked for strong legs and hooves, like a real balrog): the fiend's goat legs x 1.4 in rock skin with lava cracks: a heavy haunch with big quads and hamstrings forward to the knee, a thick-muscled shin back down to a raised hock, a long cannon bone (an ember seam down the front) to the fetlock with dewclaws, and a big cloven hoof standing on its toes (two wedge-shaped horn-brown claws stepping up towards the heel, a glowing cleft). The hips stand lower than the straight leg reaches (2.13 m against 2.64 m), so the knee always bends forward; the IK ankle is the hock and the warrior IK's heel lift is off (`R.noHeel`). `legS` is kept at the devil lord's x 1.9, so his keys carry over; the feet are keyed 1.3x further apart.
-- **Wings** `dwing_L/R` / `dwingO_L/R`: the devil lord's tattered wing x 1.15 (about 8 m span spread), a dark membrane with ember-glow edges.
-- **Tail** `dptail_0..13`: 1.7 m, tapering, spined, a glowing tip.
-- **Fire mane** (`DP_MANE`, cubes `dpf_*`): the efreet's square smoke: 104 cubes in three fire shades on the head, neck, shoulders, upper back, waist and the tail tip, born on the body, swelling, then shrinking and darkening as they rise and drift. `fi` scales them (Idle 1, war 1.15, Roar about 2, Flame burst 2.6, Death down to embers).
+- **Wings** `dwing_L/R` / `dwingO_L/R` (after the film: huge bat wings held raised and half open, a membrane of shadow whose edges dissolve into smoke): a thick arm bone to the wrist with a hooked thumb claw, four long fanned fingers (`DP_FING`: 20°, -12°, -42°, -72° from straight out, 0.75–1.0 wing units, about 2.6–3.5 m) with glowing undersides and claws at the tips, a dark torn membrane in fan slices (`DP_WSL`) with scalloped edges and a few holes. About 10 m span. Held raised and half open (`wg` [28,18,10,20,-5], war [24,12,8,10,0]); laid flat on the ground in Death.
+- **Wing smoke** (`DP_WSMOKE`, cubes `dpk_*`): 48 dark cubes (a few embers) always drifting up off the wings' edges.
+- **Tail** `dptail_0..17`: about 4.9 m, very thick at the root (0.43 m) and tapering to a thin end (0.05 m), spines along the top, cracks, a claw spike at the end, no flame. The 14 tail-curl keys are spread over the 18 segments.
+- **Fire mane** (`DP_MANE`, cubes `dpf_*`): the efreet's square smoke: 94 cubes in three fire shades on the head, neck, shoulders, upper back and waist, born on the body, swelling, then shrinking and darkening as they rise and drift. `fi` scales them (Idle 1, war 1.15, Roar about 2, Flame burst 2.6, Death down to embers).
 - **Black smoke** (`DP_SMOKE`, cubes `dps_*`): 44 big dark cubes rising slowly from the body, growing as they go; `sm` scales them (only in Death and Dead).
 - Effect cubes are flagged `userData.gear` (not body).
 
@@ -77,7 +79,7 @@ One-shot clips are followed by Idle (war mode); Death by Dead (smouldering) (`cl
 
 ## Checks done
 
-- `node tools/check-character.mjs demon-prince` for every weapon (seed 14) and the other horns and skins (seed 2, ram; Death for all three horns): every clip passes jumps, twists and the ground, except **Death: PILE TOO HIGH (1.37–1.69 m)**: a 4.2 m giant with a bulky chest lying face down is that thick, and the great horns stand up from the head turned to the side, like the fiend (1.05 m) and the oni (0.92 m).
+- `node tools/check-character.mjs demon-prince` for every weapon (seed 14) and the other horns and skins (seed 2, ram; Death for all three horns): every clip passes jumps, twists and the ground, except **Death: PILE TOO HIGH (1.44–1.57 m)**: a 4.2 m giant with a bulky chest lying face down is that thick (hips 0.73 m up), plus the horns of the head turned to the side.2 m giant with a bulky chest lying face down is that thick, and the great horns stand up from the head turned to the side, like the fiend (1.05 m) and the oni (0.92 m).
 - Viewer: the head close up, Idle, war Idle, the whip crack from the side, Roar at Night, Death and Dead from two angles.
 
 ## Possible extras (not added)
