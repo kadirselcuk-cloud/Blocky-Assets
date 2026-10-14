@@ -54,7 +54,7 @@
 | scenes/scenes4.js | "Large fortified town" (`vxSceneTown`, `sc-town`), 300 × 300 m, plateau, palisade, river, sea shore |
 | scenes/scenes5.js | "Fortified city" (`vxSceneCity`, `sc-city`), 500 × 500 m: curved road ribbons and bridges, irregular stone and wooden wall rings that follow the ground, a placement planner (oriented footprints, flat pads, regions, road fill), distance-based animation detail |
 | export/export.js | `window.AssetForge` and GLB export (see EXPORT.md) |
-| app/app.js | library UI, viewer, thumbnails, lighting presets, `Orbit` controls (WASD), options panel, animation panel, rig overlay |
+| app/app.js | library UI (asset names only, no rendered previews), search (`search`, `attachSearch`; `/` focuses it), viewer, lighting presets, `Orbit` controls (WASD), the dock (one window whose header arrows switch between Animations, Tool in hand, Options and Details; only the pages that apply are shown), `makeDraggable` (title panel and dock move by their header, positions saved, double-click puts them back), rig overlay |
 
 ## The registry
 Every asset is one object in the global `ASSETS` array; folders live in the global `FOLDERS` map.

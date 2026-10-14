@@ -46,39 +46,55 @@ function buildAsset(a,s){seed(hashStr(a.id));const m=a.build(a.variants?(s??a.de
 const fmt=n=>n.toLocaleString('en-US');
 const dims=s=>`${s.x.toFixed(1)} × ${s.z.toFixed(1)} m, ${s.y.toFixed(1)} m tall`;
 
-/* ---------- thumbnails ---------- */
-let TR=null,thumbJob=0;const THUMBS={};
-function renderThumb(a){
-  if(!TR){TR=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});TR.setPixelRatio(1);TR.setSize(800,600,false);setupRenderer(TR);}
-  const scene=new THREE.Scene(),model=buildAsset(a);scene.add(model);poseStill(model,'Idle',.6);const fr=frameOf(model),env=buildEnv(scene,fr,model.userData.ground??a.groundR);
-  const saved=GLOW.map(m=>m.emissiveIntensity);applyPreset(scene,env,model,'day',TR);
-  const ch=a.kind==='character',it=a.folder.startsWith('items'),scn=a.kind==='scene',cam=new THREE.PerspectiveCamera(32,4/3,.1,800),sph=new THREE.Spherical(Math.max(.6,fr.radius)/Math.sin(THREE.MathUtils.degToRad(16))*(ch?1.02:it?1.12:scn?.42:.6),ch?1.45:it?1.2:scn?.9:1.1,ch?.45:.62);
-  cam.position.setFromSpherical(sph).add(fr.center);cam.lookAt(fr.center.clone().add(new THREE.Vector3(0,fr.size.y*(ch?.03:it?0:-.04),0)));
-  TR.render(scene,cam);const url=TR.domElement.toDataURL('image/jpeg',.86);GLOW.forEach((m,i)=>m.emissiveIntensity=saved[i]);
-  const info={url,size:fr.size.clone(),ch:a.kind==='character',design:a.design,...statsOf(model)};disposeModel(model);return info;}
-function fillThumb(id){const t=THUMBS[id];document.querySelectorAll(`[data-thumb="${id}"]`).forEach(img=>{img.src=t.url;img.closest('.thumb').classList.add('ready');});
-  document.querySelectorAll(`[data-meta="${id}"]`).forEach(el=>el.textContent=t.ch?`${t.size.y.toFixed(1)} m tall, ${fmt(t.tris)} triangles, randomizable`:`${t.design?`Design ${t.design}, `:''}${t.size.x.toFixed(1)} × ${t.size.z.toFixed(1)} m plot, ${t.size.y.toFixed(1)} m tall`);}
-async function renderThumbs(list){const job=++thumbJob;for(const a of list){if(!THUMBS[a.id]){await new Promise(r=>requestAnimationFrame(()=>setTimeout(r,16)));if(job!==thumbJob)return;try{THUMBS[a.id]=renderThumb(a);}catch(e){console.error(e);continue;}}fillThumb(a.id);}}
+/* ---------- search ---------- */
+const norm=s=>String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+function folderPath(path){let acc='';return path.split('/').map(p=>{acc=acc?acc+'/'+p:p;return FOLDERS[acc]?FOLDERS[acc].name:p;}).join(' / ');}
+let SIDX=null;
+function searchIndex(){if(SIDX)return SIDX;
+  const fs=Object.keys(FOLDERS).filter(Boolean).map(p=>({href:'#/f/'+p,label:FOLDERS[p].name,path:p.includes('/')?folderPath(p.split('/').slice(0,-1).join('/')):'Library',tag:'Folder',name:norm(FOLDERS[p].name),id:norm(p),fold:'',desc:norm(FOLDERS[p].blurb||'')}));
+  const as=ASSETS.map(a=>({href:'#/a/'+a.id,label:a.name,path:folderPath(a.folder),tag:'',name:norm(a.name),id:norm(a.id),fold:norm(folderPath(a.folder)),desc:norm(a.desc||'')}));
+  return SIDX=[...fs,...as];}
+/* every word must match somewhere; name matches rank above id, folder and description matches */
+function search(q){const words=norm(q).trim().split(/\s+/).filter(Boolean);if(!words.length)return[];const out=[];
+  for(const e of searchIndex()){let sc=0;for(const w of words){const s=e.name.startsWith(w)?60:(' '+e.name).includes(' '+w)?45:e.name.includes(w)?30:e.id.includes(w)?20:e.fold.includes(w)?12:e.desc.includes(w)?4:0;if(!s){sc=-1;break;}sc+=s;}
+    if(sc>0)out.push([sc+(e.tag?5:0),e]);}
+  return out.sort((x,y)=>y[0]-x[0]||x[1].label.localeCompare(y[1].label)).map(x=>x[1]);}
+function attachSearch(inp,list){let items=[],act=0;
+  const close=()=>{list.hidden=true;inp.setAttribute('aria-expanded','false');};
+  const mark=()=>{list.querySelectorAll('li[data-i]').forEach(li=>li.setAttribute('aria-selected',String(+li.dataset.i===act)));const c=list.querySelector(`li[data-i="${act}"]`);c&&c.scrollIntoView({block:'nearest'});};
+  const render=()=>{const q=inp.value.trim();if(!q){close();return;}items=search(q).slice(0,80);act=0;
+    list.innerHTML=items.length?items.map((e,i)=>`<li role="option" data-i="${i}" aria-selected="${i===0}"><a href="${e.href}"><span class="sr-name">${e.tag?`<span class="sr-tag">${e.tag}</span>`:''}${esc(e.label)}</span><span class="sr-path">${esc(e.path)}</span></a></li>`).join(''):`<li class="sr-none">Nothing matches “${esc(q)}”</li>`;
+    list.hidden=false;inp.setAttribute('aria-expanded','true');};
+  const go=e=>{if(!e)return;inp.value='';close();inp.blur();location.hash=e.href;};
+  inp.addEventListener('input',render);inp.addEventListener('focus',render);inp.addEventListener('blur',close);
+  list.addEventListener('mousedown',e=>e.preventDefault());
+  list.addEventListener('click',e=>{const li=e.target.closest('li[data-i]');if(!li)return;e.preventDefault();go(items[+li.dataset.i]);});
+  inp.addEventListener('keydown',e=>{e.stopPropagation();
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){if(!items.length||list.hidden)return;act=(act+(e.key==='ArrowDown'?1:-1)+items.length)%items.length;mark();e.preventDefault();}
+    else if(e.key==='Enter'){if(!list.hidden)go(items[act]);e.preventDefault();}
+    else if(e.key==='Escape'){if(inp.value){inp.value='';close();}else inp.blur();e.preventDefault();}});}
+attachSearch($('#q'),$('#qres'));attachSearch($('#vq'),$('#vqres'));
+addEventListener('keydown',e=>{if(e.key!=='/'||e.ctrlKey||e.metaKey||e.altKey||(e.target.closest&&e.target.closest('input,textarea,select')))return;const inp=$('#viewer').hidden?$('#q'):$('#vq');if(!inp.offsetParent)return;e.preventDefault();inp.focus();});
 
-/* ---------- library pages ---------- */
+/* ---------- library pages (names only: no rendered previews, so the library opens instantly) ---------- */
 function crumbs(path,extra){const parts=path?path.split('/'):[];let html=`<a href="#/">Library</a>`,acc='';
   for(const p of parts){acc=acc?acc+'/'+p:p;html+=`<span aria-hidden="true">/</span><a href="#/f/${acc}">${esc(FOLDERS[acc].name)}</a>`;}
   if(extra)html+=`<span aria-hidden="true">/</span><span aria-current="page">${esc(extra)}</span>`;return html;}
+const SHELF_NAMES=14;
 function shelf(path){const f=FOLDERS[path],list=assetsIn(path,true),n=list.length;
-  const slots=list.slice(0,4).map(a=>`<span class="thumb"><img data-thumb="${a.id}" alt=""></span>`).join('')+(n?'':`<span class="slot-empty">Empty for now. Ask for one in the chat.</span>`);
-  return `<li><a class="shelf" href="#/f/${path}"><span class="shelf-label"><span class="shelf-name">${esc(f.name)}</span><span class="shelf-blurb">${esc(f.blurb||'')}</span><span class="shelf-count">${n?`${n} asset${n>1?'s':''}`:'No assets yet'}</span></span><span class="shelf-strip">${slots}</span></a></li>`;}
+  const names=n?`<ul class="chips">${list.slice(0,SHELF_NAMES).map(a=>`<li><a class="chip" href="#/a/${a.id}">${esc(a.name)}</a></li>`).join('')}${n>SHELF_NAMES?`<li><a class="chip more" href="#/f/${path}">+${n-SHELF_NAMES} more</a></li>`:''}</ul>`:`<p class="chips-empty">Empty for now. Ask for one in the chat.</p>`;
+  return `<li><div class="shelf"><a class="shelf-label" href="#/f/${path}"><span class="shelf-name">${esc(f.name)}</span><span class="shelf-blurb">${esc(f.blurb||'')}</span><span class="shelf-count">${n?`${n} asset${n>1?'s':''}`:'No assets yet'}</span></a>${names}</div></li>`;}
 function showFolder(path){
   if(!FOLDERS[path])path='';const f=FOLDERS[path];closeViewer();$('#library').hidden=false;
   $('#crumbs').innerHTML=path?crumbs(path.split('/').slice(0,-1).join('/'))+`<span aria-hidden="true">/</span><span aria-current="page">${esc(f.name)}</span>`:'';
   let html='';
-  if(!path)html+=`<section class="intro"><h1>Asset library</h1><p>Each model is built in code and opens in a 3D viewer you can orbit, zoom and relight. Name an asset or a category in the chat and it lands on these shelves.</p></section>`;
+  if(!path)html+=`<section class="intro"><h1>Asset library</h1><p>Each model is built in code and opens in a 3D viewer you can orbit, zoom and relight. Search for anything with the box above, or press / to start typing.</p></section>`;
   else html+=`<section class="intro"><h1>${esc(f.name)}</h1>${f.blurb?`<p>${esc(f.blurb)}</p>`:''}</section>`;
   if(f.children.length)html+=`<ul class="shelves">${f.children.map(shelf).join('')}</ul>`;
   const own=assetsIn(path,false);
-  if(own.length)html+=`<ul class="grid">${own.map(a=>`<li><a class="card" href="#/a/${a.id}"><span class="thumb"><img data-thumb="${a.id}" alt="${esc(a.name)} preview"></span><span class="card-name">${esc(a.name)}</span><span class="card-meta" data-meta="${a.id}">Rendering preview</span></a></li>`).join('')}</ul>`;
+  if(own.length)html+=(f.children.length?`<h2 class="list-head">In ${esc(f.name)}</h2>`:'')+`<ul class="names">${own.map(a=>`<li><a href="#/a/${a.id}" title="${esc(a.desc||'')}"><span class="card-name">${esc(a.name)}</span></a></li>`).join('')}</ul>`;
   if(!f.children.length&&!own.length)html+=`<div class="empty"><p>Nothing here yet.</p><p>Name an asset in the chat, for example “a knight in plate armor” or “a set of healing potions”, and it will appear in this folder.</p></div>`;
-  $('#app').innerHTML=html;window.scrollTo(0,0);
-  renderThumbs(assetsIn(path,true));}
+  $('#app').innerHTML=html;window.scrollTo(0,0);}
 
 /* ---------- orbit controls ---------- */
 class Orbit{
@@ -122,6 +138,9 @@ function ensureViewer(){if(V.renderer)return;const r=new THREE.WebGLRenderer({an
   $('#tRig').addEventListener('click',()=>{V.rigOn=!V.rigOn;if(V.rig)V.rig.group.visible=V.rigOn;syncBar();});
   document.querySelectorAll('[data-speed]').forEach(b=>b.addEventListener('click',()=>{V.speed=+b.dataset.speed;syncBar();}));
   addEventListener('keydown',e=>{if($('#viewer').hidden||e.target.closest('input,textarea'))return;if(e.key==='ArrowRight')step(1);else if(e.key==='ArrowLeft')step(-1);else if(e.key==='Escape')location.hash='#/f/'+V.asset.folder;});
+  $('#dPrev').addEventListener('click',()=>turnPage(-1));$('#dNext').addEventListener('click',()=>turnPage(1));
+  makeDraggable($('#vhead'),$('#vhead'),'head');makeDraggable($('#vdock'),$('#dockHead'),'dock',true);
+  new ResizeObserver(()=>$('#viewer').style.setProperty('--dockh',$('#vdock').offsetHeight+'px')).observe($('#vdock'));
   $('#vprev').addEventListener('click',()=>step(-1));$('#vnext').addEventListener('click',()=>step(1));}
 function resize(){if(!V.renderer)return;const el=$('#stage'),w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;V.renderer.setSize(w,h,false);V.cam.aspect=w/h;V.cam.updateProjectionMatrix();}
 function syncBar(){document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.mode===V.mode)));$('#tTurn').setAttribute('aria-pressed',String(V.ctl.auto));$('#tWire').setAttribute('aria-pressed',String(V.wire));$('#tRig').setAttribute('aria-pressed',String(V.rigOn));document.querySelectorAll('[data-speed]').forEach(b=>b.setAttribute('aria-checked',String(+b.dataset.speed===V.speed)));}
@@ -131,7 +150,7 @@ function showAsset(id,vs){const a=ASSETS.find(x=>x.id===id);if(!a){location.hash
   $('#library').hidden=true;$('#viewer').hidden=false;document.title=a.name+' — Asset Forge';ensureViewer();resize();
   $('#vcrumbs').innerHTML=crumbs(a.folder);$('#vname').textContent=a.name;$('#vdesc').textContent=a.desc;$('#vvar').hidden=true;$('#tVar').hidden=!a.variants;$('#tPair').hidden=!a.pair;if(a.pair)$('#tPair').textContent=a.folder.endsWith('blocky')?'Smooth version':'Blocky version';$('#vspecs').innerHTML='';$('#loading').hidden=false;
   const sib=assetsIn(a.folder,false);$('#vprev').hidden=$('#vnext').hidden=sib.length<2;
-  V.asset=a;thumbJob++;
+  V.asset=a;
   setTimeout(()=>{if(V.asset!==a)return;
     if(V.model){disposeModel(V.model);}
     const scene=new THREE.Scene(),model=buildAsset(a,seedN);scene.add(model);poseStill(model,'Idle',.6);const fr=frameOf(model),env=buildEnv(scene,fr,model.userData.ground??a.groundR);
@@ -141,15 +160,40 @@ function showAsset(id,vs){const a=ASSETS.find(x=>x.id===id);if(!a){location.hash
     const asp=V.cam.aspect||1,rr=asp<1?r*Math.pow(1/asp,.4):r;if(!sameAsset)V.ctl.set(fr.center.clone().setY(it?fr.center.y:scn?0:fr.size.y*(ch?(asp<1?.56:.47):.36)),rr,ch?1.38:scn?.95:1.12,ch?.5:.58);V.ctl.minR=Math.min(V.ctl.minR,it?.3:V.ctl.minR);V.ctl.maxR=Math.max(V.ctl.maxR,rr*1.6);
     const s=statsOf(model);$('#vspecs').innerHTML=`<div><dt>Size</dt><dd>${dims(fr.size)}</dd></div><div><dt>Triangles</dt><dd>${fmt(s.tris)}</dd></div>`+(ch?`<div><dt>Joints</dt><dd>${model.userData.joints.length}</dd></div><div><dt>Clips</dt><dd>${model.userData.clips.length}</dd></div>`:`<div><dt>Meshes</dt><dd>${fmt(s.meshes)}</dd></div>`);
     const st=model.userData.stats;if(scn&&st)$('#vspecs').innerHTML+=`<div><dt>FPS</dt><dd id="vfps">…</dd></div><div><dt>Buildings</dt><dd>${fmt(st.buildings)}${st.houses!=null?` (${st.houses} houses)`:''}</dd></div>${st.production!=null?`<div><dt>Production</dt><dd>${st.production}</dd></div>`:''}${st.military!=null?`<div><dt>Military</dt><dd>${st.military}</dd></div>`:''}${st.farm!=null?`<div><dt>Farm buildings</dt><dd>${st.farm}</dd></div>`:''}<div><dt>Population</dt><dd>${st.adults+st.children} (${st.adults} adults, ${st.children} children)</dd></div><div><dt>Animals</dt><dd>${fmt(st.animals)}</dd></div><div><dt>Wildlife</dt><dd>${fmt(st.wildlife)}</dd></div><div><dt>Trees</dt><dd>${fmt(st.trees)}</dd></div>`;
-    setupAnim(model,keep);setupOpts(model,a);
+    setupAnim(model,keep);setupOpts(model,a);setDock();
     $('#loading').hidden=true;syncBar();
     if(!V.raf){let last=performance.now();const loop=t=>{V.raf=requestAnimationFrame(loop);const dt=Math.min(.05,(t-last)/1000);last=t;V.ctl.update(dt);if(V.env)followShadow(V.env,V.ctl);if(V.model&&V.model.userData.tick)V.model.userData.tick(dt,V.cam);if(V.mixer){V.mixer.update(dt*V.speed);V.model.userData.post&&V.model.userData.post();toolPost();}if(V.rig)updateRig();V.renderer.render(V.scene,V.cam);V.fpsN=(V.fpsN||0)+1;if(!V.fpsT0)V.fpsT0=t;if(t-V.fpsT0>=500){const e=document.getElementById('vfps');if(e)e.textContent=Math.round(V.fpsN*1000/(t-V.fpsT0));V.fpsN=0;V.fpsT0=t;}};V.raf=requestAnimationFrame(loop);}
   },30);}
 function applyWire(on=V.wire){if(!V.model)return;V.model.traverse(o=>{if(o.isMesh)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.wireframe=on);});}
 function closeViewer(){applyWire(false);$('#viewer').hidden=true;document.title='Asset Forge';if(V.raf){cancelAnimationFrame(V.raf);V.raf=0;}}
 
+/* ---------- dock (Animations, Options, Details in one window) and draggable panels ---------- */
+const PAGES={anims:'Animations',tools:'Tool in hand',opts:'Options',specs:'Details'};
+function setDock(){const list=[V.hasAnims&&'anims',V.usesTools&&'tools',V.hasOpts&&'opts','specs'].filter(Boolean),pick=store.get('page','');V.pages=list;
+  showPage(list.includes(pick)?pick:list[0]);
+  $('#dPrev').disabled=$('#dNext').disabled=list.length<2;
+  $('#dDots').innerHTML=list.length<2?'':list.map(p=>`<button data-page="${p}" aria-label="${PAGES[p]}" title="${PAGES[p]}"></button>`).join('');
+  $('#dDots').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{store.set('page',b.dataset.page);showPage(b.dataset.page);}));syncDots();}
+function showPage(p){V.page=p;document.querySelectorAll('.dock-page').forEach(s=>s.hidden=s.dataset.page!==p);$('#dTitle').textContent=PAGES[p];syncDots();}
+function syncDots(){$('#dDots').querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',String(b.dataset.page===V.page)));}
+function turnPage(d){const L=V.pages||[];if(L.length<2)return;const p=L[(L.indexOf(V.page)+d+L.length)%L.length];store.set('page',p);showPage(p);}
+const MOBILE=matchMedia('(max-width:720px)');
+function makeDraggable(panel,handle,key,fit){
+  const place=(x,y)=>{const vw=innerWidth,vh=innerHeight,w=panel.offsetWidth;x=Math.min(Math.max(x,60-w),vw-60);y=Math.min(Math.max(y,0),vh-(fit?180:40));
+    Object.assign(panel.style,{left:x+'px',top:y+'px',right:'auto',bottom:'auto'});if(fit)panel.style.maxHeight=(vh-y-16)+'px';panel.classList.add('moved');};
+  const apply=()=>{let p=null;try{p=JSON.parse(store.get('pos:'+key,'null'));}catch(e){}
+    if(p&&!MOBILE.matches)place(p.x,p.y);else{Object.assign(panel.style,{left:'',top:'',right:'',bottom:'',maxHeight:''});panel.classList.remove('moved');}};
+  handle.addEventListener('pointerdown',e=>{if(MOBILE.matches||e.button!==0||e.target.closest('button,a,input,select,textarea,.sr'))return;
+    const r=panel.getBoundingClientRect(),ox=e.clientX-r.left,oy=e.clientY-r.top;handle.setPointerCapture(e.pointerId);panel.classList.add('dragging');e.preventDefault();
+    const mv=ev=>place(ev.clientX-ox,ev.clientY-oy);
+    const up=()=>{handle.removeEventListener('pointermove',mv);handle.removeEventListener('pointerup',up);handle.removeEventListener('pointercancel',up);panel.classList.remove('dragging');
+      if(panel.classList.contains('moved'))store.set('pos:'+key,JSON.stringify({x:parseFloat(panel.style.left),y:parseFloat(panel.style.top)}));};
+    handle.addEventListener('pointermove',mv);handle.addEventListener('pointerup',up);handle.addEventListener('pointercancel',up);});
+  handle.addEventListener('dblclick',e=>{if(e.target.closest('button,a,input,.sr'))return;store.set('pos:'+key,'null');apply();});
+  MOBILE.addEventListener('change',apply);addEventListener('resize',()=>{if(panel.classList.contains('moved'))place(parseFloat(panel.style.left),parseFloat(panel.style.top));});apply();}
+
 /* ---------- animation panel & rig overlay ---------- */
-function setupOpts(model,a){const aw=!!model.userData.awning,ok=aw||!!(a.opts&&a.opts.length);$('#vopts').hidden=!ok;$('#viewer').classList.toggle('has-opts',ok);if(!ok)return;
+function setupOpts(model,a){const aw=!!model.userData.awning,ok=aw||!!(a.opts&&a.opts.length);V.hasOpts=ok;if(!ok){$('#optbody').innerHTML='';return;}
   const vals=optVals(a);let h='';
   if(aw)h+=`<div class="opt-row"><h3>Awning colour</h3><div class="sw" id="swatches">${AWNING_COLORS.map(([c,n])=>`<button data-c="${c}" title="${n}" aria-label="${n}" style="background:repeating-linear-gradient(90deg,${c} 0 8px,#e8e4dc 8px 16px)"></button>`).join('')}</div></div>`;
   for(const p of a.opts||[])h+=`<div class="opt-row"><h3>${esc(p.label)}</h3><div class="opt-seg" role="group" aria-label="${esc(p.label)}">${p.choices.map(([v,l])=>`<button data-k="${p.key}" data-v="${esc(v)}" aria-pressed="${String(v)===String(vals[p.key])}">${esc(l)}</button>`).join('')}</div></div>`;
@@ -158,17 +202,18 @@ function setupOpts(model,a){const aw=!!model.userData.awning,ok=aw||!!(a.opts&&a
     $('#swatches').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>apply(b.dataset.c)));apply(store.get('awn:'+a.id,model.userData.awnColor));}
   $('#optbody').querySelectorAll('[data-k]').forEach(b=>b.addEventListener('click',()=>{const p=a.opts.find(q=>q.key===b.dataset.k);store.set('opt:'+a.id+':'+b.dataset.k,b.dataset.v);
     if(p&&p.live&&model.userData.setOpt){const c=p.choices.find(c=>String(c[0])===b.dataset.v);model.userData.setOpt(p.key,c?c[0]:b.dataset.v);b.parentNode.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));return;}
-    delete THUMBS[a.id];showAsset(a.id,V.seed);}));
-  requestAnimationFrame(()=>$('#viewer').style.setProperty('--opth',$('#vopts').offsetHeight+'px'));}
-function setupAnim(model,first='Idle'){const clips=model.userData.clips,panel=$('#vanims');V.mixer=null;V.cur=null;if(V.piece){V.piece.parent&&V.piece.parent.remove(V.piece);V.piece=null;}V.toolObj=null;
+    showAsset(a.id,V.seed);}));}
+function setupAnim(model,first='Idle'){const clips=model.userData.clips;V.mixer=null;V.cur=null;if(V.piece){V.piece.parent&&V.piece.parent.remove(V.piece);V.piece=null;}V.toolObj=null;
   if(V.rig){V.scene.remove(V.rig.group);V.rig=null;}
-  $('#tRig').hidden=!clips;panel.hidden=!clips;$('#viewer').classList.toggle('has-anims',!!clips);if(!clips)return;
+  $('#tRig').hidden=!clips;V.hasAnims=!!clips;V.usesTools=false;if(!clips)return;
   V.mixer=new THREE.AnimationMixer(model);V.mixer.addEventListener('finished',e=>{if(e.action===V.cur&&!e.action.getClip().hold&&(!/^(Death|Fall)/.test(e.action.getClip().name)||e.action.getClip().nextAlways))playClip(e.action.getClip().next||'Idle');});
   $('#animList').innerHTML=clips.map(c=>`<li><button data-clip="${esc(c.name)}" aria-pressed="false"><span class="an-name">${esc(c.name)}</span><span class="an-meta">${c.duration.toFixed(c.duration<1?2:1)} s, ${c.loopMode?'loop':'once'}</span></button></li>`).join('');
   $('#animList').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>playClip(b.dataset.clip)));
   $('#toolRow').innerHTML=['',...Object.keys(TOOLS)].map(n=>`<button data-tool="${n}" aria-pressed="false">${n||'No tool'}</button>`).join('');
   $('#toolRow').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{equipTool(b.dataset.tool);const c=V.cur&&V.cur.getClip();if(c&&c.tool&&!toolFits(c))playClip('Idle');else if(c&&c.tool)placePiece(c);}));
-  buildRig(model);$('#toolRow').hidden=!!model.userData.animal;if(!model.userData.animal){const t=model.userData.occTool||(model.userData.traits&&model.userData.traits.job?'':V.tool);V.tool='';equipTool(t);}else{V.toolObj=null;}playClip(first,0);}
+  /* the Tool in hand page only shows for characters that can hold villager tools (clips that use them, or a job tool) */
+  const usesTools=!model.userData.animal&&(clips.some(c=>c.tool)||!!model.userData.occTool);
+  V.usesTools=usesTools;buildRig(model);if(usesTools){const t=model.userData.occTool||(model.userData.traits&&model.userData.traits.job?'':V.tool);V.tool='';equipTool(t);}else{V.tool='';V.toolObj=null;}playClip(first,0);}
 function toolFits(c){const T=TOOLS[V.tool];return T&&(c.tool==='two')===T.two;}
 function equipTool(name){if(V.toolObj){V.toolObj.parent&&V.toolObj.parent.remove(V.toolObj);V.toolObj=null;}V.tool=name||'';
   if(name&&TOOLS[name]&&V.model){const o=TOOLS[name].build(),k=V.model.userData.traits;o.scale.setScalar(k&&k.child?.72:k&&k.kind==='female'?.92:1);V.model.getObjectByName('socket_R').add(o);V.toolObj=o;applyWire();}
