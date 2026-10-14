@@ -13,8 +13,12 @@
    are baked as position and scale tracks (whole cycles per clip, so loops close); fi scales the fire (Roar and Flame burst flare it,
    Death puts it out). */
 const DP_F=1.9;
-VB.dprince=Object.assign({},VB.male,{thigh:.52*DP_F,shin:.5*DP_F,ankle:.07*DP_F,hipOff:.06*DP_F,spine:.13*DP_F,chest:.26*DP_F,neck:.26*DP_F,headY:.08*DP_F,shW:.33*DP_F,ua:.36*DP_F,fa:.32*DP_F,g:1.22*DP_F,hipW:.1*DP_F,sex:'male'});
-{const b=VB.dprince;b.key='dprince';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
+/* strong goat legs (the fiend's, x DP_LG 1.4): the hips stand lower than the straight leg reaches, so the knee bends forward and the
+   shin runs back to a raised hock; the IK 'ankle' is the hock and the IK foot is the cannon bone and the cloven hoof (R.noHeel). legS
+   is kept at the devil lord's x DP_F, so his keys carry over */
+const DP_LG=1.4;
+VB.dprince=Object.assign({},VB.male,{thigh:.62*DP_LG,shin:.6*DP_LG,ankle:.5*DP_LG,hipOff:.08*DP_LG,spine:.13*DP_F,chest:.26*DP_F,neck:.26*DP_F,headY:.08*DP_F,shW:.38*DP_F,ua:.36*DP_F,fa:.32*DP_F,g:1.22*DP_F,hipW:.29,sex:'male'});
+{const b=VB.dprince;b.key='dprince';b.hipH=1.52*DP_LG;b.legS=(.52+.5)*DP_F/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 const DP_SKIN={charred:['#1e1a1a','charred black'],ash:['#363032','ash grey'],ember:['#2a1a16','smouldering brown']};
 const DP_FIRE={orange:['#ffe07a','#ff7a1a','#c4380e','#ff6a12','orange'],crimson:['#ffb08a','#e8301c','#8a1410','#ff3a1a','crimson'],green:['#e0ff9a','#3ccf3a','#1a7a2a','#50ff50','green']};
 const DP_HORN={great:'great horns sweeping out and forward like a bull\'s',ram:'curling ram horns',swept:'long horns swept back'};
@@ -137,17 +141,32 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
     for(const[z,Lp]of[[.042,.055],[.014,.062],[-.014,.058],[-.042,.048]]){const g1=new THREE.Group(),g2=new THREE.Group();g1.position.set(0,0,z*F);fg.add(g1);g2.position.set(0,(.055-Lp)*F,z*F);ft.add(g2);
       X(g1,.028,Lp,.028,skin,0,-Lp/2+.003,0);X(g2,.025,.04,.025,skin,0,-.02,0);X(g2,.018,.032,.018,claw,-s*.002,-.05,0);X(g2,.011,.024,.011,claw,-s*.005,-.073,0);}
     const tg=new THREE.Group();tg.rotation.set(-.6,0,-s*.15);th.add(tg);X(tg,.032,.055,.032,skin,0,-.024,0);X(tg,.027,.036,.027,skin,0,-.06,0);X(tg,.017,.03,.017,claw,0,-.088,0);}
-  /* legs: thick rock-plated thighs, a knee plate, heavy shins with a ridge, clawed beast feet (three toes and a heel spur; the sole is
-     the IK foot's) */
-  for(const[sd,s]of[['L',1],['R',-1]]){const th=J('thigh_'+sd,hips,s*B.hipW,-(B.hipOff+.01*F),0),sn=J('shin_'+sd,th,0,-B.thigh,0),ft=J('foot_'+sd,sn,0,-B.shin,0);
-    X(th,.23,.54,.24,skin,0,-.25,0);X(th,.16,.3,.05,skinL,0,-.3,.11);X(th,.05,.3,.2,skinD,s*.115,-.15,0);crack(th,s*.121,-.3,0,.14,.4,Math.PI/2);crack(th,.03,-.2,.121,.1,-.5);
-    X(sn,.18,.13,.07,skinD,0,-.02,.06);X(sn,.18,.44,.18,skin,0,-.26,0);X(sn,.14,.2,.08,skinL,0,-.15,-.09);X(sn,.06,.36,.04,skinD,0,-.27,.09);crack(sn,-s*.03,-.3,.111,.1,.3);
-    X(ft,.15,.08,.15,skin,0,-.04,-.01);X(ft,.03,.03,.045,claw,0,-.05,-.08,-.4,0,0);
-    for(const x of[-.047,0,.047]){X(ft,.044,.045,.13,skin,x,-.058,.07);X(ft,.032,.03,.03,claw,x,-.065,.14);X(ft,.02,.02,.02,claw,x,-.07,.155);}}
+  /* legs: the fiend's goat legs x DP_LG in rock skin: a heavy haunch with big quads and hamstrings forward to the knee, a thick-muscled
+     shin back down to a pointed hock, a long cannon bone down to the fetlock (dewclaws behind) and a big cloven hoof on its toes (two
+     wedge-shaped black claws stepping up towards the heel, ember seams); lava cracks. Rest pose: legs bent so the hooves stand */
+  {const Lg=DP_LG,Y=(par,w,h,d,m,x,y,z,rx,ry,rz)=>bx(par,w*Lg,h*Lg,d*Lg,m,x*Lg,y*Lg,z*Lg,rx,ry,rz),TH=.62,fk=.5/.06,D2=Math.PI/180,hoof=bm('#2a2220','plain'),hoofL=bm('#4a3c34','plain'),restT=-42.5,restK=86.7;
+  for(const[sd,s]of[['L',1],['R',-1]]){const th=J('thigh_'+sd,hips,s*B.hipW,-(B.hipOff+.014),0),sn=J('shin_'+sd,th,0,-B.thigh,0),ft=J('foot_'+sd,sn,0,-B.shin,0);
+    th.rotation.x=restT*D2;sn.rotation.x=restK*D2;ft.rotation.x=-(restT+restK)*D2;
+    Y(th,.46,TH+.16,.5,skin,0,-TH/2+.05,0);Y(th,.38,.32,.07,skinL,0,-.42,.27);Y(th,.07,.34,.38,skinD,s*.25,-.38,.02);Y(th,.36,.3,.07,skin,0,-.26,-.27);
+    for(const[x,y,z]of[[.12,-.2,.26],[-.1,-.34,.26],[s*.25,-.14,-.1],[0,-.24,-.31],[-s*.22,-.48,.12]])Y(th,.09,.13,.05,skinD,x,y,z,0,0,(r()-.5)*.6);
+    Y(th,.38,.12,.4,skinD,0,-TH+.03,.02);crack(th,.04,-.22,.239,.12,.4);crack(th,s*.188,-.12,0,.1,-.3,Math.PI/2);crack(th,-.05,-.3,-.199,.1,.5);
+    Y(sn,.34,.3,.36,skin,0,-.14,-.01);Y(sn,.27,.34,.27,skin,0,-.42,-.01);Y(sn,.26,.14,.15,skinD,0,-.26,-.15);
+    for(const[x,y,z]of[[.08,-.1,.19],[-.08,-.24,.19],[s*.18,-.18,-.02],[0,-.36,-.15]])Y(sn,.07,.11,.05,skinD,x,y,z,0,0,(r()-.5)*.6);crack(sn,.02,-.12,.135,.1,.3);
+    const S=-.07*fk+.005;
+    Y(ft,.22,.2,.22,skin,0,-.01,-.01);Y(ft,.12,.12,.1,skinD,0,0,-.15);
+    const cn=new THREE.Group();put(ft,cn,0,-.05*Lg,-.01*Lg,-.12,0,0);Y(cn,.15,.3,.15,skin,0,-.15,0);Y(cn,.016,.2,.012,crackM,0,-.15,.08);
+    Y(ft,.23,.1,.23,skinD,0,S+.21,0);Y(ft,.18,.06,.18,skin,0,S+.155,.02);
+    Y(ft,.018,.11,.24,crackM,0,S+.06,.05);
+    for(const t of[-1,1]){const x=t*.06;
+      Y(ft,.1,.06,.28,hoof,x,S+.03,.05);Y(ft,.095,.06,.21,hoof,x,S+.085,.02);Y(ft,.09,.05,.13,hoof,x,S+.135,-.015);
+      Y(ft,.085,.035,.05,hoofL,x,S+.0175,.16);Y(ft,.09,.06,.05,hoofL,x,S+.035,-.075);Y(ft,.05,.05,.05,hoof,t*.055,S+.21,-.12);}}}
+  /* a stronger upper body: the chest, waist, neck, hips and arms made broader and deeper */
+  {const bulk=(j,sx,sy,sz)=>{for(const m of j.children)if(m.isMesh){m.position.x*=sx;m.position.y*=sy;m.position.z*=sz;m.scale.x*=sx;m.scale.y*=sy;m.scale.z*=sz;}};
+    bulk(chest,1.24,1.08,1.22);for(const sd of['L','R']){const ft=root.getObjectByName('foot_'+sd);bulk(root.getObjectByName('thigh_'+sd),1.12,1,1.12);bulk(root.getObjectByName('shin_'+sd),1.18,1,1.15);bulk(ft,1.45,1,1.15);for(const g of ft.children)if(!g.isMesh)bulk(g,1.5,1,1.4);}bulk(spine,1.16,1,1.16);bulk(neck,1.18,1,1.18);bulk(hips,1.3,1,1.2);for(const sd of['L','R']){bulk(root.getObjectByName('upperArm_'+sd),1.32,1,1.32);bulk(root.getObjectByName('foreArm_'+sd),1.3,1,1.3);}}
   /* wings on the shoulder blades, huge and tattered, dark membrane with ember edges (the devil lord's wing) */
   const spike=(par,x,y,w,len,m,rz=0)=>{const g=new THREE.Group();g.position.set(x,y,0);g.rotation.z=rz;g.scale.set(1,len/w,1);par.add(g);bx(g,w*.7071,w*.7071,.01,m,0,0,0,0,0,Math.PI/4);return g;};
   const strip=(par,x,w,h,m,hole)=>{bx(par,w,.008,.012,crackM,x,-h+.004,0);if(!hole){bx(par,w,h,.008,m,x,-h/2,0);return;}const[h0,h1]=hole;bx(par,w,h0,.008,m,x,-h0/2,0);bx(par,w,h-h1,.008,m,x,-(h1+h)/2,0);};
-  for(const[sd,s]of[['L',1],['R',-1]]){const w0=new THREE.Group();w0.name='dwing_'+sd;w0.position.set(s*.15*F,.2*F,-.17*F);chest.add(w0);const w=new THREE.Group();w.scale.setScalar(DP_WS);w0.add(w);
+  for(const[sd,s]of[['L',1],['R',-1]]){const w0=new THREE.Group();w0.name='dwing_'+sd;w0.position.set(s*.17*F,.21*F,-.23*F);chest.add(w0);const w=new THREE.Group();w.scale.setScalar(DP_WS);w0.add(w);
     const a=.4,b=.55;bx(w,.07,.07,.07,wingB,0,0,0);bx(w,a,.042,.042,wingB,s*a/2,0,0);spike(w,s*.06,.05,.03,.08,claw,-s*.3);
     [[.38,.07,null],[.46,.2,[.2,.26]],[.5,.33,null]].forEach(([h,x,ho])=>{strip(w,s*x,.135,h,memb,ho);spike(w,s*(x+.02),-h-.05,.06,.12,membD);});
     const wo=new THREE.Group();wo.name='dwingO_'+sd;wo.position.set(s*a,0,0);w.add(wo);bx(wo,.06,.06,.06,wingB,0,0,0);
@@ -187,7 +206,7 @@ const DP_N={fl:[0],HP:[0,-.02,0],h:[0,0,0],sp:[1,0,0],ch:[-2,0,0],nk:[2,0,0],hd:
   wg:[40,55,10,50,-30],ba:[0],tc:[-40,4,4,4,4,6,6,6,8,8,10,14,18,22],tw:[.4],tsw:[0]};
 const DP_HUNCH={sp:3,ch:7,nk:10,hd:-10};
 function dpRig(wpn,horns){const B=VB.dprince,m=buildDemonPrince(1,{bare:true,weapon:wpn,horns}),J={};m.traverse(q=>{if(q.userData.joint||q.name)J[q.name]=q;});
-  const tail=[];for(let i=0;i<DP_TAIL;i++)tail.push(J['dptail_'+i]);return{m,J,B,two:false,lprop:true,tail};}
+  const tail=[];for(let i=0;i<DP_TAIL;i++)tail.push(J['dptail_'+i]);return{m,J,B,two:false,lprop:true,noHeel:true,tail};}
 
 /* the clips are made per weapon; Death and Dead (smouldering) also per horns (the head rests on them) */
 function demonPrinceClips(wpn,horns){return dpClips(wpn,'ram',false).concat(dpClips(wpn,horns,true));}
@@ -221,7 +240,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
         if(c<bc){bc=c;best=pp;}}
       if(!best)best=prev||el0;nx[sd]=best;o['p'+sd]=best.toArray();}
     PP=nx;return o;};
-  const lift=p=>{const o=Object.assign({},p),f=p.fl[0];o.HP=[p.HP[0],p.HP[1]+f,p.HP[2]];for(const c of['FL','FR']){const Fq=p[c].slice();Fq[3]=(Fq[3]||0)+f;o[c]=Fq;}o.gR=[p.gR[0],p.gR[1]+f,p.gR[2]];o.gL=[p.gL[0],p.gL[1]+f,p.gL[2]];
+  const lift=p=>{const o=Object.assign({},p),f=p.fl[0];o.HP=[p.HP[0],p.HP[1]+f,p.HP[2]];for(const c of['FL','FR']){const Fq=p[c].slice();Fq[0]*=1.3;Fq[3]=(Fq[3]||0)+f;o[c]=Fq;}o.gR=[p.gR[0],p.gR[1]+f,p.gR[2]];o.gL=[p.gL[0],p.gL[1]+f,p.gL[2]];
     o.sp=[p.sp[0]+DP_HUNCH.sp,p.sp[1],p.sp[2]];o.ch=[p.ch[0]+DP_HUNCH.ch,p.ch[1],p.ch[2]];o.nk=[p.nk[0]+DP_HUNCH.nk,p.nk[1],p.nk[2]];o.hd=[p.hd[0]+DP_HUNCH.hd,p.hd[1],p.hd[2]];return o;};
   /* each hand follows its forearm, bent by the wrist towards its prop's direction (clamped), plus the keyed bend */
   const wrist=(s,p,sd)=>{R.m.updateMatrixWorld(true);const fq=R.J['foreArm_'+sd].getWorldQuaternion(new Q()),d=new V(...p['d'+sd]).normalize().applyQuaternion(fq.invert());
@@ -234,7 +253,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
   const ROPES=[DP_ROPE.whip];if(wpn==='flail')ROPES.push(DP_ROPE.flail);
   const anchorOf=rp=>{const Mp=R.J['dp_prop_'+rp.sd].matrixWorld;return{A:new V(0,rp.anc,0).applyMatrix4(Mp),hd:new V(0,1,0).transformDirection(Mp)};};
   const caps=()=>{const P=n=>R.J[n].getWorldPosition(new V()),c=[],add=(a,b,r,arm)=>c.push({a,b,r,arm});const nk=P('neck');add(P('hips'),nk,.27*F);add(nk,R.J.head.localToWorld(new V(0,.22*F,.04*F)),.2*F);
-    for(const sd of['L','R']){add(P('thigh_'+sd),P('shin_'+sd),.15*F);add(P('shin_'+sd),P('foot_'+sd),.11*F);add(P('foot_'+sd),R.J['foot_'+sd].localToWorld(new V(0,-.05*F,.13*F)),.075*F);
+    for(const sd of['L','R']){add(P('thigh_'+sd),P('shin_'+sd),.17*F);add(P('shin_'+sd),P('foot_'+sd),.13*F);add(P('foot_'+sd),R.J['foot_'+sd].localToWorld(new V(0,-.7,.1)),.08*F);
       add(P('upperArm_'+sd),P('foreArm_'+sd),.13*F,1);add(P('foreArm_'+sd),P('hand_'+sd),.12*F,1);}
     for(let i=0;i<DP_TAIL-1;i+=2)add(P('dptail_'+i),P('dptail_'+(i+2<DP_TAIL?i+2:DP_TAIL-1)),.07*F);return c;};
   const t1=new V(),t2=new V(),t3=new V();
@@ -371,7 +390,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
         if(q<G.duty){const v=q/G.duty;z=G.s*(1-2*v);l=0;pt=v<.15?-8*(1-v/.15):v>.7?G.toe*(v-.7)/.3:0;}
         else{const v=(q-G.duty)/(1-G.duty),sm=v*v*(3-2*v);z=-G.s+2*G.s*sm;l=G.lift*Math.sin(Math.PI*v);pt=G.toe*(1-v)*(1-v)-8*v*v;}
         o['F'+sd]=[x,z+(sd==='L'?1:-1)*(G.st||0),yaw,l,pt];}return o;};
-    const sp=2*G.s/(G.duty*dur);CC(name,dur,fn,{loop:true,tp:dur,gz:-sp*k,note:`${note}, in place, ${(sp*k).toFixed(1)} m/s`,speed:sp*k});};
+    const sp=2*G.s/(G.duty*dur);CC(name,dur,fn,{loop:true,fps:60,tp:dur,gz:-sp*k,note:`${note}, in place, ${(sp*k).toFixed(1)} m/s`,speed:sp*k});};
 
   /* ---- on the ground ---- */
   CC('Idle',5,t=>{const p=D*t/5,b=S(p),b2=S(2*p);return wrP(DP_N,{HP:[0,-.02-.005*b2,0],ch:[-2+1*b2,0,0],hd:[2+1.5*S(2*p+1),12*S(p+.6),1.5*S(p)],
@@ -455,7 +474,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
     [.36,{HP:[0,-.06,-.05],h:[2,-12,0],sp:[2,-4,0],ch:[0,-6,0],hd:[-8,8,0],jw:[.2]}],
     [.9,{}]],'Blow to the face: his head snaps back, his arms fly up and the wings jerk open');
   KC('Hit 2',1.1,[[0,{}],
-    [.12,{HP:[.06,-.08,0],h:[6,8,-10],sp:[4,4,-6],ch:[0,6,-8],hd:[-10,24,-12],gL:[.58,1.2,.26],jw:[.5],wg:[44,40,6,30,0],tsw:[-60]}],
+    [.15,{HP:[.06,-.08,0],h:[6,8,-10],sp:[4,4,-6],ch:[0,6,-8],hd:[-10,24,-12],gL:[.54,1.16,.28],jw:[.5],wg:[44,40,6,30,0],tsw:[-60]}],
     [.32,{HP:[.08,-.1,0],h:[6,0,-6],sp:[5,0,-4],ch:[2,0,-6],hd:[-2,16,-6],FL:[.21,.12,2,0,0],gL:[.52,1.16,.32],jw:[.2]}],
     [.62,{HP:[.05,-.08,0],FL:[.21,.12,2,0,0]}],
     [1.1,{}]],'Struck from the right: twists away and catches himself with a step, then turns back');
