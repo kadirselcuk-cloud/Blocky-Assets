@@ -47,7 +47,7 @@ const DP_ROPE=(()=>{const F=DP_F,W={pre:'dpw_',sd:'L',N:14,anc:.28*F,L:[],th:[],
 function dpFx(seed,list){const r=mulberry32(seed),L=[];for(const[par,n,c,s,k]of list)for(let i=0;i<n;i++){const ty=i%3,kk=k||1;
     L.push({par,p:[c[0]+(r()-.5)*s[0],c[1]+(r()-.5)*s[1],c[2]+(r()-.5)*s[2]],ty,P:[.6,.8,1.0][ty]*(.85+.3*r()),ph:r(),sz:[.075,.052,.034][ty]*(.8+.4*r())*kk,rise:[.22,.42,.66][ty]*(.8+.4*r())*kk,dx:(r()-.5)*.2,dz:(r()-.5)*.2});}
   return L;}
-const DP_MANE=dpFx(4242,[['head',24,[0,.31,-.06],[.24,.05,.24],1.7],['neck',14,[0,.14,.16],[.2,.05,.4],1.5],['chest',20,[0,.33,-.04],[.5,.05,.24],1.5],['chest',14,[0,.18,-.19],[.4,.24,.03],1.3],
+const DP_MANE=dpFx(4242,[['head',24,[0,.31,-.06],[.24,.05,.24],1.7],['neck',12,[0,.13,.1],[.18,.05,.28],1.5],['chest',20,[0,.33,-.04],[.5,.05,.24],1.5],['chest',14,[0,.18,-.19],[.4,.24,.03],1.3],
   ['spine',8,[0,.12,-.15],[.2,.2,.03],1.1],['upperArm_L',6,[.04,.1,0],[.14,.03,.18],1.1],['upperArm_R',6,[-.04,.1,0],[.14,.03,.18],1.1]]);
 /* black smoke for Death: big dark cubes rising slowly from the body, growing as they go (sm scales them) */
 const DP_SMOKE=dpFx(777,[['chest',14,[0,.18,0],[.5,.3,.3]],['spine',8,[0,.1,0],[.36,.3,.24]],['hips',5,[0,-.04,0],[.4,.2,.28]],['head',5,[0,.2,0],[.24,.2,.24]],
@@ -108,7 +108,7 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
   /* boxes and horns in devil-lord units, scaled to metres */
   const X=(par,w,h,d,m,x,y,z,rx,ry,rz)=>bx(par,w*F,h*F,d*F,m,x*F,y*F,z*F,rx,ry,rz),H=(par,P,a,b,m,mD)=>ncHorn(par,P.map(p=>p.map(v=>v*F)),a*F,b*F,m,mD);
   const vb=new THREE.Group();vb.name='vbody';root.add(vb);
-  const hips=J('hips',vb,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,.28*F,.1*F),head=J('head',neck,0,.05*F,.4*F);
+  const hips=J('hips',vb,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,.28*F,.1*F),head=J('head',neck,0,.05*F,.28*F);
   /* glowing lava cracks: thin glowing bars laid on a surface, in a zigzag */
   const crack=(par,x,y,z,len,rz,ry=0)=>{X(par,.008,len*.55,.006,crackM,x,y+len*.22,z,0,ry,rz);X(par,.008,len*.5,.006,crackM,x+.006,y-len*.22,z,0,ry,rz-.5);};
   /* hips: rocky plates, a dark crotch plate */
@@ -124,11 +124,12 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
   X(chest,.014,.16,.012,skinD,0,.17,.201);crack(chest,.13,.18,.201,.14,.7);crack(chest,.18,.12,.201,.08,-.4);crack(chest,-.08,.2,.201,.1,-.9);crack(chest,-.16,.15,.201,.12,.3);crack(chest,.03,.04,.171,.1,.2);
   crack(chest,.2,.1,-.201,.12,.5);crack(chest,-.18,.2,-.211,.1,-.4);
   /* neck: thick, a rock plate at the back */
-  /* the neck rises out of the top of the chest between the shoulders and leans forward (a group ng tilted up 7° from level), tapering
-     from the shoulders to the head in three sections, rock plates along the top with small spines, a glowing seam under the throat */
-  {const ng=new THREE.Group();ng.rotation.x=-7*Math.PI/180;neck.add(ng);X(ng,.3,.24,.14,skin,0,-.04,-.06);
-  [[.28,.26,.2,0,.04],[.22,.21,.18,0,.19],[.17,.17,.16,0,.32]].forEach(([w,h,d,y,z],i)=>{X(ng,w,h,d,skin,0,y,z);X(ng,w*.7,.04,d*.8,i%2?skinD:skinL,0,y+h/2+.015,z);X(ng,w*.8,.035,d*.9,skinD,0,y-h/2-.01,z);
-    X(ng,.012,.008,d*.9,crackM,0,y-h/2-.03,z);H(ng,[[0,y+h/2+.03,z],[0,y+h/2+.07,z-.03],[0,y+h/2+.1,z-.07]],.035,.01,horn,hornD);});}
+  /* the neck rises out of the top of the chest between the shoulders and leans forward (a group ng tilted up 7° from level): short and
+     thick, rounded (each ring a box and the same box turned 45° about the neck, so the cross-section is eight-sided), tapering towards the
+     head; muscle bands along the sides, small spines along the top, a glowing seam under the throat */
+  {const ng=new THREE.Group();ng.rotation.x=-7*Math.PI/180;neck.add(ng);X(ng,.3,.24,.12,skin,0,-.04,-.05);
+  [[.29,.26,.1,0],[.26,.23,.1,.09],[.22,.2,.1,.17],[.19,.18,.1,.24]].forEach(([w,h,d,z],i)=>{X(ng,w,h,d,i%2?skinD:skin,0,0,z);X(ng,w*.78,h*.78,d*.96,skin,0,0,z,0,0,Math.PI/4);
+    for(const sx of[-1,1])X(ng,.02,h*.55,d*.9,skinL,sx*(w/2+.005),-.01,z);X(ng,.012,.008,d,crackM,0,-h/2-.004,z);if(i<3)H(ng,[[0,h/2-.01,z],[0,h/2+.04,z-.03],[0,h/2+.07,z-.07]],.035,.01,horn,hornD);});}
   /* head: bestial: a skull with a crown plate, a heavy brow slanting down to the middle over deep glowing eyes, a short muzzle with a
      sloping bridge and nostrils, upper fangs, cheek spikes swept back, fire in the mouth; the jaw (g_jaw) opens */
   X(head,.28,.24,.28,skin,0,.2,-.03);X(head,.24,.08,.2,skinD,0,.33,-.05);X(head,.22,.1,.14,skin,0,.08,-.08);
