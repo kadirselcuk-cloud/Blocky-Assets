@@ -104,7 +104,7 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
   const horn=bm('#141012','plain'),hornD=bm('#2a2224','plain'),iron=bm('#1c1a1e','plain'),ironL=bm('#3a363c','plain'),ironD=bm('#0c0b0e','plain'),grip=bm('#1e1212','leather');
   const hot=efGlow(FC[0],1.3),mid=efGlow(FC[1],1.0),deep=efGlow(FC[2],.8),crackM=wrGlow(shade(FC[3],.8),FC[3],1.0,pxTex('plain')),eyeM=wrGlow(FC[0],FC[1],1.8,pxTex('plain')),glowB=wrGlow('#ffffff',FC[1],2.4,pxTex('plain'));
   const wingB=bm(shade(SK,.9),'skin'),memb=bm(skinK==='ember'?'#2a1612':'#1c1616','plain'),membD=bm(skinK==='ember'?'#1c0e0a':'#120e0e','plain');
-  const FM=[hot,mid,deep],M={iron,ironL,ironD,grip,hot,mid,deep,crack:crackM};
+  const FM=[efGlow(shade(FC[1],.42),.5),mid,deep],M={iron,ironL,ironD,grip,hot,mid,deep,crack:crackM};
   /* boxes and horns in devil-lord units, scaled to metres */
   const X=(par,w,h,d,m,x,y,z,rx,ry,rz)=>bx(par,w*F,h*F,d*F,m,x*F,y*F,z*F,rx,ry,rz),H=(par,P,a,b,m,mD)=>ncHorn(par,P.map(p=>p.map(v=>v*F)),a*F,b*F,m,mD);
   const vb=new THREE.Group();vb.name='vbody';root.add(vb);
