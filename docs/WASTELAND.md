@@ -50,3 +50,6 @@ Rubble mounds (`wlMound`) give each cell the same jitter on every layer, so a bl
 - Every `wl-` asset built in Node with every option value: no errors, the ground covers every piece.
 - Viewer, Day / Dusk / Night; the scene from above and from several angles: the castle, the camp, the cave, the track.
 - Scene: about 185k triangles, about 380 draw calls, 11 point lights; one frame (animation + render with shadows) about 15 ms.
+
+## Raided village (added later)
+Folder **Raided village** (`src/buildings/raid.js`): a village after the goblins came. Burnt cottage (smouldering with embers and smoke, or burnt out), burning cottage (roof ablaze, smoke column, orange light), smashed hut, smashed fence (4 m, same grid), broken well, raid totem (forked stake with skulls and stolen things), plunder cart, goblin catapult (Fire, Reload), battering ram (Swing, Strike), burnt field tile, dropped belongings, broken village sign. Fire and smoke are baked clips (Idle loops, see ANIMATED_PROPS.md).

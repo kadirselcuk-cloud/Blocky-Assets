@@ -36,3 +36,8 @@ Grid lines on 4k + 2 (cell centres on multiples of 4, so the path runs along x =
 - Every `ud-` asset built in Node with every option value: no errors, the ground covers every piece; every clip the scene uses exists.
 - Viewer: the grand mausoleum, keep, crypt wall, gatehouse and crypt entrance close up; the scene from above and from several angles in Day, Dusk and Night.
 - Scene: about 186k triangles, about 350 draw calls, 12 point lights; one frame (animation + render with shadows) about 20 ms.
+
+## Catacombs and the depths (added later)
+Folder **Catacombs & depths** (`src/buildings/catacombs.js`). Catacomb pieces are **whole 4 × 4 m cells**: floor (top at y = 0), walls and a low stepped vault (2.8–3.6 m). The passage is 2.4 m wide and centred, running along z; the 0.8 m side walls carry three tiers of burial niches (skulls, bundled bones, shrouds, cobwebs).
+- Passage (optional green sconces), corner (+z edge to +x edge), T-junction (branch to +x), dead end (ossuary wall and a skull altar), stair down (3.2 m, one level, towards -z; the next cell's floor is at y = -3.2), gate (iron grille, Open/Close), flooded (black water, stepping stones), collapsed (rubble under a hole in the vault, a gap along one wall), chasm (8 m shaft with a green glow, narrow bridge).
+- Well of souls (green wisps rise, Idle loop), bone throne for the lich, phylactery shrine (floating gem, Idle and Shatter), skull pillar (vertex piece faced with skulls), and a bone chandelier option on the crypt vault.

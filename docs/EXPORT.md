@@ -14,7 +14,7 @@ There are three ways in, from easiest to most flexible.
 - **Contents of a GLB:**
   - Meshes with embedded pixel textures (nearest-filter look; set nearest filtering in your engine).
   - Point lights (as `KHR_lights_punctual`).
-  - **All animation clips** for villagers and animals (named `Idle`, `Walk`, `Run`, `Graze`, …).
+  - **All animation clips** for characters, animals and animated props (named `Idle`, `Walk`, `Run`, `Graze`, `Open`, `Break`, `Fire`, …; see ANIMATED_PROPS.md).
   - Units are metres, +Y is up, and the front faces +Z.
 - **Not included:** procedural motion (turning sails and wheels, water waves, flame flicker, gate animation, scene agents). Scenes export as static geometry.
 

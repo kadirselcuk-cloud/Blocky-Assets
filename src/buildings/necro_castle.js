@@ -65,8 +65,9 @@ function ncObelisk(s){const root=udRoot(2),dk=vm('gothDark');bx(root,1.6,.3,1.6,
   bx(root,.36,.3,.36,dk,0,y+.15,0);bx(root,.2,.25,.2,RUNEMAT,0,y+.42,0);return root;}
 function ncGargoyleAsset(s){const root=udRoot(1.4);bx(root,.9,.9,.9,vm('gothStone'),0,.45,0);bx(root,1,.1,1,vm('gothDark'),0,.95,0);ncGargoyle(root,0,1,0,0,1.2);return root;}
 function ncBanner(s){const root=udRoot(1.6),ib=vm('ironB');bx(root,.6,.3,.6,vm('gothDark'),0,.15,0);bx(root,.1,4.4,.1,ib,0,2.5,0);bx(root,1.2,.08,.08,ib,.55,4.6,0);bx(root,.16,.16,.16,vm('gold'),0,4.78,0);bx(root,.12,.12,.12,vm('gold'),1.17,4.6,0);
-  const b=new THREE.Group();put(root,b,.6,4.56,0);for(const x of[-.4,.4])bx(b,.04,.1,.04,vm('rope'),x,-.05,0);bx(b,1,1.9,.04,vm('woolPurple'),0,-1.05,0);bx(b,1,.12,.05,vm('dark'),0,-.3,0);bx(b,1,.12,.05,vm('dark'),0,-1.7,0);
-  for(const[x,h]of[[-.37,.35],[0,.55],[.37,.3]])bx(b,.26,h,.04,vm('woolPurple'),x,-2-h/2+.02,0);return root;}
+  const b=new THREE.Group();b.name='banner_cloth';put(root,b,.6,4.56,0);for(const x of[-.4,.4])bx(b,.04,.1,.04,vm('rope'),x,-.05,0);bx(b,1,1,.04,vm('woolPurple'),0,-.6,0);bx(b,1,.12,.05,vm('dark'),0,-.3,0);
+  const b2=new THREE.Group();b2.name='banner_tail';put(b,b2,0,-1.1,0);bx(b2,1,.9,.04,vm('woolPurple'),0,-.45,0);bx(b2,1,.12,.05,vm('dark'),0,-.6,0);for(const[x,h]of[[-.37,.35],[0,.55],[.37,.3]])bx(b2,.26,h,.04,vm('woolPurple'),x,-.9-h/2+.02,0);
+  propAnim(root,[b,b2],[{name:'Idle',dur:3.6,loop:true,fn:(t,S)=>{const a=t/3.6*Math.PI*2;S.banner_cloth={r:[Math.sin(a)*.05,Math.sin(a)*.2,0]};S.banner_tail={r:[Math.sin(a-1)*.1,Math.sin(a-1.2)*.28,0]};}}]);return root;}
 function ncThrone(s){const root=udRoot(2),dk=vm('gothDark'),st=vm('gothStone');ruBox(root,2.4,.3,2,dk,0,.15,0,-1.2,0);ruBox(root,1.8,.3,1.5,st,0,.45,0,-.9,.3);bx(root,1.2,.4,1,st,0,.8,.1);bx(root,1.1,.12,.9,vm('woolPurple'),0,1.06,.12);
   bx(root,1.3,3,.3,st,0,2.1,-.45);for(let i=0;i<4;i++)bx(root,1.1-i*.26,.3,.3,st,0,3.75+i*.3,-.45);bx(root,.16,.4,.16,st,0,5.05,-.45);wlSkull(root,0,3.1,-.3,1.3,0);bx(root,.9,1.6,.04,vm('woolPurple'),0,1.9,-.28);
   for(const sd of[-1,1]){bx(root,.24,.8,1,st,sd*.66,1.2,.1);wlSkull(root,sd*.66,1.6,.4,.8,0);bx(root,.3,2.6,.3,dk,sd*.8,1.9,-.45);bx(root,.18,.5,.18,dk,sd*.8,3.45,-.45);bx(root,.08,.3,.08,dk,sd*.8,3.85,-.45);}return root;}

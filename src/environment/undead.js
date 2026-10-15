@@ -52,19 +52,24 @@ const UD_STYLE_OPT={key:'style',label:'Style',choices:[['random','Random'],['rou
 const UD_WEAR={key:'wear',label:'Condition',choices:[['clean','Weathered'],['mossy','Mossy'],['cracked','Cracked']],def:'clean'};
 const udStyle=(op,r)=>!op||!op.style||op.style==='random'?UD_STYLES[Math.floor(r()*UD_STYLES.length)]:op.style;
 /* tapered coffin lying along z (head at -z), base at y = 0 */
-function udCoffin(par,state,r,x=0,z=0,ry=0){const g=new THREE.Group();put(par,g,x,0,z,0,ry,0);const c=vm('coffin');
-  const seg=(gg,y,h,mat,shrink=0)=>{bx(gg,.5-shrink,h,.5,mat,0,y,-.75);bx(gg,.66-shrink,h,.6,mat,0,y,-.2);bx(gg,.56-shrink,h,.5,mat,0,y,.35);bx(gg,.44-shrink,h,.4,mat,0,y,.8);};
-  if(state==='standing'){g.rotation.x=Math.PI/2;g.position.y=1.0;const s=new THREE.Group();g.add(s);seg(s,0,.44,c);bx(s,.58,.04,.5,vm('iron'),0,.23,-.2);return g;}
-  seg(g,.15,.3,c);if(state==='open'){seg(g,.29,.02,vm('velvet'),.08);wlSkull(g,0,.3,-.72,.75,0);for(const zz of[-.15,.25,.55])bx(g,.3,.04,.06,vm('bone'),0,.32,zz);for(const sd of[-1,1])bx(g,.05,.04,.5,vm('bone'),sd*.12,.32,.45);
-    const lid=new THREE.Group();put(g,lid,.75,0,.1,0,.15,0);seg(lid,.04,.08,c);}
-  else{seg(g,.34,.08,c);bx(g,.06,.02,.4,vm('iron'),0,.39,-.2);bx(g,.3,.02,.06,vm('iron'),0,.39,-.25);}
-  return g;}
-
+const UD_CSEG=[[-.75,.5,.5],[-.2,.66,.6],[.35,.56,.5],[.8,.44,.4]];
+function udCoffin(par,state,r,x=0,z=0,ry=0){const g=new THREE.Group();put(par,g,x,0,z,0,ry,0);const c=vm('coffin'),body=new THREE.Group();g.add(body);
+  for(const[zz,w,d]of UD_CSEG){bx(body,w,.22,d,c,0,.11,zz);for(const sd of[-1,1])bx(body,.05,.2,d,c,sd*(w/2-.025),.32,zz);bx(body,w-.1,.02,d,vm('velvet'),0,.23,zz);}
+  bx(body,.5,.2,.05,c,0,.32,-.975);bx(body,.44,.2,.05,c,0,.32,.975);
+  for(let i=0;i<3;i++){const[z0,w0,d0]=UD_CSEG[i],[,w1]=UD_CSEG[i+1],zb=z0+d0/2,dw=Math.abs(w1-w0)/2;for(const sd of[-1,1])bx(body,dw+.05,.2,.05,c,sd*(Math.min(w0,w1)/2+dw/2-.025),.32,zb);}
+  wlSkull(body,0,.24,-.74,.6,0);for(const zz of[-.32,-.15,.02])bx(body,.28,.03,.05,vm('bone'),0,.255,zz);bx(body,.05,.03,.4,vm('bone'),0,.255,-.15);
+  for(const sd of[-1,1]){bx(body,.04,.03,.55,vm('bone'),sd*.12,.255,.55);bx(body,.04,.03,.45,vm('bone'),sd*.22,.255,-.05);}
+  const lid=new THREE.Group();lid.name='coffin_lid';body.add(lid);const door=new THREE.Group();door.name='coffin_door';put(lid,door,.33,0,0);
+  for(const[zz,w,d]of UD_CSEG)bx(door,w,.08,d,c,-.33,.04,zz);bx(door,.06,.02,.4,vm('iron'),-.33,.09,-.2);bx(door,.3,.02,.06,vm('iron'),-.33,.09,-.25);
+  const P={closed:[0,.42,0,0,0,0],open:[.82,0,.1,0,.15,0]};
+  if(state==='standing'){body.rotation.x=Math.PI/2;body.position.y=1.0;lid.position.set(0,.42,0);}else{const q=P[state]||P.closed;lid.position.set(q[0],q[1],q[2]);lid.rotation.set(q[3],q[4],q[5]);}
+  g.userData.coffin={lid,door,state,P};return g;}
 FOLDERS[''].children.push('undead');
 FOLDERS['undead']={name:'Undead kit',blurb:'Graveyards, crypts and the necromancer\'s castle, on a 4 m grid',children:['undead/terrain','undead/nature','undead/graveyard','undead/crypt','undead/castle']};
 FOLDERS['undead/terrain']={name:'Terrain',blurb:'Dark grass, grave soil, bone-strewn ground and flagstone paths (4 × 4 m)',children:[]};
 FOLDERS['undead/nature']={name:'Nature',blurb:'Gnarled dead trees, glowing toadstools, ground mist, a black swamp',children:[]};
 FOLDERS['undead/graveyard']={name:'Graveyard',blurb:'Headstones, graves, tombs, mausoleums, iron fences and gates, lychgate, statues, lamps',children:[]};
+
 const UD=(id,f,name,build,desc,o={})=>ASSETS.push(Object.assign({id:'ud-'+id,folder:'undead/'+f,name,build,desc},o));
 
 /* ======================= terrain ======================= */
@@ -128,7 +133,8 @@ function udMausoleum(s,op){const root=udRoot(3.2),r=mulberry32((s||1)*971),open=
   bx(root,3.6,.4,4.4,dk,0,.2,0);bx(root,2,.2,.4,dk,0,.1,2.4);bx(root,3.2,2.8,3.6,st,0,1.8,-.2);bx(root,3.36,.2,3.76,dk,0,3.3,-.2);
   const rf=vRoof(3.4,4.2,1.4,vm('slate'),{ov:.1,ovL:.1,step:.35,gable:st,ridge:dk});put(root,rf,0,3.4,0,0,Math.PI/2,0);bx(root,.24,.24,.24,st,0,3.4+1.4+.2,2.1);
   for(const sd of[-1,1]){bx(root,.4,.2,.4,dk,sd*1.25,.5,1.85);bx(root,.3,2.6,.3,st,sd*1.25,1.9,1.85);bx(root,.44,.2,.44,dk,sd*1.25,3.3,1.85);}bx(root,2.9,.2,.4,dk,0,3.3,1.85);
-  bx(root,1.3,2.2,.06,vm(open?'dark':'ironB'),0,1.5,1.62);if(!open){bx(root,.04,2.1,.02,vm('dark'),0,1.5,1.66);for(const sd of[-1,1])bx(root,.06,.06,.04,vm('iron'),sd*.12,1.45,1.67);}else{const lf=new THREE.Group();put(root,lf,.62,.4,1.62,0,-1.1,0);bx(lf,.64,2.2,.06,vm('ironB'),-.32,1.1,0);}
+  bx(root,1.3,2.2,.01,vm('dark'),0,1.5,1.606);const dl=[];for(const sd of[-1,1]){const lf=new THREE.Group();lf.name='tomb_door_'+(sd<0?'L':'R');put(root,lf,sd*.65,.4,1.64,0,open?sd*1.1:0,0);bx(lf,.65,2.2,.06,vm('ironB'),-sd*.325,1.1,0);bx(lf,.06,.06,.04,vm('iron'),-sd*.53,1.05,.04);for(const y of[.5,1.7])bx(lf,.5,.05,.03,vm('iron'),-sd*.33,y,.04);dl.push([lf,sd]);}
+  propAnim(root,dl.map(d=>d[0]),[{name:'Open',dur:2,hold:true,fn:(t,S)=>{for(const[lf,sd]of dl)S[lf.name]={r:[0,sd*1.1*(open?1:paEase(t/2)),0]};}},{name:'Close',dur:2,hold:true,fn:(t,S)=>{for(const[lf,sd]of dl)S[lf.name]={r:[0,sd*1.1*(open?1-paEase(t/2):0),0]};}}]);
   bx(root,1,.3,.04,dk,0,2.85,1.62);for(const sd of[-1,1]){const u=new THREE.Group();put(root,u,sd*1.6,.4,2);bx(u,.24,.08,.24,dk,0,.04,0);bx(u,.3,.34,.3,st,0,.25,0);bx(u,.2,.1,.2,st,0,.47,0);}
   if(wear==='mossy'){for(let i=0;i<5;i++)bx(root,.5+r()*.6,.3+r()*.5,.02,vm('moss'),(r()-.5)*2.4,.6+r()*1.2,1.61);bx(root,3.2,.06,.5,vm('moss'),0,3.43,1.8);for(let i=0;i<6;i++)wlTuft(root,(r()-.5)*3.6,0,2.4+r()*.5,r,false);}
   if(wear==='cracked')for(let k=0;k<2;k++){let cx=(r()<.5?-1:1)*(.9+r()*.4),y=3;for(let i=0;i<8;i++){bx(root,.04,.18,.02,vm('dark'),cx,y,1.61);cx+=(r()-.5)*.08;y-=.18;}}
@@ -140,8 +146,9 @@ function udMausoleumLarge(s,op){const root=udRoot(5),L=root.userData.lights,r=mu
   for(const x of[-2.1,-.8,.8,2.1]){bx(root,.5,.2,.5,dk,x,.7,2.1);vDisc(root,x,2.1,.22,.8,3.2,st,.11);bx(root,.54,.24,.54,dk,x,4.12,2.1);}
   bx(root,5,.4,.7,dk,0,4.44,2.1);bx(root,5.2,.12,.8,st,0,4.7,2.1);const pd=new THREE.Group();put(root,pd,0,4.76,1.85);for(let i=0;i<4;i++)bx(pd,4.8-i*1.2,.3,.5,st,0,.15+i*.3,0);bx(pd,.3,.3,.3,st,0,1.35,0);
   {const ow=new THREE.Group();put(root,ow,0,5.3,2.11);const R=.3,c=.06;for(let x=-R+c/2;x<R;x+=c){const h=2*Math.sqrt(Math.max(0,R*R-x*x));if(h>.02)bx(ow,c,h,.03,vm('dark'),x,0,0);}for(let k=0;k<12;k++){const a2=k/12*Math.PI*2;bx(ow,.1,.1,.05,vm('tombDark'),Math.cos(a2)*(R+.04),Math.sin(a2)*(R+.04),0);}}
-  bx(root,1.8,2.8,.08,vm('dark'),0,2.1,1.62);if(open){for(const sd of[-1,1]){const lf=new THREE.Group();put(root,lf,sd*.9,.6,1.66,0,sd*1.2,0);bx(lf,.9,2.8,.06,vm('ironB'),-sd*.45,1.4,0);for(const y of[.6,1.4,2.2])bx(lf,.8,.06,.04,vm('iron'),-sd*.45,y,.04);}}
-  else{for(const sd of[-1,1]){bx(root,.9,2.8,.06,vm('ironB'),sd*.45,2.1,1.68);for(const y of[1.2,2,2.8])bx(root,.8,.06,.04,vm('iron'),sd*.45,y,1.72);}}
+  bx(root,1.8,2.8,.08,vm('dark'),0,2.1,1.62);const dl=[];for(const sd of[-1,1]){const lf=new THREE.Group();lf.name='crypt_door_'+(sd<0?'L':'R');put(root,lf,sd*.9,.6,1.7,0,open?sd*1.2:0,0);bx(lf,.9,2.8,.06,vm('ironB'),-sd*.45,1.4,0);for(const y of[.6,1.4,2.2])bx(lf,.8,.06,.04,vm('iron'),-sd*.45,y,.04);dl.push([lf,sd]);}
+  propAnim(root,dl.map(d=>d[0]),[{name:'Open',dur:2.4,hold:true,fn:(t,S)=>{for(const[lf,sd]of dl)S[lf.name]={r:[0,sd*1.2*(open?1:paEase(t/2.4)),0]};}},{name:'Close',dur:2.4,hold:true,fn:(t,S)=>{for(const[lf,sd]of dl)S[lf.name]={r:[0,sd*1.2*(open?1-paEase(t/2.4):0),0]};}}]);
+  
   for(const sd of[-1,1]){udFlame(root,L,sd*1.35,.75,2.55,.18,.9);bx(root,.3,.15,.3,vm('ironB'),sd*1.35,.67,2.55);}
   for(const sd of[-1,1]){const g=new THREE.Group();put(root,g,sd*3.5,.3,2.9);bx(g,.6,.6,.6,dk,0,.3,0);wlSkull(g,0,.6,.0,1.4,0);}
   for(let i=0;i<8;i++){const a=r()*3.14,d=4+r()*.6;wlTuft(root,Math.cos(a)*d,0,Math.sin(a)*d*.8+.8,r,r()<.4);}return root;}
@@ -186,9 +193,9 @@ function udLamp(s,op){const root=udRoot(1.4),ib=vm('ironB'),green=(op&&op.light)
   if(green){const g=new THREE.Group();put(root,g,0,2.81,.5);bx(g,.04,.12,.04,ib,0,-.06,0);bx(g,.26,.04,.26,ib,0,-.14,0);bx(g,.26,.04,.26,ib,0,-.5,0);for(const[a,b]of[[1,1],[1,-1],[-1,1],[-1,-1]])bx(g,.03,.34,.03,ib,a*.115,-.32,b*.115);udFlame(g,root.userData.lights,0,-.48,0,.12,.9);}
   else vLantern(root,root.userData.lights,0,2.85,0);return root;}
 function udGibbet(s){const root=udRoot(2.4),r=mulberry32((s||1)*1019),tb=vm('timber');bx(root,.6,.2,.6,vm('tombDark'),0,.1,0);bx(root,.26,4.2,.26,tb,0,2.2,0);bx(root,1.8,.22,.22,tb,.78,4.1,0);wlBeam(root,[0,3.2,0],[.9,4.0,0],.14,tb);
-  let y=3.99;for(let i=0;i<5;i++){bx(root,i%2?.03:.07,.14,i%2?.07:.03,vm('iron'),1.5,y-.07,0);y-=.12;}const c=new THREE.Group();put(root,c,1.5,y-1.3,0);const ib=vm('ironB');
+  const sw=new THREE.Group();sw.name='gibbet_swing';put(root,sw,1.5,3.99,0);let y=0;for(let i=0;i<5;i++){bx(sw,i%2?.03:.07,.14,i%2?.07:.03,vm('iron'),0,y-.07,0);y-=.12;}const c=new THREE.Group();put(sw,c,0,y-1.3,0);const ib=vm('ironB');
   bx(c,.74,.06,.74,ib,0,1.3,0);bx(c,.74,.06,.74,ib,0,0,0);for(let i=0;i<4;i++)for(const sd of[-1,1]){bx(c,.04,1.3,.04,ib,-.3+i*.2,.65,sd*.35);bx(c,.04,1.3,.04,ib,sd*.35,.65,-.3+i*.2);}bx(c,.1,.12,.1,ib,0,1.38,0);
-  wlSkull(c,.05,.03,.05,.9,.6);wlBone(c,.4,-.05,.03,-.1,.4);bx(c,.24,.1,.16,vm('bone'),.1,.5,-.1,.3,0,.5);bx(c,.05,.6,.05,vm('bone'),-.15,.33,.15,0,0,.3);
+  wlSkull(c,.05,.03,.05,.9,.6);wlBone(c,.4,-.05,.03,-.1,.4);bx(c,.24,.1,.16,vm('bone'),.1,.5,-.1,.3,0,.5);bx(c,.05,.6,.05,vm('bone'),-.15,.33,.15,0,0,.3);propAnim(root,[sw],[{name:'Idle',dur:4,loop:true,fn:(t,S)=>{const a=t/4*Math.PI*2;S.gibbet_swing={r:[Math.sin(a)*.05,Math.sin(a*2)*.08,Math.sin(a+1)*.07]};}},{name:'Struck',dur:3,next:'Idle',fn:(t,S)=>{const d=Math.exp(-t*1.2);S.gibbet_swing={r:[Math.sin(t*4)*.1*d,0,Math.sin(t*3.6)*.45*d]};}}]);
   for(let i=0;i<3;i++)wlTuft(root,(r()-.5)*1.4,0,(r()-.5)*1.4,r,true);return root;}
 function udDiggerCart(s){const root=udRoot(3),r=mulberry32((s||1)*1021);vCart(root,0,0,0,null).position.y=-.05;udCoffin(root,'closed',r,0,-.2,0).position.y=.7;wlBeam(root,[.45,.75,.8],[.5,1.6,-.6],.05,vm('planksDark'));bx(root,.2,.26,.04,vm('iron'),.5,1.66,-.65,0,0,.1);
   bx(root,.06,.8,.06,vm('planksDark'),-.5,1.1,-.98);vLantern(root,root.userData.lights,-.5,1.45,-.98).rotation.y=Math.PI;return root;}
