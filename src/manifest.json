@@ -60,6 +60,7 @@
     "src/items/loot.js",
     "src/items/items2.js",
     "src/effects/spells.js",
+    "src/effects/spells2.js",
     "src/environment/wasteland.js",
     "src/buildings/ruins.js",
     "src/buildings/goblin_fort.js",

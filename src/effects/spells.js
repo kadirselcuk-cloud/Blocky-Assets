@@ -35,7 +35,7 @@ function spM(hex,kind='glow',op){const k=hex+kind+(op||'');if(SP_MC.has(k))retur
   else if(kind==='smoke')m=new THREE.MeshStandardMaterial({color:c,transparent:true,opacity:op||.72,depthWrite:false,roughness:1});
   else m=new THREE.MeshStandardMaterial({color:c,roughness:op||.75});
   m.name='fx_'+kind+'_'+hex.slice(1);SP_MC.set(k,m);return m;}
-function spPal(key){const p=SP_PAL[key]||SP_PAL.fire,c=p.c;return{key,c,l:p.l,hot:spM(c[0]),br:spM(c[1]),mid:spM(c[2]),dk:spM(c[3]),sm:spM(c[4],'smoke'),
+function spPal(key){const p=SP_PAL[key]||SP_PAL.fire,c=p.c;return{key,c,l:p.l,hot:spM(c[0]),br:spM(c[1]),mid:spM(c[2]),dk:spM(c[3]),sm:spM(c[4],'smoke',.5),
   soft:spM(c[2],'soft'),softB:spM(c[1],'soft'),add:spM(c[2],'add'),addB:spM(c[1],'add'),addH:spM(c[0],'add',.4)};}
 const spTau=(t,D,P,ph)=>{const n=Math.max(1,Math.round(D/P));return((t/D*n+ph)%1+1)%1;};
 const spW=(t,D,k)=>t/D*SP_TAU*k;                                   // angle that turns k whole times per loop
@@ -48,10 +48,10 @@ const spHash=n=>{let h=Math.imul(n^0x9e3779b9,0x85ebca6b);h^=h>>>13;h=Math.imul(
 function spGeo(halo=false){const pos=[],nor=[],uv=[],idx=[],M=new THREE.Matrix4(),Vp=new THREE.Vector3(),Vs=new THREE.Vector3(),V=new THREE.Vector3(),I=new THREE.Quaternion(),
   sp=SPG.attributes.position.array,sn=SPG.attributes.normal.array,su=SPG.attributes.uv.array,si=SPG.index.array,Y=new THREE.Vector3(0,1,0);
   const G={n:0};
-  G.boxQ=(w,h,d,x,y,z,q=I)=>{M.compose(Vp.set(x,y,z),q,Vs.set(w,h,d));const b=pos.length/3;
+  G.boxQ=(w,h,d,x=0,y=0,z=0,q=I)=>{M.compose(Vp.set(x,y,z),q,Vs.set(w,h,d));const b=pos.length/3;
     for(let i=0;i<sp.length;i+=3){V.set(sp[i],sp[i+1],sp[i+2]).applyMatrix4(M);pos.push(V.x,V.y,V.z);V.set(sn[i],sn[i+1],sn[i+2]).applyQuaternion(q);nor.push(V.x,V.y,V.z);}
     for(let i=0;i<su.length;i++)uv.push(su[i]);for(let i=0;i<si.length;i++)idx.push(b+si[i]);G.n++;return G;};
-  G.box=(w,h,d,x,y,z,rx=0,ry=0,rz=0)=>G.boxQ(w,h,d,x,y,z,new THREE.Quaternion().setFromEuler(new THREE.Euler(rx,ry,rz)));
+  G.box=(w,h,d,x=0,y=0,z=0,rx=0,ry=0,rz=0)=>G.boxQ(w,h,d,x,y,z,new THREE.Quaternion().setFromEuler(new THREE.Euler(rx,ry,rz)));
   /* flat line on a horizontal plane at height y: w wide, h thick, ends overlap by ext */
   G.flat=(ax,az,bx_,bz,w,h,y,ext=halo?0:w*.5)=>{const dx=bx_-ax,dz=bz-az,L=Math.hypot(dx,dz);if(L<1e-6)return G;return G.box(w,h,L+ext,(ax+bx_)/2,y,(az+bz)/2,0,Math.atan2(dx,dz),0);};
   /* 3D line from a to b (arrays), square section w */
@@ -121,13 +121,13 @@ function spFire(K,o){const P=spPal(o.pal),h=o.h||1,sz=o.sz||h*.16,x0=o.x||0,y0=o
   const pick=k=>{let a=0;for(const ro of roles){a+=ro[0];if(k<a)return ro;}return roles[3];};
   spPS(K,{n:o.n||40,seed:o.seed||11,par:o.par,init:(r,i)=>{const ro=pick((i+.5)/(o.n||40)),e=o.em?o.em(r):(()=>{const d=spInDisc(r,o.R||.2);return[d[0],0,d[1]];})();
       return{mat:ro[1],e,rise:ro[2]*(.8+.4*r()),sz:ro[3]*sz*(.7+.6*r()),P:(.5+.55*ro[2])*life*(.85+.3*r()),sw:r()*SP_TAU,sa:(r()-.5)*.08*h};},
-    f:(q,u,t,A,c)=>{const a=o.A?o.A(A,c,t):A;if(a<=1e-3)return spHid;const k=1-conv*u,ry=q.rise*h*Math.pow(u,.9);
+    f:(q,u,t,A,c)=>{const a=o.Ae?o.Ae(q.e,A,c,t):o.A?o.A(A,c,t):A;if(a<=1e-3)return spHid;const k=1-conv*u,ry=q.rise*h*Math.pow(u,.9);
       return{p:[x0+q.e[0]*k+Math.sin(q.sw+u*5)*q.sa+wind[0]*ry,y0+q.e[1]+ry*(.6+.4*a),z0+q.e[2]*k+Math.cos(q.sw+u*4)*q.sa+wind[1]*ry],s:q.sz*spEnv(u,.14)*a};}});
-  if(o.smoke)spPS(K,{n:o.smoke,seed:(o.seed||11)+1,par:o.par,init:r=>{const d=spInDisc(r,(o.R||.2)*.6);return{mat:P.sm,e:[d[0],0,d[1]],P:1.6*life*(.85+.3*r()),sw:r()*SP_TAU,sz:sz*(1.1+.6*r())};},
-    f:(q,u,t,A,c)=>{const a=o.A?o.A(A,c,t):A;if(a<=1e-3)return spHid;const ry=h*(.7+1.3*u);
-      return{p:[x0+q.e[0]+Math.sin(q.sw+u*3)*.12*h+wind[0]*ry,y0+ry,z0+q.e[2]+Math.cos(q.sw+u*2)*.12*h+wind[1]*ry],s:q.sz*(.5+.9*u)*Math.pow(Math.sin(Math.PI*u),.8)*a};}});
+  if(o.smoke)spPS(K,{n:o.smoke,seed:(o.seed||11)+1,par:o.par,init:r=>{const d=spInDisc(r,(o.R||.2)*.6);return{mat:P.sm,e:[d[0],0,d[1]],P:1.6*life*(.85+.3*r()),sw:r()*SP_TAU,sz:sz*(.9+.5*r())};},
+    f:(q,u,t,A,c)=>{const a=o.Ae?o.Ae(q.e,A,c,t):o.A?o.A(A,c,t):A;if(a<=1e-3)return spHid;const ry=h*(.7+1.3*u);
+      return{p:[x0+q.e[0]+Math.sin(q.sw)*.35*h*u+wind[0]*ry,y0+ry,z0+q.e[2]+Math.cos(q.sw)*.35*h*u+wind[1]*ry],s:q.sz*(.5+.9*u)*Math.pow(Math.sin(Math.PI*u),.8)*(1-.5*u)*a};}});
   if(o.embers)spPS(K,{n:o.embers,seed:(o.seed||11)+2,par:o.par,init:r=>{const d=spInDisc(r,o.R||.2);return{mat:r()<.5?P.hot:P.br,e:[d[0],0,d[1]],P:1.2*life*(.8+.4*r()),sw:r()*SP_TAU,sz:sz*.22};},
-    f:(q,u,t,A,c)=>{const a=o.A?o.A(A,c,t):A;if(a<=1e-3)return spHid;const ry=h*2.2*u;
+    f:(q,u,t,A,c)=>{const a=o.Ae?o.Ae(q.e,A,c,t):o.A?o.A(A,c,t):A;if(a<=1e-3)return spHid;const ry=h*2.2*u;
       return{p:[x0+q.e[0]+Math.sin(q.sw+u*9)*.15*h+wind[0]*ry,y0+ry,z0+q.e[2]+Math.cos(q.sw+u*7)*.15*h+wind[1]*ry],s:q.sz*(u<.1?u/.1:1-u)*a};}});}
 
 /* glowing orb: hot core, soft shell turned 45 degrees, additive halo; spins and breathes. Returns the group (scale = strength). */
@@ -154,12 +154,15 @@ function spSwirl(K,o){const P=spPal(o.pal),c0=[o.x||0,o.y||0,o.z||0];
     f:(q,u,t,A,c)=>{const a=o.A?o.A(A,c,t):A;if(a<=1e-3)return spHid;const rr=q.R0*(1-u)*a,an=q.a0+(o.turns||1.5)*SP_TAU*u*(o.dir||1),flat=o.flat;
       return{p:[c0[0]+Math.sin(an)*rr,c0[1]+(flat?0:q.yy*(1-u))+(o.lift||0)*u,c0[2]+Math.cos(an)*rr*(o.squash||1)],s:q.sz*a*(u<.15?u/.15:1-.7*u)};}});}
 /* one-shot radial burst in clip `clip` starting at t0: speed, drag, gravity, dir (unit vector bias), spread */
-function spBurst(K,o){const P=spPal(o.pal),c0=[o.x||0,o.y||0,o.z||0],L=[],r=mulberry32(o.seed||51),clips=[].concat(o.clip);
+function spBurst(K,o){const P=spPal(o.pal),c0=[o.x||0,o.y||0,o.z||0],L=[],r=mulberry32(o.seed||51),clips=[].concat(o.clip),
+    evs=c=>o.at?(o.at[c]||[]):(clips.includes(c)?[[o.t0||0,c0]]:[]);
   for(let i=0;i<(o.n||20);i++){const m=K.p(o.mats?o.mats[i%o.mats.length]:(r()<.3?P.hot:r()<.7?P.br:P.mid),o.par||K.root);
     let d=new THREE.Vector3(r()*2-1,r()*2-1,r()*2-1);if(o.flat)d.y=Math.abs(d.y)*.15;d.normalize();if(o.dir){d.multiplyScalar(o.spread??.5).add(new THREE.Vector3(...o.dir)).normalize();}if(o.up)d.y=Math.abs(d.y);
     L.push({m,d,v:(o.v||3)*(.6+.8*r()),life:(o.life||.8)*(.7+.6*r()),sz:(o.sz||.06)*(.6+.8*r())});}
-  K.add((S,t,A,c)=>{for(const q of L){const tt=t-(o.t0||0);if(!clips.includes(c)||tt<0||tt>q.life){S[q.m.name]=spHid;continue;}const u=tt/q.life,dr=o.drag??2.5,dist=q.v*(1-Math.exp(-dr*tt))/dr;
-    S[q.m.name]={p:[c0[0]+q.d.x*dist,c0[1]+q.d.y*dist-(o.g||0)*tt*tt*.5,c0[2]+q.d.z*dist],s:q.sz*(1-u)*(o.grow?1+u*o.grow:1)};}});return L;}
+  K.add((S,t,A,c)=>{let ev=null;for(const e of evs(c))if(t>=e[0])ev=e;
+    for(const q of L){const tt=ev?t-ev[0]:-1;if(!ev||tt>q.life){S[q.m.name]=spHid;continue;}const u=tt/q.life,dr=o.drag??2.5,dist=q.v*(1-Math.exp(-dr*tt))/dr,e=ev[1],k=o.k||1;
+      let y=e[1]+(q.d.y*dist-(o.g||0)*tt*tt*.5)*k;if(o.floor!==undefined)y=Math.max(o.floor+q.sz*.5,y);
+      S[q.m.name]={p:[e[0]+q.d.x*dist*k,y,e[2]+q.d.z*dist*k],s:q.sz*k*(o.keep?Math.min(1,(1-u)*4):(1-u))*(o.grow?1+u*o.grow:1)};}});return L;}
 
 /* lightning: jagged points between a and b (midpoint displacement), with optional branches */
 function spBoltPts(a,b,r,jag=.25,lv=5){let P=[new THREE.Vector3(...a),new THREE.Vector3(...b)],J=jag;
