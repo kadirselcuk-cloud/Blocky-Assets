@@ -57,6 +57,7 @@
     "src/characters/demon_prince.js",
     "src/buildings/fences.js",
     "src/items/props_anim.js",
+    "src/items/items2.js",
     "src/effects/spells.js",
     "src/environment/wasteland.js",
     "src/buildings/ruins.js",
