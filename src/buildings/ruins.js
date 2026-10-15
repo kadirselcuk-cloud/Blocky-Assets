@@ -19,7 +19,7 @@ function ruGrid(par,nc,nr,G,o={}){const c=RU_C,t=o.t??RU_T,L=nc*c,used=[];for(le
   for(let r=0;r<nr;r++)for(let i=0;i<nc;i++){if(used[r][i]||!G(i,r))continue;let j=i;while(j+1<nc&&G(j+1,r)&&!used[r][j+1])j++;let r2=r;
     if(r>0||o.noPlinth)while(r2+1<nr){let ok=true;for(let k=i;k<=j;k++)if(!G(k,r2+1)||used[r2+1][k]){ok=false;break;}if(!ok)break;r2++;}
     for(let rr=r;rr<=r2;rr++)for(let k=i;k<=j;k++)used[rr][k]=true;
-    const w=(j-i+1)*c,h=(r2-r+1)*c,x0=-L/2+i*c,y0=r*c,pl=r===0&&!o.noPlinth;ruBox(par,w,h,pl?t+.2:t,pl?vm('ruinDark'):(o.mat||vm('ruin')),x0+w/2,y0+h/2,o.z||0,x0,y0);}}
+    const w=(j-i+1)*c,h=(r2-r+1)*c,x0=-L/2+i*c,y0=r*c,pl=r===0&&!o.noPlinth;ruBox(par,w,h,pl?t+.2:t,pl?(o.pmat||vm('ruinDark')):(o.mat||vm('ruin')),x0+w/2,y0+h/2,o.z||0,x0,y0);}}
 /* wear on one face (face plane at z = fz, sd = which side): crack chains, moss patches, ivy */
 function ruCracks(par,nc,G,top,r,n,fz,sd){const c=RU_C,L=nc*c;for(let k=0;k<n;k++){let i=Math.floor(r()*nc),row=top(i)-1;if(row<3)continue;let x=-L/2+i*c+c/2+(r()-.5)*.2;const steps=6+Math.floor(r()*8);
   for(let s=0;s<steps&&row>=1;s++){const ci=Math.floor((x+L/2)/c);if(ci<0||ci>=nc||!G(ci,row))break;bx(par,.06,.22,.02,vm('dark'),x,row*c+c*.75-(s%2)*.2,sd*(fz+.01));x+=(r()<.5?-1:1)*.06;if(s%2)row--;}}}

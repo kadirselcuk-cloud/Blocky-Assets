@@ -60,12 +60,16 @@
     "src/buildings/ruins.js",
     "src/buildings/goblin_fort.js",
     "src/environment/cave.js",
+    "src/environment/undead.js",
+    "src/buildings/crypt.js",
+    "src/buildings/necro_castle.js",
     "src/scenes/scenes.js",
     "src/scenes/scenes2.js",
     "src/scenes/scenes3.js",
     "src/scenes/scenes4.js",
     "src/scenes/scenes5.js",
     "src/scenes/scenes6.js",
+    "src/scenes/scenes7.js",
     "src/export/export.js"
   ],
   "app": ["src/app/app.js"]
