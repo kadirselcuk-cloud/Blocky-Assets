@@ -15,6 +15,7 @@ Read this file first in every session, then open only the doc you need:
 | Animated props (barrels breaking, coffins and lids opening, gates, catapult…): `propAnim`, the list of clips | `docs/ANIMATED_PROPS.md` |
 | The undead kit (`ud-`): graveyards, crypts (modular rooms), catacombs and the depths, the necromancer's castle; the Haunted necropolis scene | `docs/UNDEAD.md` |
 | The wasteland kit (`wl-`): 4 m grid rules, ruined castle, goblin fortress, raided village, cave, terrain, nature and props; the Goblin wasteland scene | `docs/WASTELAND.md` |
+| The hell kit (`hl-`): terrain and lava, nature, props, the infernal citadel, the depths (magma caves), the demon temple; the Infernal citadel scene | `docs/HELL.md` |
 | The warrior: body, equipment, all clips and how they are built | `docs/WARRIOR.md` |
 | The goblin enemy: body, clothes, weapons, clips | `docs/GOBLIN.md` |
 | The goblin shaman: body, accessories, staffs, clips | `docs/GOBLIN_SHAMAN.md` |

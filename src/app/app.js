@@ -22,8 +22,8 @@ function markDecor(model){model.children.forEach(ch=>{let hasTuft=false;ch.trave
 function buildEnv(scene,fr,gr,gk){const hemi=new THREE.HemisphereLight(),sun=new THREE.DirectionalLight();
   sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);const ext=Math.max(fr.size.x,fr.size.z)*.75+2,sc=sun.shadow.camera,sunD=Math.max(60,fr.radius*1.3);sc.left=-ext;sc.right=ext;sc.top=ext;sc.bottom=-ext;sc.near=1;sc.far=sunD+fr.radius*2+20;sun.shadow.bias=-.0004;sun.shadow.normalBias=.035;
   scene.add(hemi,sun,sun.target);
-  const noG=gr===-1,GR=noG?Math.max(6,fr.radius*.9):Math.round((gr||Math.max(9,Math.max(fr.size.x,fr.size.z)*.85))/.8)*.8,sd=vm(gk==='waste'?'wDustSide':gk==='grave'?'gGrassSide':'grassSide'),dt=vm('dirt');let ground=null;
-  if(!noG){ground=box(2*GR,.8,2*GR,[sd,sd,vm(gk==='waste'?'wDust':gk==='grave'?'gGrass':'grassTop'),dt,sd,sd],{s:.8,ox:0,oy:0,oz:0});ground.position.y=-.4;ground.castShadow=false;ground.receiveShadow=true;scene.add(ground);}
+  const noG=gr===-1,GR=noG?Math.max(6,fr.radius*.9):Math.round((gr||Math.max(9,Math.max(fr.size.x,fr.size.z)*.85))/.8)*.8,sd=vm(gk==='waste'?'wDustSide':gk==='grave'?'gGrassSide':gk==='hell'?'hAshSide':'grassSide'),dt=vm('dirt');let ground=null;
+  if(!noG){ground=box(2*GR,.8,2*GR,[sd,sd,vm(gk==='waste'?'wDust':gk==='grave'?'gGrass':gk==='hell'?'hAsh':'grassTop'),dt,sd,sd],{s:.8,ox:0,oy:0,oz:0});ground.position.y=-.4;ground.castShadow=false;ground.receiveShadow=true;scene.add(ground);}
   scene.fog=new THREE.Fog(0xffffff,GR*3.5,GR*9);
   return{hemi,sun,ground,GR,sunD,center:fr.center.clone(),radius:fr.radius,follow:fr.radius>160};}
 /* big scenes: the sun's shadow box follows the orbit target and shrinks when zoomed in (sharper shadows, much less to draw) */

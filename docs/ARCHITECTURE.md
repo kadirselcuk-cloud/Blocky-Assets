@@ -59,6 +59,10 @@
 | environment/undead.js | undead kit core (see UNDEAD.md): textures (`gSoil`, `gGrass`, `gPath`, `tomb`, `ashlarG`, `ironB`, `coffin`…), materials (`NFIRE`, `RUNEMAT`, `UDGLOW`, `MISTMAT`, `UDWATER`), helpers (`udRoot` sets `groundKind:'grave'`, `udFlame`, `udCandle`, `udHeadstone`, `udCoffin`, `udMist`), terrain (`udTile`, `udPathTile`), nature and graveyard pieces; `UD()` registers `ud-` assets |
 | buildings/crypt.js | crypt rooms: `cwBody` (two-layer wall from `ruGrid`, openings in the front layer), `cwWall`, `cwDoor`, `cwPillar`, `cwVault`, `cwFloor`, `cwStairs`, `udWebAt`; sarcophagus, altar, candles, brazier, ritual circle, ossuary |
 | buildings/necro_castle.js | necromancer's castle: `ncWall` (gothic walls from `ruGrid`, pointed merlons), `ncGlass`, `NGLASS`, gatehouse with portcullis, `ncTower`, `ncKeep`, `ncGargoyle`, obelisk, banner, throne, pikes |
+| environment/hell.js | hell kit core (see HELL.md): textures (`hBrim`, `hAsh`, `hCrust`, `hLava`, `hFloor`, `hBasalt`, `hFort`…), materials (`LAVAMAT` with a sliding texture, `CRUSTMAT`, `HFLOORMAT`, `HRUNE`, `HEMBER`, `SOULMAT`, `HL_FIRE`), helpers (`hlRoot` sets `groundKind:'hell'`, `hlLavaTick`, `hlIdle`/`hlDone` bake Idle and one-shot clips, `hlFlame`, `hlSpike`, `hlHorn`, `hlChain`, `hlGlyph`, `hlSoul`, `hlBubbles`, `hlSmoke`), terrain (`hlTile`, `hlLavaTile`, `hlRoadTile`, `hlCliff`), nature and props; `HL()` registers `hl-` assets |
+| buildings/hell_fort.js | infernal citadel: `hcWall` (walls from `ruGrid` with fang merlons `hcFang`, rune bands `hcRunes`), `hcDemonHead`, tower, fire pillar, gatehouse (`vGateAnim`), keep, stairs, bridge, causeway, floor, throne, statue, banner, railing, column |
+| environment/hell_depths.js | magma caves (`hlReskin` turns the wasteland cave pieces red with glowing veins, `hlCrystals`), lavafall wall, chasm with chain bridge; demon temple (summoning circle, altar, obelisk, soul pit, lava fountain, pillar of faces) |
+| scenes/scenes8.js | "Infernal citadel" (`vxSceneHell`, `sc-hell`), 100 × 100 m; terrain lava from `sceneTerrain` extra surfaces (`SC_HELL_SURF`, the cloned lava materials slide with `LAVATEX`); every character is queued (`later`) |
 | scenes/scenes7.js | "Haunted necropolis" (`vxSceneNecropolis`, `sc-necropolis`), 100 × 100 m; every undead character is queued (`later`) |
 | scenes/scenes6.js | "Goblin wasteland" (`vxSceneWasteland`, `sc-wasteland`), 100 × 100 m; heavy characters are queued (`later`) and join after the scene is shown |
 | scenes/scenes.js | `sceneTerrain` (voxel heightmap, only visible faces; optional `extra` surface table `{name:[top,side,metric]}`), `mergeStatic` (optional chunk size so big scenes can cull), `compactRig` (folds a character into one skinned mesh using a shared 16 × 16 texture atlas and vertex colours), `pineSwap`, `sceneStats`, agent behaviours (`agentOf`, `behPath`, `behWander`, `behCircle`, `giveTool`, `workPiece`) |
@@ -91,7 +95,7 @@ FOLDERS['buildings/medieval/production']={name:'Production',blurb:'…',children
 |---|---|
 | `lights` | PointLights; their intensity follows Day/Dusk/Night (`userData.min` sets an always-on floor) |
 | `ground` | grass base half-size in metres; `-1` means no base (terrain tiles, scenes) |
-| `groundKind` | `'waste'` shows the base as dusty ground, `'grave'` as dark grass, instead of grass (wasteland and undead kits) |
+| `groundKind` | `'waste'` shows the base as dusty ground, `'grave'` as dark grass, `'hell'` as ash, instead of grass (wasteland, undead and hell kits) |
 | `clips`, `joints` | AnimationClips and the joint objects (characters and animals) |
 | `post()` | called after each mixer update (villager skirts) |
 | `tick(dt)` | per-frame update (scenes, gate animation) |
