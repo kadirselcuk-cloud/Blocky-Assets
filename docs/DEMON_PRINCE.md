@@ -20,7 +20,7 @@ About **4.2 m** to the top of the head (4.7 m to the horn tips), hunched and mas
 `VB.dprince`: the devil lord's torso and arms x `DP_F` 1.9 with broader shoulders and the fiend's goat legs x `DP_LG` 1.4, on the villager's 25 joints in a body group `vbody`, in real metres (meshes are authored in devil-lord units and scaled, no group scale). The warrior's IK (`wrSolve`) fits unchanged and the devil lord's clip keys carry over (they are in units of `legS`). A hunch (`DP_HUNCH`: spine, chest and neck pitched forward, head levelled) is added to every pose.
 
 - **Skin**: rock-black plates (lighter and darker boxes) crossed by glowing lava cracks on the chest, waist, back, arms, legs and face.
-- **Head position**: like the film's balrog, the head sits at the front on a thick neck leaning forward: the neck (0.65 m wide, 1.06 m long, ridged on top, a glowing crack under the throat) runs forward from the chest top (neck joint 0.38 m up, 0.15 m forward), the head sits 0.76 m further forward at its end, and the hunch (`DP_HUNCH`: spine 4°, chest 12°, neck 14° forward, head levelled) brings it down to shoulder height.
+- **Head position**: like the film's balrog, the head sits at the front on a thick neck leaning forward: the neck (1.06 m long, tapering in three sections from 0.53 m wide at the shoulders to 0.32 m at the head, rock plates and small spines along the top, a glowing seam under the throat) runs forward from the chest top (neck joint 0.38 m up, 0.15 m forward), the head sits 0.76 m further forward at its end, and the hunch (`DP_HUNCH`: spine 4°, chest 12°, neck 14° forward, head levelled) brings it down to shoulder height.
 - **Head**: skull with a crown plate, a heavy brow slanting down to the middle over deep sockets with glowing eyes (white-hot pupils), a broad low upper jaw with nostrils, a glowing line of fire along the mouth, upper fangs, cheek spikes swept back; the jaw `g_jaw` opens onto fire inside.
 - **Spikes**: on the shoulders (angled out), elbows, forearms, and down the back (pointing back).
 - **Upper body**: chest, waist, neck, hips and arms made broader and deeper (a bulk pass after building: chest x 1.24 wide, 1.22 deep; upper arms x 1.32, forearms x 1.3).
@@ -79,7 +79,7 @@ One-shot clips are followed by Idle (war mode); Death by Dead (smouldering) (`cl
 
 ## Checks done
 
-- `node tools/check-character.mjs demon-prince` for every weapon (seed 14) and the other horns and skins (seed 2, ram; Death for all three horns): every clip passes jumps, twists and the ground, except **Death: PILE TOO HIGH (1.70–1.89 m)**: a 4.2 m giant with a bulky chest lying face down is that thick (hips 0.73 m up), plus the horns of the head turned to the side.2 m giant with a bulky chest lying face down is that thick, and the great horns stand up from the head turned to the side, like the fiend (1.05 m) and the oni (0.92 m).
+- `node tools/check-character.mjs demon-prince` for every weapon (seed 14) and the other horns and skins (seed 2, ram; Death for all three horns): every clip passes jumps, twists and the ground, except **Death: PILE TOO HIGH (1.54–1.57 m)**: a 4.2 m giant with a bulky chest lying face down is that thick (hips 0.73 m up), plus the horns of the head turned to the side.2 m giant with a bulky chest lying face down is that thick, and the great horns stand up from the head turned to the side, like the fiend (1.05 m) and the oni (0.92 m).
 - Viewer: the head close up, Idle, war Idle, the whip crack from the side, Roar at Night, Death and Dead from two angles.
 
 ## Possible extras (not added)

@@ -124,7 +124,9 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
   X(chest,.014,.16,.012,skinD,0,.17,.201);crack(chest,.13,.18,.201,.14,.7);crack(chest,.18,.12,.201,.08,-.4);crack(chest,-.08,.2,.201,.1,-.9);crack(chest,-.16,.15,.201,.12,.3);crack(chest,.03,.04,.171,.1,.2);
   crack(chest,.2,.1,-.201,.12,.5);crack(chest,-.18,.2,-.211,.1,-.4);
   /* neck: thick, a rock plate at the back */
-  X(neck,.34,.3,.56,skin,0,.01,.16);X(neck,.26,.1,.48,skinL,0,.16,.14);X(neck,.24,.1,.46,skinD,0,-.13,.18);X(neck,.012,.008,.4,crackM,0,-.181,.19);X(neck,.22,.16,.05,skinD,0,.06,-.1);for(const z of[-.02,.12,.26,.38])X(neck,.36,.05,.06,skinD,0,.11,z);
+  /* the neck tapers from the shoulders to the head in three sections, rock plates along the top with small spines, a glowing seam under the throat */
+  [[.28,.26,.22,-.01,.0],[.22,.21,.2,.01,.17],[.17,.17,.18,.03,.33]].forEach(([w,h,d,y,z],i)=>{X(neck,w,h,d,skin,0,y,z);X(neck,w*.7,.04,d*.8,i%2?skinD:skinL,0,y+h/2+.015,z);X(neck,w*.8,.035,d*.9,skinD,0,y-h/2-.01,z);
+    X(neck,.012,.008,d*.9,crackM,0,y-h/2-.03,z);H(neck,[[0,y+h/2+.03,z],[0,y+h/2+.07,z-.03],[0,y+h/2+.1,z-.07]],.035,.01,horn,hornD);});X(neck,.22,.16,.05,skinD,0,.06,-.1);
   /* head: bestial: a skull with a crown plate, a heavy brow slanting down to the middle over deep glowing eyes, a short muzzle with a
      sloping bridge and nostrils, upper fangs, cheek spikes swept back, fire in the mouth; the jaw (g_jaw) opens */
   X(head,.28,.24,.28,skin,0,.2,-.03);X(head,.24,.08,.2,skinD,0,.33,-.05);X(head,.22,.1,.14,skin,0,.08,-.08);
