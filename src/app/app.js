@@ -19,11 +19,11 @@ function frameOf(model){const b=new THREE.Box3();model.children.forEach(ch=>{if(
   const size=b.getSize(new THREE.Vector3()),center=b.getCenter(new THREE.Vector3());return{box:b,size,center,radius:size.length()/2};}
 function markDecor(model){model.children.forEach(ch=>{let hasTuft=false;ch.traverse(o=>{if(o.isMesh&&o.geometry.type==='ConeGeometry'&&o.geometry.parameters.radius===.08)hasTuft=true;});if(hasTuft||(ch.isMesh&&ch.geometry.type==='PlaneGeometry'))ch.userData.noFrame=true;});}
 
-function buildEnv(scene,fr,gr){const hemi=new THREE.HemisphereLight(),sun=new THREE.DirectionalLight();
+function buildEnv(scene,fr,gr,gk){const hemi=new THREE.HemisphereLight(),sun=new THREE.DirectionalLight();
   sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);const ext=Math.max(fr.size.x,fr.size.z)*.75+2,sc=sun.shadow.camera,sunD=Math.max(60,fr.radius*1.3);sc.left=-ext;sc.right=ext;sc.top=ext;sc.bottom=-ext;sc.near=1;sc.far=sunD+fr.radius*2+20;sun.shadow.bias=-.0004;sun.shadow.normalBias=.035;
   scene.add(hemi,sun,sun.target);
-  const noG=gr===-1,GR=noG?Math.max(6,fr.radius*.9):Math.round((gr||Math.max(9,Math.max(fr.size.x,fr.size.z)*.85))/.8)*.8,sd=vm('grassSide'),dt=vm('dirt');let ground=null;
-  if(!noG){ground=box(2*GR,.8,2*GR,[sd,sd,vm('grassTop'),dt,sd,sd],{s:.8,ox:0,oy:0,oz:0});ground.position.y=-.4;ground.castShadow=false;ground.receiveShadow=true;scene.add(ground);}
+  const noG=gr===-1,GR=noG?Math.max(6,fr.radius*.9):Math.round((gr||Math.max(9,Math.max(fr.size.x,fr.size.z)*.85))/.8)*.8,sd=vm(gk==='waste'?'wDustSide':'grassSide'),dt=vm('dirt');let ground=null;
+  if(!noG){ground=box(2*GR,.8,2*GR,[sd,sd,vm(gk==='waste'?'wDust':'grassTop'),dt,sd,sd],{s:.8,ox:0,oy:0,oz:0});ground.position.y=-.4;ground.castShadow=false;ground.receiveShadow=true;scene.add(ground);}
   scene.fog=new THREE.Fog(0xffffff,GR*3.5,GR*9);
   return{hemi,sun,ground,GR,sunD,center:fr.center.clone(),radius:fr.radius,follow:fr.radius>160};}
 /* big scenes: the sun's shadow box follows the orbit target and shrinks when zoomed in (sharper shadows, much less to draw) */
@@ -153,13 +153,13 @@ function showAsset(id,vs){const a=ASSETS.find(x=>x.id===id);if(!a){location.hash
   V.asset=a;
   setTimeout(()=>{if(V.asset!==a)return;
     if(V.model){disposeModel(V.model);}
-    const scene=new THREE.Scene(),model=buildAsset(a,seedN);scene.add(model);poseStill(model,'Idle',.6);const fr=frameOf(model),env=buildEnv(scene,fr,model.userData.ground??a.groundR);
+    const scene=new THREE.Scene(),model=buildAsset(a,seedN);scene.add(model);poseStill(model,'Idle',.6);const fr=frameOf(model),env=buildEnv(scene,fr,model.userData.ground??a.groundR,model.userData.groundKind);
     if(model.userData.variantText){$('#vvar').hidden=false;$('#vvar').innerHTML=`<span>Look ${seedN}</span> ${esc(model.userData.variantText)}`;}
     applyWire(false);Object.assign(V,{scene,model,env});applyWire();applyPreset(scene,env,model,V.mode,V.renderer);
     const ch=a.kind==='character',it=a.folder.startsWith('items'),scn=a.kind==='scene',r=Math.max(.6,fr.radius)/Math.sin(THREE.MathUtils.degToRad(19))*(ch?1.45:it?1.5:scn?.5:.82);V.ctl.minR=ch?.6:fr.radius*.35;V.ctl.maxR=env.GR*2.2;
     const asp=V.cam.aspect||1,rr=asp<1?r*Math.pow(1/asp,.4):r;if(!sameAsset)V.ctl.set(fr.center.clone().setY(it?fr.center.y:scn?0:fr.size.y*(ch?(asp<1?.56:.47):.36)),rr,ch?1.38:scn?.95:1.12,ch?.5:.58);V.ctl.minR=Math.min(V.ctl.minR,it?.3:V.ctl.minR);V.ctl.maxR=Math.max(V.ctl.maxR,rr*1.6);
     const s=statsOf(model);$('#vspecs').innerHTML=`<div><dt>Size</dt><dd>${dims(fr.size)}</dd></div><div><dt>Triangles</dt><dd>${fmt(s.tris)}</dd></div>`+(ch?`<div><dt>Joints</dt><dd>${model.userData.joints.length}</dd></div><div><dt>Clips</dt><dd>${model.userData.clips.length}</dd></div>`:`<div><dt>Meshes</dt><dd>${fmt(s.meshes)}</dd></div>`);
-    const st=model.userData.stats;if(scn&&st)$('#vspecs').innerHTML+=`<div><dt>FPS</dt><dd id="vfps">…</dd></div><div><dt>Buildings</dt><dd>${fmt(st.buildings)}${st.houses!=null?` (${st.houses} houses)`:''}</dd></div>${st.production!=null?`<div><dt>Production</dt><dd>${st.production}</dd></div>`:''}${st.military!=null?`<div><dt>Military</dt><dd>${st.military}</dd></div>`:''}${st.farm!=null?`<div><dt>Farm buildings</dt><dd>${st.farm}</dd></div>`:''}<div><dt>Population</dt><dd>${st.adults+st.children} (${st.adults} adults, ${st.children} children)</dd></div><div><dt>Animals</dt><dd>${fmt(st.animals)}</dd></div><div><dt>Wildlife</dt><dd>${fmt(st.wildlife)}</dd></div><div><dt>Trees</dt><dd>${fmt(st.trees)}</dd></div>`;
+    const st=model.userData.stats;if(scn&&st)$('#vspecs').innerHTML+=`<div><dt>FPS</dt><dd id="vfps">…</dd></div><div><dt>Buildings</dt><dd>${fmt(st.buildings)}${st.houses!=null?` (${st.houses} houses)`:''}</dd></div>${st.production!=null?`<div><dt>Production</dt><dd>${st.production}</dd></div>`:''}${st.military!=null?`<div><dt>Military</dt><dd>${st.military}</dd></div>`:''}${st.farm!=null?`<div><dt>Farm buildings</dt><dd>${st.farm}</dd></div>`:''}${st.enemies!=null?`<div><dt>Enemies</dt><dd>${st.enemies}</dd></div>`:`<div><dt>Population</dt><dd>${st.adults+st.children} (${st.adults} adults, ${st.children} children)</dd></div>`}<div><dt>Animals</dt><dd>${fmt(st.animals)}</dd></div><div><dt>Wildlife</dt><dd>${fmt(st.wildlife)}</dd></div><div><dt>Trees</dt><dd>${fmt(st.trees)}</dd></div>`;
     setupAnim(model,keep);setupOpts(model,a);setDock();
     $('#loading').hidden=true;syncBar();
     if(!V.raf){let last=performance.now();const loop=t=>{V.raf=requestAnimationFrame(loop);const dt=Math.min(.05,(t-last)/1000);last=t;V.ctl.update(dt);if(V.env)followShadow(V.env,V.ctl);if(V.model&&V.model.userData.tick)V.model.userData.tick(dt,V.cam);if(V.mixer){V.mixer.update(dt*V.speed);V.model.userData.post&&V.model.userData.post();toolPost();}if(V.rig)updateRig();V.renderer.render(V.scene,V.cam);V.fpsN=(V.fpsN||0)+1;if(!V.fpsT0)V.fpsT0=t;if(t-V.fpsT0>=500){const e=document.getElementById('vfps');if(e)e.textContent=Math.round(V.fpsN*1000/(t-V.fpsT0));V.fpsN=0;V.fpsT0=t;}};V.raf=requestAnimationFrame(loop);}

@@ -1,7 +1,8 @@
 /* ======================= SCENES ======================= */
 const SC_A=id=>ASSETS.find(a=>a.id===id);
 /* terrain: 2 m voxel columns on a height grid, one instanced mesh per surface type */
-function sceneTerrain(root,size,cell,heightAt,surfAt){const N=Math.round(size/cell),half=size/2,defs={grass:['grassTop','grassSide'],path:['dirtRoad','dirt'],plaza:['cobble','cobble'],sand:['sand','sandSide'],dirt:['dirt','dirt'],bed:['riverbed','dirt'],rock:['stone','stone']};
+/* extra (optional): more surface types, {name:[top texture, side texture, metric]}; metric sides tile the texture every 0.8 m down from the top instead of stretching it over the column */
+function sceneTerrain(root,size,cell,heightAt,surfAt,extra){const N=Math.round(size/cell),half=size/2,defs=Object.assign({grass:['grassTop','grassSide'],path:['dirtRoad','dirt'],plaza:['cobble','cobble'],sand:['sand','sandSide'],dirt:['dirt','dirt'],bed:['riverbed','dirt'],rock:['stone','stone']},extra||{});
   const mat=(k,rep)=>{const b=vm(k),m=b.clone();m.map=b.map.clone();m.map.wrapS=m.map.wrapT=THREE.RepeatWrapping;m.map.repeat.set(rep,rep);m.map.needsUpdate=true;return m;};
   /* only the faces that can be seen: every top, and the side walls down to the lower neighbour (same look as full columns, far fewer triangles) */
   const Hh=new Float32Array(N*N),Sf=new Array(N*N),cells={};for(let i=0;i<N;i++)for(let k=0;k<N;k++){const x=-half+cell/2+i*cell,z=-half+cell/2+k*cell,h=heightAt(x,z),sf=surfAt(x,z,h);Hh[i*N+k]=h;Sf[i*N+k]=sf;(cells[sf]=cells[sf]||[]).push([x,z,h]);}
@@ -11,8 +12,8 @@ function sceneTerrain(root,size,cell,heightAt,surfAt){const N=Math.round(size/ce
   for(let i=0;i<N;i++)for(let k=0;k<N;k++){const h=Hh[i*N+k],sf=Sf[i*N+k],b=Math.min(-1,h-1.2),x0=-half+i*cell,x1=x0+cell,z0=-half+k*cell,z1=z0+cell;
     quad(gOf(sf,false),[[x0,h,z0],[x0,h,z1],[x1,h,z1],[x1,h,z0]],[0,1,0],[[0,1],[0,0],[1,0],[1,1]]);
     for(const[di,dk,n,fx]of[[1,0,[1,0,0],x1],[-1,0,[-1,0,0],x0],[0,1,[0,0,1],z1],[0,-1,[0,0,-1],z0]]){const ni=i+di,nk=k+dk,nh=ni<0||nk<0||ni>=N||nk>=N?-1e9:Hh[ni*N+nk];if(nh>=h)continue;
-      const y0=Math.max(nh,b),v0=(y0-b)/(h-b),g=gOf(sf,true);
-      if(di)quad(g,[[fx,y0,z0],[fx,h,z0],[fx,h,z1],[fx,y0,z1]],n,[[0,v0],[0,1],[1,1],[1,v0]]);else quad(g,[[x0,y0,fx],[x0,h,fx],[x1,h,fx],[x1,y0,fx]],n,[[0,v0],[0,1],[1,1],[1,v0]]);}}
+      const y0=Math.max(nh,b),met=defs[sf][2],v0=met?(y0-h)/cell+2:(y0-b)/(h-b),v1=met?2:1,g=gOf(sf,true);
+      if(di)quad(g,[[fx,y0,z0],[fx,h,z0],[fx,h,z1],[fx,y0,z1]],n,[[0,v0],[0,v1],[1,v1],[1,v0]]);else quad(g,[[x0,y0,fx],[x0,h,fx],[x1,h,fx],[x1,y0,fx]],n,[[0,v0],[0,v1],[1,v1],[1,v0]]);}}
   for(const key in G){const{sf,side,P,Nn,U}=G[key],[t,sd]=defs[sf],geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(P,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(Nn,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));
     const m=new THREE.Mesh(geo,mat(side?sd:t,cell/.8));m.receiveShadow=true;m.castShadow=true;root.add(m);}
   return cells;}
@@ -40,8 +41,8 @@ function pineSwap(obj,seed=1){const lv=vm('leaves'),hit=[];const lw=g=>Math.max(
 const WILD_SP=new Set(['wolf','deer','boar','bison','bear','rabbit','duck','crow','songbird']);
 const SC_BLD=id=>{const a=SC_A(id);return!!a&&a.folder.startsWith('buildings')&&!a.folder.endsWith('fences')&&!/palisade|stonewall|gate|tower/.test(id);};
 const SC_HOUSE=id=>{const a=SC_A(id);return!!a&&(a.folder.endsWith('housing')||/^vx-farm/.test(id));};
-function sceneStats(root,o){let ad=0,ch=0,an=0,wi=0;root.traverse(q=>{const u=q.userData;if(u.traits){u.traits.child?ch++:ad++;}else if(u.animal){WILD_SP.has(u.animal)?wi++:an++;}});
-  root.userData.stats=Object.assign({},o,{adults:ad,children:ch,animals:an,wildlife:wi});}
+function sceneStats(root,o){let ad=0,ch=0,an=0,wi=0,en=0;root.traverse(q=>{const u=q.userData;if(u.enemy)en++;else if(u.traits){u.traits.child?ch++:ad++;}else if(u.animal){WILD_SP.has(u.animal)?wi++:an++;}});
+  root.userData.stats=Object.assign({},o,{adults:ad,children:ch,animals:an,wildlife:wi},en?{enemies:en}:{});}
 
 /* scene agents: fold each character's box meshes into one skinned mesh per material, using its joints as bones.
    The mixer keeps driving the same joints, so clips, skirts and held tools still work, with far fewer draw calls. */

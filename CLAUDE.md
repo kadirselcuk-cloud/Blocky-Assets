@@ -12,6 +12,7 @@ Read this file first in every session, then open only the doc you need:
 | How the code is organised, helper functions, how to add an asset | `docs/ARCHITECTURE.md` |
 | Every asset id, folder, options (generated) | `docs/ASSET_CATALOG.md` |
 | Using assets in another project (GLB, JS API, catalog.json) | `docs/EXPORT.md` |
+| The wasteland kit (`wl-`): 4 m grid rules, ruined castle, goblin fortress, cave, terrain, nature and props; the Goblin wasteland scene | `docs/WASTELAND.md` |
 | The warrior: body, equipment, all clips and how they are built | `docs/WARRIOR.md` |
 | The goblin enemy: body, clothes, weapons, clips | `docs/GOBLIN.md` |
 | The goblin shaman: body, accessories, staffs, clips | `docs/GOBLIN_SHAMAN.md` |

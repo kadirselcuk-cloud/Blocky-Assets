@@ -50,4 +50,5 @@ Load three r128, then `dist/asset-forge-lib.js` (run `npm run build` first):
 | `it-` | items |
 | `env-` | environment |
 | `tr-` | terrain tiles |
+| `wl-` | wasteland kit (modular, 4 m grid; see WASTELAND.md) |
 | `sc-` | scenes |

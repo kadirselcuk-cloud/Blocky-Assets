@@ -56,11 +56,16 @@
     "src/characters/devil_lord.js",
     "src/characters/demon_prince.js",
     "src/buildings/fences.js",
+    "src/environment/wasteland.js",
+    "src/buildings/ruins.js",
+    "src/buildings/goblin_fort.js",
+    "src/environment/cave.js",
     "src/scenes/scenes.js",
     "src/scenes/scenes2.js",
     "src/scenes/scenes3.js",
     "src/scenes/scenes4.js",
     "src/scenes/scenes5.js",
+    "src/scenes/scenes6.js",
     "src/export/export.js"
   ],
   "app": ["src/app/app.js"]
