@@ -52,9 +52,12 @@ const DP_MANE=dpFx(4242,[['head',24,[0,.31,-.06],[.24,.05,.24],1.7],['neck',12,[
 /* black smoke for Death: big dark cubes rising slowly from the body, growing as they go (sm scales them) */
 const DP_SMOKE=dpFx(777,[['chest',14,[0,.18,0],[.5,.3,.3]],['spine',8,[0,.1,0],[.36,.3,.24]],['hips',5,[0,-.04,0],[.4,.2,.28]],['head',5,[0,.2,0],[.24,.2,.24]],
   ['upperArm_L',3,[0,-.15,0],[.15,.3,.15]],['upperArm_R',3,[0,-.15,0],[.15,.3,.15]],['thigh_L',3,[0,-.25,0],[.18,.4,.18]],['thigh_R',3,[0,-.25,0],[.18,.4,.18]]]).map(P=>Object.assign(P,{P:P.P*2.8,sz:P.sz*2.2,rise:P.rise*3.2,dx:P.dx*3,dz:P.dz*3,smoke:true}));
+const DP_HOT=(L,n)=>{L.forEach((P,i)=>{if(P.ty===0&&i%n===0)P.hot=true;});return L;};
 const DP_WFX={sword:dpFx(51,[]),axe:dpFx(52,[['dp_prop_R',24,[.19,.94,0],[.18,.34,.04]]]),flail:dpFx(53,[['dpc_5',24,[0,.1,0],[.24,.24,.24],.9]]),whip:dpFx(54,[])};
 {const r=mulberry32(55);for(let k=0;k<30;k++){const u=.06+.94*r(),ty=k%3;DP_WFX.sword.push({par:'dp_prop_R',p:[-.16*u*u+(r()-.5)*.08,.13+1.05*u,(r()<.5?-1:1)*(.012+.02*r())],ty,P:[.6,.8,1.0][ty]*(.85+.3*r()),ph:r(),sz:[.06,.042,.028][ty]*(.85+.3*r()),rise:[.16,.3,.46][ty]*(.8+.4*r()),dx:(r()-.5)*.14,dz:(r()-.5)*.14});}
   for(let k=0;k<20;k++){const ty=k%3,i=2+Math.floor(r()*12);DP_WFX.whip.push({par:'dpw_'+i,p:[0,.17*r(),0],ty,P:[.5,.7,.9][ty]*(.85+.3*r()),ph:r(),sz:[.04,.03,.02][ty]*(.85+.3*r()),rise:[.12,.22,.34][ty]*(.8+.4*r()),dx:(r()-.5)*.1,dz:(r()-.5)*.1});}}
+/* a few cubes keep the bright colour for a feeling of fire; the wings' dark cubes stay in Death, their coloured ones fade with the fire */
+DP_HOT(DP_MANE,15);for(const k in DP_WFX)DP_HOT(DP_WFX[k],12);DP_WSMOKE.forEach((P,i)=>{P.dark=P.ty!==0;if(P.ty===0&&i%4===0)P.hot=true;});
 
 /* the right-hand weapons: grip at the origin, along local y, the edge towards +x (devil-lord units, scaled by DP_F) */
 function dpWeapon(kind,M){const F=DP_F,w=new THREE.Group(),X=(w0,h,d,m,x,y,z,rx,ry,rz)=>bx(w,w0*F,h*F,d*F,m,x*F,y*F,z*F,rx,ry,rz),H=(P,a,b,m,mD)=>ncHorn(w,P.map(p=>p.map(v=>v*F)),a*F,b*F,m,mD);
@@ -202,8 +205,8 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
   const mk=(sd,g)=>{const wg=new THREE.Group();wg.name='weapon_'+sd;wg.userData.gear=true;root.getObjectByName('socket_'+sd).add(wg);const pr=new THREE.Group();pr.name='dp_prop_'+sd;pr.quaternion.copy(SH_BASIS());wg.add(pr);pr.add(g);return pr;};
   mk('L',dpWhip(M));const wp=mk('R',dpWeapon(wpnK,M));if(wpnK==='flail')dpChain(wp.children[0],M);
   /* the fire cubes (named dpf_ on the body, dpq_ on the weapon, dpz_ on the whip) */
-  const cubes=(L,pre,mats=FM)=>L.forEach((P,k)=>{const par=root.getObjectByName(P.par),g=new THREE.Group();g.name=pre+k;g.userData.gear=true;g.position.set(P.p[0]*F,P.p[1]*F,P.p[2]*F);g.scale.setScalar(P.sz*F*.5);par.add(g);bx(g,1,1,1,mats[P.ty]);});
-  cubes(DP_MANE,'dpf_');cubes(DP_WFX[wpnK],'dpq_');cubes(DP_WFX.whip,'dpz_');cubes(DP_SMOKE,'dps_',[bm('#121010','plain'),bm('#201c1c','plain'),bm('#2e2828','plain')]);cubes(DP_WSMOKE,'dpk_',[deep,bm('#1a1616','plain'),bm('#0e0c0c','plain')]);
+  const cubes=(L,pre,mats=FM)=>L.forEach((P,k)=>{const par=root.getObjectByName(P.par),g=new THREE.Group();g.name=pre+k;g.userData.gear=true;g.position.set(P.p[0]*F,P.p[1]*F,P.p[2]*F);g.scale.setScalar(P.sz*F*.5);par.add(g);bx(g,1,1,1,P.hot?hot:mats[P.ty]);});
+  cubes(DP_MANE,'dpf_');cubes(DP_WFX[wpnK],'dpq_');cubes(DP_WFX.whip,'dpz_');cubes(DP_SMOKE,'dps_',[bm('#0c0a0a','plain'),bm('#141111','plain'),bm('#1b1616','plain')]);cubes(DP_WSMOKE,'dpk_',[deep,FM[0],bm('#0c0a0a','plain')]);
   if(o.bare)return root;
   if(!o.noClips){root.userData.clips=demonPrinceClips(wpnK,hornK);const mx=new THREE.AnimationMixer(root);mx.clipAction(root.userData.clips[0]).play();mx.update(0);}
   root.userData.ground=7;
@@ -359,7 +362,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
   /* ---- tracks every clip carries: wings, tail, jaw, body group, the ropes and the fire cubes ---- */
     const cubeTrack=(Lst,pre,frames,T,dur,Tr,Vt)=>{const q=new M4(),inv=new M4();Lst.forEach((P,kk)=>{const PP=[],SC=[],key=P.wing?'fi':P.smoke?'sm':'fi';
       if(!P.wing&&!frames.some(fr=>fr[key]>0)){Vt.push(new THREE.VectorKeyframeTrack(pre+kk+'.position',[0,dur],[P.p[0]*F,P.p[1]*F,P.p[2]*F,P.p[0]*F,P.p[1]*F,P.p[2]*F]),new THREE.VectorKeyframeTrack(pre+kk+'.scale',[0,dur],[.0005,.0005,.0005,.0005,.0005,.0005]));return;}
-      frames.forEach((fr,i)=>{const Mw=fr.W[P.par],fi=P.wing?Math.min(1,Math.max(.3,fr.fi)):Math.max(0,fr[key]),t=T[i],n=Math.max(1,Math.round(dur/P.P)),tau=((t/dur*n+P.ph)%1+1)%1,
+      frames.forEach((fr,i)=>{const Mw=fr.W[P.par],fi=P.wing?(P.dark?Math.min(1,Math.max(.3,fr.fi,fr.sm||0)):Math.min(1,Math.max(0,fr.fi))):Math.max(0,fr[key]),t=T[i],n=Math.max(1,Math.round(dur/P.P)),tau=((t/dur*n+P.ph)%1+1)%1,
           env=P.smoke?Math.pow(Math.sin(Math.PI*tau),.7)*(.45+.55*tau):(tau<.15?tau/.15:(1-tau)/.85),sz=Math.max(.0005,P.sz*F*fi*env);
         const w=new V(P.p[0]*F,P.p[1]*F,P.p[2]*F).applyMatrix4(Mw);w.x+=P.dx*F*tau;w.z+=P.dz*F*tau;w.y+=P.rise*F*(P.smoke?1:Math.pow(Math.max(fi,.001),.7))*Math.pow(tau,.8);w.y=Math.max(w.y,sz*.9+.003);
         inv.copy(Mw).invert();w.applyMatrix4(inv);const sc=new V().setFromMatrixScale(Mw).x||1;PP.push(w.x,w.y,w.z);const z=sz/sc;SC.push(z,z,z);});
