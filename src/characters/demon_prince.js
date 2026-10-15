@@ -23,12 +23,12 @@ const DP_SKIN={charred:['#1e1a1a','charred black'],ash:['#363032','ash grey'],em
 const DP_FIRE={orange:['#ffe07a','#ff7a1a','#c4380e','#ff6a12','orange'],crimson:['#ffb08a','#e8301c','#8a1410','#ff3a1a','crimson'],green:['#e0ff9a','#3ccf3a','#1a7a2a','#50ff50','green']};
 const DP_HORN={great:'great horns sweeping out and forward like a bull\'s',ram:'curling ram horns',swept:'long horns swept back'};
 const DP_WPN={sword:'a burning curved sword',axe:'a fiery axe',flail:'a burning flail'};
-const DP_BEND=110*Math.PI/180,DP_WS=1.6*DP_F*1.15,DP_TAIL=18,DP_TL=.14*DP_F;
+const DP_BEND=110*Math.PI/180,DP_WS=1.6*DP_F*1.15,DP_TAIL=18,DP_TL=.125*DP_F;
 /* the balrog wing (after the film: huge bat wings held raised and half open, long fanned fingers, a torn membrane of shadow whose
    edges dissolve into smoke): four fingers from the wrist [angle° from straight out, length] in wing units, and the membrane between
    them in fan slices (3 per sector), each with its scalloped, ragged edge radius Re */
-const DP_FING=[[20,.95],[-12,1.0],[-42,.9],[-72,.75]];
-function dpWingSlices(){const out=[],S=[[20,.95,-12,1.0],[-12,1.0,-42,.9],[-42,.9,-72,.75],[-72,.75,-108,.5]];
+const DP_FING=[[-20,1.0],[-50,.95],[-78,.85],[-105,.65]];
+function dpWingSlices(){const out=[],S=[[-20,1.0,-50,.95],[-50,.95,-78,.85],[-78,.85,-105,.65],[-105,.65,-140,.45]];
   S.forEach(([a1,R1,a2,R2],si)=>{for(let k=0;k<3;k++){const u=(k+.5)/3;out.push({si,k,th:(a1+(a2-a1)*u)*Math.PI/180,dth:Math.abs(a2-a1)/3*Math.PI/180,Re:(R1+(R2-R1)*u)*(1-.26*Math.sin(Math.PI*u))*(.9+.1*Math.sin(si*7.3+k*3.1))});}});return out;}
 const DP_WSL=dpWingSlices(),DP_WA=.45;
 /* smoke always drifting off the wings' edges (dark, a few embers), on the outer wing dwingO_{L,R}; base points in wing units / DP_F */
@@ -47,7 +47,7 @@ const DP_ROPE=(()=>{const F=DP_F,W={pre:'dpw_',sd:'L',N:14,anc:.28*F,L:[],th:[],
 function dpFx(seed,list){const r=mulberry32(seed),L=[];for(const[par,n,c,s,k]of list)for(let i=0;i<n;i++){const ty=i%3,kk=k||1;
     L.push({par,p:[c[0]+(r()-.5)*s[0],c[1]+(r()-.5)*s[1],c[2]+(r()-.5)*s[2]],ty,P:[.6,.8,1.0][ty]*(.85+.3*r()),ph:r(),sz:[.075,.052,.034][ty]*(.8+.4*r())*kk,rise:[.22,.42,.66][ty]*(.8+.4*r())*kk,dx:(r()-.5)*.2,dz:(r()-.5)*.2});}
   return L;}
-const DP_MANE=dpFx(4242,[['head',24,[0,.31,-.06],[.24,.05,.24],1.7],['neck',10,[0,.08,-.12],[.2,.12,.04],1.5],['chest',20,[0,.33,-.04],[.5,.05,.24],1.5],['chest',14,[0,.18,-.19],[.4,.24,.03],1.3],
+const DP_MANE=dpFx(4242,[['head',24,[0,.31,-.06],[.24,.05,.24],1.7],['neck',12,[0,.16,.06],[.2,.05,.34],1.5],['chest',20,[0,.33,-.04],[.5,.05,.24],1.5],['chest',14,[0,.18,-.19],[.4,.24,.03],1.3],
   ['spine',8,[0,.12,-.15],[.2,.2,.03],1.1],['upperArm_L',6,[.04,.1,0],[.14,.03,.18],1.1],['upperArm_R',6,[-.04,.1,0],[.14,.03,.18],1.1]]);
 /* black smoke for Death: big dark cubes rising slowly from the body, growing as they go (sm scales them) */
 const DP_SMOKE=dpFx(777,[['chest',14,[0,.18,0],[.5,.3,.3]],['spine',8,[0,.1,0],[.36,.3,.24]],['hips',5,[0,-.04,0],[.4,.2,.28]],['head',5,[0,.2,0],[.24,.2,.24]],
@@ -108,7 +108,7 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
   /* boxes and horns in devil-lord units, scaled to metres */
   const X=(par,w,h,d,m,x,y,z,rx,ry,rz)=>bx(par,w*F,h*F,d*F,m,x*F,y*F,z*F,rx,ry,rz),H=(par,P,a,b,m,mD)=>ncHorn(par,P.map(p=>p.map(v=>v*F)),a*F,b*F,m,mD);
   const vb=new THREE.Group();vb.name='vbody';root.add(vb);
-  const hips=J('hips',vb,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,.1*F,.2*F),head=J('head',neck,0,.02*F,.1*F);
+  const hips=J('hips',vb,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,.2*F,.08*F),head=J('head',neck,0,.05*F,.28*F);
   /* glowing lava cracks: thin glowing bars laid on a surface, in a zigzag */
   const crack=(par,x,y,z,len,rz,ry=0)=>{X(par,.008,len*.55,.006,crackM,x,y+len*.22,z,0,ry,rz);X(par,.008,len*.5,.006,crackM,x+.006,y-len*.22,z,0,ry,rz-.5);};
   /* hips: rocky plates, a dark crotch plate */
@@ -124,7 +124,7 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
   X(chest,.014,.16,.012,skinD,0,.17,.201);crack(chest,.13,.18,.201,.14,.7);crack(chest,.18,.12,.201,.08,-.4);crack(chest,-.08,.2,.201,.1,-.9);crack(chest,-.16,.15,.201,.12,.3);crack(chest,.03,.04,.171,.1,.2);
   crack(chest,.2,.1,-.201,.12,.5);crack(chest,-.18,.2,-.211,.1,-.4);
   /* neck: thick, a rock plate at the back */
-  X(neck,.3,.24,.36,skin,0,0,-.08);X(neck,.24,.12,.22,skinL,0,.1,-.12);X(neck,.05,.16,.02,skinD,0,.03,.121);X(neck,.2,.14,.04,skinD,0,.06,-.14);
+  X(neck,.34,.3,.42,skin,0,0,.1);X(neck,.26,.1,.34,skinL,0,.15,.08);X(neck,.24,.1,.32,skinD,0,-.14,.12);X(neck,.012,.008,.28,crackM,0,-.19,.13);X(neck,.22,.16,.05,skinD,0,.06,-.1);for(const z of[-.02,.12,.24])X(neck,.36,.05,.06,skinD,0,.1,z);
   /* head: bestial: a skull with a crown plate, a heavy brow slanting down to the middle over deep glowing eyes, a short muzzle with a
      sloping bridge and nostrils, upper fangs, cheek spikes swept back, fire in the mouth; the jaw (g_jaw) opens */
   X(head,.28,.24,.28,skin,0,.2,-.03);X(head,.24,.08,.2,skinD,0,.33,-.05);X(head,.22,.1,.14,skin,0,.08,-.08);
@@ -189,7 +189,7 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
       const r0=.03+(sl.Re-.03)*j/n,r1=.03+(sl.Re-.03)*(j+1)/n,rm=(r0+r1)/2;bx(wo,rm*sl.dth*1.12+.012,(r1-r0)*1.06,.008,j===n-1?membD:memb,s*rm*Math.cos(sl.th),rm*Math.sin(sl.th),0,0,0,s*(sl.th-Math.PI/2));}});}
   /* tail: eighteen segments from the base of the spine, about 4.9 m, very thick at the root and tapering to a thin end; spines along
      the top, cracks, a claw spike at the end */
-  {let p=hips;for(let i=0;i<DP_TAIL;i++){const g=new THREE.Group();g.name='dptail_'+i;g.position.set(0,i?0:-.06*F,i?-DP_TL:-.17*F);p.add(g);const u=i/(DP_TAIL-1),t=(.2*Math.pow(1-u,1.3)+.025)*F;
+  {let p=hips;for(let i=0;i<DP_TAIL;i++){const g=new THREE.Group();g.name='dptail_'+i;g.position.set(0,i?0:-.06*F,i?-DP_TL:-.17*F);p.add(g);const u=i/(DP_TAIL-1),t=(.235*Math.pow(1-u,1.3)+.03)*F;
     bx(g,t,t,DP_TL+.014*F,i%3===1?skinD:skin,0,0,-DP_TL/2);if(i<DP_TAIL-1)bx(g,Math.max(.012,t*.18),t*.5,.04*F,claw,0,t/2+t*.18,-DP_TL/2,-.5,0,0);if(i%3===2)bx(g,.008*F,.006*F,DP_TL*.6,crackM,t*.3,-t/2-.002,-DP_TL/2);p=g;}
     const z=-DP_TL;bx(p,.03*F,.03*F,.12*F,claw,0,0,z-.05*F);}
   const joints=[];root.traverse(q=>{if(q.userData.joint&&!q.userData.socket)joints.push(q);});root.userData.joints=joints;
@@ -216,8 +216,8 @@ const DP_CLIPS={};
    weapon low; wings half closed. War (DP_W): wider, left foot forward, the whip handle forward, the weapon raised. */
 const DP_N={fl:[0],HP:[0,-.02,0],h:[0,0,0],sp:[1,0,0],ch:[-2,0,0],nk:[2,0,0],hd:[2,0,0],FL:[.12,.03,6,0,0],FR:[-.12,-.01,-8,0,0],
   gL:[.4,.94,.16],dL:[.15,-.55,.82],pL:[.6,-.3,-.7],gR:[-.38,.92,.1],dR:[0,-.45,.9],pR:[-.6,-.3,-.7],wl:[0,0,0],wr:[0,0,0],fist:[95,95],jw:[0],vb:[1,0],fi:[1],
-  wg:[28,18,10,20,-5],ba:[0],tc:[-40,4,4,4,4,6,6,6,8,8,10,14,18,22],tw:[.4],tsw:[0]};
-const DP_HUNCH={sp:4,ch:12,nk:16,hd:-24};
+  wg:[30,18,10,20,-15],ba:[0],tc:[-40,4,4,4,4,6,6,6,8,8,10,14,18,22],tw:[.4],tsw:[0]};
+const DP_HUNCH={sp:4,ch:12,nk:14,hd:-22};
 function dpRig(wpn,horns){const B=VB.dprince,m=buildDemonPrince(1,{bare:true,weapon:wpn,horns}),J={};m.traverse(q=>{if(q.userData.joint||q.name)J[q.name]=q;});
   const tail=[];for(let i=0;i<DP_TAIL;i++)tail.push(J['dptail_'+i]);return{m,J,B,two:false,lprop:true,noHeel:true,tail};}
 
@@ -394,7 +394,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
     const Mm=[],c=sampleClip(name,dur,t=>{const s=solve(fn(t),t,o);Mm.push(MEM);return s;},Object.assign({autoFeet:false,fps},o),B);extra(c,fn,Mm,o);SIM=null;RS=null;
     if(o.next!==undefined){if(o.next)c.next=o.next;}else if(!o.loop)c.next='Idle (war mode)';if(o.hold)c.hold=true;if(o.speed)c.speed=o.speed;L.push(c);MIN=.4*F;return c;};
   const W=wrP(DP_N,{HP:[0,-.07,0],h:[4,-14,0],sp:[3,-4,0],ch:[3,-6,0],nk:[0,0,0],hd:[-4,14,0],FL:[.14,.17,-4,0,0],FR:[-.14,-.15,-30,0,0],
-    gL:[.44,1.08,.3],dL:[.2,-.25,.95],gR:wpn==='flail'?[-.42,1.02,.4]:[-.38,1.12,.34],dR:wpn==='flail'?[-.1,-.15,.98]:[-.2,.55,.8],wg:[24,12,8,10,0],tc:[-34,4,6,6,6,6,6,6,6,6,8,10,12,14],tw:[1],fi:[1.15]});
+    gL:[.44,1.08,.3],dL:[.2,-.25,.95],gR:wpn==='flail'?[-.42,1.02,.4]:[-.38,1.12,.34],dR:wpn==='flail'?[-.1,-.15,.98]:[-.2,.55,.8],wg:[26,12,8,10,-10],tc:[-34,4,6,6,6,6,6,6,6,6,8,10,12,14],tw:[1],fi:[1.15]});
   const KC=(name,dur,keys,note,o={})=>{const f=wrKeys(keys.map(q=>[q[0],wrP(o.base||W,q[1]||{})]));return CC(name,dur,o.add?t=>o.add(t,f(t)):f,Object.assign({note,fps:60},o));};
   /* in-place IK gait: planted feet slide back at one steady speed, swinging feet come forward lifted; the ground under the ropes slides
      back at the same speed, so the lash trails behind */
@@ -408,7 +408,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
 
   /* ---- on the ground ---- */
   CC('Idle',5,t=>{const p=D*t/5,b=S(p),b2=S(2*p);return wrP(DP_N,{HP:[0,-.02-.005*b2,0],ch:[-2+1*b2,0,0],hd:[2+1.5*S(2*p+1),12*S(p+.6),1.5*S(p)],
-    gL:[.4,.94+.006*b2,.16],gR:[-.38,.92+.01*b2,.1],wg:[28+3*S(p),18,10,20+4*S(2*p),-5],tsw:[24*S(p)],fi:[1+.08*S(2*p)]});},
+    gL:[.4,.94+.006*b2,.16],gR:[-.38,.92+.01*b2,.1],wg:[30+3*S(p),18,10,20+4*S(2*p),-15],tsw:[24*S(p)],fi:[1+.08*S(2*p)]});},
     {loop:true,tp:2.5,note:'Stands hunched and heavy, the whip lying out on the ground before him, the weapon low; breathes and looks slowly round, the fire of his mane flickering, wings half closed, the tail swaying'});
   GAIT('Walk',1.5,{duty:.62,s:.24,lift:.07,toe:12,x:.1,yaw:[4,-4],b:.012,sw:.02,
     body:u=>{const yw=C(D*u),a=C(D*(u-.06));return wrP(DP_N,{HP:[0,-.03,0],h:[3,-5*yw,0],sp:[1,2*yw,0],ch:[-1,4*yw,0],hd:[2,-3*yw,0],
@@ -416,7 +416,7 @@ function dpClips(wpn,horns,dead){const ck=wpn+':'+(dead?horns:'')+':'+dead;if(DP
 
   /* ---- war mode ---- */
   CC('Idle (war mode)',2.6,t=>{const p=D*t/2.6,b=S(p);return wrP(W,{HP:[0,-.07-.008*b,0],ch:[3+1.2*S(2*p),-6,0],hd:[-4+1.5*S(2*p+1),14+5*S(p),0],
-    gL:[.44,1.08+.015*S(p+1.2),.3],gR:[W.gR[0],W.gR[1]+.02*S(p+.4),W.gR[2]],wg:[24+4*S(p),12,8,10,0],tsw:[-20*S(p)],fi:[1.15+.1*S(2*p)]});},
+    gL:[.44,1.08+.015*S(p+1.2),.3],gR:[W.gR[0],W.gR[1]+.02*S(p+.4),W.gR[2]],wg:[26+4*S(p),12,8,10,-10],tsw:[-20*S(p)],fi:[1.15+.1*S(2*p)]});},
     {loop:true,tp:2.6,note:'Wider stance, left foot forward, the whip held out before him, the weapon raised, wings half open, the fire burning higher'});
   GAIT('Walk (war mode)',1.4,{duty:.64,s:.21,lift:.065,toe:12,x:.13,yaw:[-2,-28],b:.01,sw:.016,st:.07,
     body:u=>wrP(W,{h:[6,-14-3*C(D*u),0],gL:[.44,1.08,.3-.03*C(D*u)],dL:[.35,-.3,.89],gR:[W.gR[0],W.gR[1],W.gR[2]+.03*C(D*u)],tsw:[24*C(D*u)]})},'Advances, whip and weapon held ready');
