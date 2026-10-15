@@ -9,7 +9,7 @@
    themselves. The mound groups get position, scale and rotation tracks: the upper rolls follow the hips part of the way,
    squash and jiggle, the foot ripples, and both flatten into a puddle when it melts (Death) and swell back (Rise). */
 const LM_FLESH={raw:['#c47a6e','raw pink'],blood:['#a2443c','blood red'],pallid:['#a8948c','pallid grey'],bruised:['#80596a','bruised purple']};
-const LM_EYES={yellow:['#f0e0a0','#c8a020',.7,'dull yellow eyes'],milky:['#e6e4da',null,0,'milky blind eyes'],ember:['#ffd0a0','#ff5a10',1.6,'ember-glowing eyes']};
+const LM_EYES={yellow:['#ffd890','#f0a838',.7,'dull yellow eyes'],milky:['#e6e4da',null,0,'milky blind eyes'],ember:['#ffdcb8','#f0502a',1.6,'ember-glowing eyes']};
 /* foot segments [z, width, muscle height]; rolls [y, width, height, depth, z]; how far each roll follows the hips */
 const LM_PED=[[.39,.82,.15],[.22,1,.2],[.05,1.07,.22],[-.12,1.05,.21],[-.29,.94,.18],[-.46,.76,.14],[-.61,.5,.1]];
 const LM_ROLL=[[.2,1.08,.26,.96,0],[.45,.92,.22,.8,.01],[.65,.74,.16,.64,.02]],LM_K=[.2,.45,.75],LM_HIP=.72;
@@ -20,8 +20,8 @@ function buildHellMound(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x
   const flesh0=pick(['raw','raw','blood','pallid','bruised']),eye0=pick(['yellow','yellow','milky','ember']),drool=r()<.6,lump=r()<.5,burn=r()<.35,hunchL=r()<.5,sores=Math.floor(r()*1e6);
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,fleshK=opt('flesh',flesh0),eyeK=opt('eyes',eye0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),mix=(a,b,f)=>'#'+new THREE.Color(a).lerp(new THREE.Color(b),f).getHexString(),FL=LM_FLESH[fleshK][0];
-  const skin=bm(FL,'skin'),skinD=bm(shade(FL,.8),'skin'),skinX=bm(shade(FL,.55),'skin'),raw=bm(mix(FL,'#c02828',.45),'skin'),fat=bm(mix(FL,'#e8d0a0',.6),'skin'),
-    sole=bm(shade(mix(FL,'#706050',.3),.6),'plain'),sore=bm('#4e1010','plain'),pus=bm('#cdb855','plain'),scab=bm('#2a1410','plain'),mouth=bm('#1c0808','plain'),
+  const skin=bm(FL,'skin'),skinD=bm(shade(FL,.8),'skin'),skinX=bm(shade(FL,.55),'skin'),raw=bm(mix(FL,'#b13e3e',.45),'skin'),fat=bm(mix(FL,'#e8d0a0',.6),'skin'),
+    sole=bm(shade(mix(FL,'#706050',.3),.6),'plain'),sore=bm('#471919','plain'),pus=bm('#cdb855','plain'),scab=bm('#2a1410','plain'),mouth=bm('#1a0909','plain'),
     teeth=bm('#c8b890','plain'),claw=bm('#3a2c1c','plain'),drl=bm('#d8d0b8','plain'),soot=bm('#2a2220','plain'),bruise=bm(mix(shade(FL,.7),'#503050',.35),'skin');
   const ey=LM_EYES[eyeK],eyeM=ey[1]?wrGlow(ey[0],ey[1],ey[2],pxTex('plain')):bm(ey[0],'plain');
   const rs=mulberry32(sores);

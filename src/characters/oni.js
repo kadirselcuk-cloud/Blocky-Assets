@@ -8,8 +8,8 @@
    rate-limited, so arms never twist or flip. After each solve the weapon is tilted up until none of it is below the ground. */
 VB.oni=Object.assign({},VB.ogre,{thigh:.62,shin:.58,ankle:.12,hipOff:.1,spine:.3,chest:.3,neck:.44,headY:.1,shW:.78,ua:.62,fa:.56,g:2.9,hipW:.24,hand:2.1});
 {const b=VB.oni;b.key='oni';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
-const ON_SKIN={red:['#b4432e','red (aka-oni)'],blue:['#41659a','blue (ao-oni)'],yellow:['#cdb84e','yellow (ki-oni)'],green:['#5a7a46','green (midori-oni)'],black:['#3c3836','black (kuro-oni)']};
-const ON_HAIR=[['#1a1614','black'],['#1a1614','black'],['#dcd6c8','white'],['#5a2a1a','dark red']];
+const ON_SKIN={red:['#a94d3b','red (aka-oni)'],blue:['#41659a','blue (ao-oni)'],yellow:['#cdb84e','yellow (ki-oni)'],green:['#5a7a46','green (midori-oni)'],black:['#3c3836','black (kuro-oni)']};
+const ON_HAIR=[['#1a1614','black'],['#1a1614','black'],['#dcd6c8','white'],['#572c1e','dark red']];
 const ON_WPN={kanabo:'iron kanabō',spiked:'spiked club',barbed:'barbed club'};
 
 /* weapons: grip at the origin, the heavy end along +y (about 1.8 m), a short handle below. Meshes sit directly in the group */
@@ -53,10 +53,10 @@ function buildOni(seed,o={}){const B=VB.oni,r=mulberry32(((seed*2654435761)>>>0)
   const rk=pick(['red','red','blue','blue','yellow','green','black']),rh=pick(['two','two','two','one']),hairC=pick(ON_HAIR),beard=r()<.5,beads=r()<.6,scar=r()<.4,ironRings=r()<.3;
   const opt=(kk,d)=>o[kk]&&o[kk]!=='random'?o[kk]:d,skinK=opt('skin',rk),horns=opt('horns',rh),wpn=o.weapon||'kanabo';
   const sk=ON_SKIN[skinK],shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),skin=bm(sk[0],'skin'),skinD=bm(shade(sk[0],.84),'skin'),skinM=bm(shade(sk[0],.64),'skin'),skinX=bm(shade(sk[0],.42),'skin');
-  const tig=bm('#d8962e','hair'),tigD=bm('#1e1810','hair'),tigW=bm('#e8dcc0','hair'),rope=bm('#d2c08a','leather'),ropeD=bm('#a8945e','leather'),
+  const tig=bm('#cf9b48','hair'),tigD=bm('#1e1810','hair'),tigW=bm('#e8dcc0','hair'),rope=bm('#d2c08a','leather'),ropeD=bm('#a8945e','leather'),
     gold=ironRings?bm('#5a5a60','plain'):bm('#c8a050','plain'),goldD=ironRings?bm('#3a3a3e','plain'):bm('#9a7838','plain'),dark=bm('#1a1210','plain'),
-    eyeW=bm('#f0e6c4','plain'),eyeR=bm('#c8402a','plain'),ivory=bm('#ece2c4','plain'),horn=bm('#e6dcbc','plain'),hornD=bm('#8a7a58','plain'),nail=bm('#2a201a','plain'),
-    hairM=bm(hairC[0],'hair'),hairD=bm(shade(hairC[0],.75),'hair'),bead=bm('#5a3a22','leather'),beadR=bm('#9a2a22','plain');
+    eyeW=bm('#ebe1c0','plain'),eyeR=bm('#b95141','plain'),ivory=bm('#ece2c4','plain'),horn=bm('#e6dcbc','plain'),hornD=bm('#8a7a58','plain'),nail=bm('#2a201a','plain'),
+    hairM=bm(hairC[0],'hair'),hairD=bm(shade(hairC[0],.75),'hair'),bead=bm('#5a3a22','leather'),beadR=bm('#8f3832','plain');
   /* joints: same names, offsets and order as buildVillager */
   const hips=J('hips',root,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
   const aw=.36,lw=.13*B.g,fk=B.ankle/.06,hk=B.hand,g=B.g;

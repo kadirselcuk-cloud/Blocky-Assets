@@ -15,13 +15,13 @@
 VB.dlord=Object.assign({},VB.male,{thigh:.52,shin:.5,ankle:.07,hipOff:.06,spine:.13,chest:.26,neck:.26,headY:.08,shW:.3,ua:.36,fa:.32,g:1.22,hipW:.09,sex:'male'});
 {const b=VB.dlord;b.key='dlord';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 const DL_SKIN={obsidian:['#2a2326','obsidian black'],ash:['#4a4446','ash grey'],blood:['#4a1a1c','blood dark']};
-const DL_GLOW={red:['#ffb0a0','#ff2a10','red','#ff5a30'],orange:['#ffd8a0','#ff7a10','orange','#ffa040'],violet:['#f0d0ff','#b030ff','violet','#c870ff'],green:['#d8ffcc','#30ff58','green','#70ff80']};
+const DL_GLOW={red:['#ff9a5a','#f0502a','red','#f0502a'],orange:['#ffcc5c','#ff8a2a','orange','#ff8a2a'],violet:['#f2e4ff','#9a5ae0','violet','#9a5ae0'],green:['#e4fbe8','#4cd88a','green','#a4ecbc']};
 const DL_HORN={crescent:'great crescent horns curving in at the tips',ram:'curling ram horns',swept:'long horns swept back'};
 const DL_STAFF={orb:'a glowing orb held in black horns',skull:'a horned skull with glowing eyes',gem:'a glowing shard in an iron cage'};
 const DL_BLADE={infernal:'a black iron scimitar with glowing runes',steel:'a dark steel scimitar'};
 const DL_WS=1.6,DL_TAIL=12,DL_TL=.11;
 /* the staff: grip at the origin, local y up; the foot 1.2 m below the grip */
-function dlStaff(kind,glow,glowB){const w=new THREE.Group(),iron=bm('#1c1a1e','plain'),ironD=bm('#0c0b0e','plain'),ironL=bm('#3a363c','plain'),wrap=bm('#3a1612','leather'),bone=bm('#cfc4ac','plain'),boneD=bm('#968a72','plain');
+function dlStaff(kind,glow,glowB){const w=new THREE.Group(),iron=bm('#1c1a1e','plain'),ironD=bm('#131116','plain'),ironL=bm('#3a363c','plain'),wrap=bm('#381714','leather'),bone=bm('#cfc4ac','plain'),boneD=bm('#968a72','plain');
   bx(w,.05,2.15,.05,iron,0,-.125,0);for(const y of[-.9,-.5,.45])bx(w,.056,.1,.056,ironD,0,y,0);bx(w,.064,.28,.064,wrap,0,0,0);
   for(const y of[-1.15,-.3,.16,-.16,.7])bx(w,.07,.035,.07,ironL,0,y,0);bx(w,.03,.06,.03,ironD,0,-1.2,0);
   bx(w,.09,.07,.09,ironL,0,.97,0);bx(w,.05,.04,.05,glow,0,.93,0,0,Math.PI/4,0);
@@ -33,8 +33,8 @@ function dlStaff(kind,glow,glowB){const w=new THREE.Group(),iron=bm('#1c1a1e','p
     for(const[x,z]of[[1,0],[-1,0],[0,1],[0,-1]])ncHorn(w,[[x*.03,.99,z*.03],[x*.09,1.06,z*.09],[x*.1,1.16,z*.1],[x*.05,1.25,z*.05],[x*.012,1.29,z*.012]],.026,.014,iron,ironD);}
   return w;}
 /* the scimitar: grip at the origin, the blade along local y, its edge towards +x, curving back towards -x; barbs on the spine */
-function dlScimitar(kind,glow){const w=new THREE.Group(),iron=bm('#1c1a1e','plain'),ironL=bm('#3a363c','plain'),grip=bm('#3a1612','leather');
-  const inf=kind==='infernal',bl=bm(inf?'#26232a':'#5c6068','plain'),sp=bm(inf?'#0e0c10':'#34373e','plain'),ed=bm(inf?'#56525a':'#a8aeb6','plain');
+function dlScimitar(kind,glow){const w=new THREE.Group(),iron=bm('#1c1a1e','plain'),ironL=bm('#3a363c','plain'),grip=bm('#381714','leather');
+  const inf=kind==='infernal',bl=bm(inf?'#26232a':'#5c6068','plain'),sp=bm(inf?'#131016':'#34373e','plain'),ed=bm(inf?'#56525a':'#a8aeb6','plain');
   bx(w,.045,.2,.045,grip,0,-.02,0);for(const y of[-.08,.04])bx(w,.05,.015,.05,iron,0,y,0);bx(w,.06,.05,.06,ironL,0,-.14,0,0,Math.PI/4,0);bx(w,.025,.04,.025,iron,0,-.18,0);
   bx(w,.13,.03,.08,iron,0,.095,0);for(const s of[-1,1])ncHorn(w,[[s*.06,.095,0],[s*.09,.13,0],[s*.1,.17,0]],.024,.01,iron,iron);
   const n=8,y0=.13,Lb=1.0;
@@ -51,11 +51,11 @@ function buildDevilLord(seed,o={}){const B=VB.dlord,r=mulberry32(((seed*26544357
   const skin0=pick(['obsidian','obsidian','ash','blood']),glow0=pick(['red','red','orange','violet','green']),horn0=pick(['crescent','crescent','ram','swept']),staff0=pick(Object.keys(DL_STAFF)),blade0=pick(['infernal','infernal','steel']);
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,skinK=opt('skin',skin0),glowK=opt('glow',glow0),hornK=opt('horns',horn0),staffK=opt('staff',staff0),bladeK=opt('blade',blade0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),SK=DL_SKIN[skinK][0];
-  const skin=bm(SK,'skin'),skinL=bm(shade(SK,1.3),'skin'),skinD=bm(shade(SK,.72),'skin'),dark=bm('#08060a','plain'),claw=bm('#0a080a','plain'),teeth=bm('#d8ccb6','plain');
-  const iron=bm('#1c1a1e','plain'),ironL=bm('#3e3a40','plain'),ironD=bm('#0c0b0e','plain'),lea=bm('#1e1414','leather'),leaD=bm('#120c0c','leather'),cloth=bm('#3a1210','cloth'),clothD=bm('#240a0a','cloth');
+  const skin=bm(SK,'skin'),skinL=bm(shade(SK,1.3),'skin'),skinD=bm(shade(SK,.72),'skin'),dark=bm('#120d16','plain'),claw=bm('#161216','plain'),teeth=bm('#d8ccb6','plain');
+  const iron=bm('#1c1a1e','plain'),ironL=bm('#3e3a40','plain'),ironD=bm('#131116','plain'),lea=bm('#1e1414','leather'),leaD=bm('#160f0f','leather'),cloth=bm('#3a1210','cloth'),clothD=bm('#240a0a','cloth');
   const horn=bm('#141012','plain'),hornD=bm('#262022','plain');
-  const gl=DL_GLOW[glowK],eyeM=wrGlow(gl[3],gl[1],1.6,pxTex('plain')),runeM=wrGlow(gl[0],gl[1],1.3,pxTex('plain')),crackM=wrGlow(shade(gl[1],.8),gl[1],.9,pxTex('plain')),glowB=wrGlow('#ffffff',gl[1],2.4,pxTex('plain'));
-  const wingB=bm('#1a1012','skin'),memb=bm(skinK==='ash'?'#3a2624':'#3e1812','plain'),membD=bm(skinK==='ash'?'#2a1a18':'#2a0e0a','plain');
+  const gl=DL_GLOW[glowK],eyeM=wrGlow(gl[3],gl[1],1.6,pxTex('plain')),runeM=wrGlow(gl[0],gl[1],1.3,pxTex('plain')),crackM=wrGlow(shade(gl[1],.8),gl[1],.9,pxTex('plain')),glowB=wrGlow('#f6f0e4',gl[1],2.4,pxTex('plain'));
+  const wingB=bm('#1a1012','skin'),memb=bm(skinK==='ash'?'#3a2624':'#3c1a15','plain'),membD=bm(skinK==='ash'?'#2a1a18':'#26110d','plain');
   const vb=new THREE.Group();vb.name='vbody';root.add(vb);
   const hips=J('hips',vb,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
   /* glowing cracks: thin glowing bars laid on a surface */

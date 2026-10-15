@@ -155,7 +155,7 @@ function fxStormCloud(_s,o){const root=new THREE.Group();root.userData.lights=[]
   const sl=t=>Math.floor(t*12+1e-6),ev=t=>{const s=sl(t),h=spHash(s%48+500);return h<.16?Math.floor(h/.16*4):-1;};
   spBolts(K,{pal:o.col,n:4,w:.07,jag:.12,lv:6,branch:3,from:r=>[(r()-.5)*R,H-R*.1,(r()-.5)*R*.6],to:r=>[(r()-.5)*R*.9,0,(r()-.5)*R*.7],seed:92,vis:(k,t)=>ev(t)===k?1:0});
   K.add((S,t,A)=>{S[cloud.name]={p:[0,H+.15*Math.sin(spW(t,4,1)),0],s:Math.max(1e-4,A)};flashes.forEach((g,i)=>{const f=ev(t)>=0||spHash(sl(t)*7+i)<.06;S[g.name]=f&&A>.5?{s:1}:spHid;});});
-  spRise(K,{pal:o.col,n:Math.round(40+R*10),R:R*.8,h:-H+.6,life:.7,sz:.04,sv:9,y:H-.4,wig:0,pow:1.6,mats:[spM('#a8c4e0','soft',.5),spM('#c8dcf0','soft',.4)],seed:93});
+  spRise(K,{pal:o.col,n:Math.round(40+R*10),R:R*.8,h:-H+.6,life:.7,sz:.04,sv:9,y:H-.4,wig:0,pow:1.6,mats:[spM('#7cc4f0','soft',.5),spM('#ccecfc','soft',.4)],seed:93});
   K.light(P.l,.4,30,0,H*.6,0);K.lf=(t,A)=>A*(ev(t)>=0?6:.3);spFrame(root,[R,H*.6,R,H*.6]);root.userData.ground=Math.max(3,R*1.1);return spFinish(K,{start:1,end:1});}
 FX('storm-cloud','lightning','Storm cloud',fxStormCloud,'A dark storm cloud 10 m up, flashing from inside, pouring rain and striking the ground with forked lightning. Clips: Idle, Start, End.',{opts:[spCol(['storm','arcane','fel','blood']),{key:'size',label:'Size',choices:[['s','Small'],['m','Medium'],['l','Large']],def:'m'}]});
 

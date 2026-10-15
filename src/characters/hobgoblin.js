@@ -5,7 +5,7 @@
 VB.hobgoblin=Object.assign({},VB.goblin,{g:1.15,td:1.25,arm:1.3,shW:.25,hipW:.095,hand:1.25,head:1.1});
 {const b=VB.hobgoblin;b.key='hobgoblin';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 const HB_SC=1.5;
-const HB_SKIN={orange:['#b4612e','rust orange'],brick:['#8e3a26','brick red'],ochre:['#9a6a34','ochre-brown'],olive:['#76735c','olive grey'],slate:['#4e5652','slate grey']};
+const HB_SKIN={orange:['#ac663c','rust orange'],brick:['#88402f','brick red'],ochre:['#9a6a34','ochre-brown'],olive:['#76735c','olive grey'],slate:['#4e5652','slate grey']};
 const HB_LEATHER=[['#5a3a22','dark leather'],['#7a5232','tan leather'],['#4a3a2e','brown leather'],['#3a3430','black leather'],['#6a2e24','red-dyed leather']];
 const HB_WPN={cleaver:'heavy cleaver',axe:'bearded war axe',mace:'iron-bound mace'};
 

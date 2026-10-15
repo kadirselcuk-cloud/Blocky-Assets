@@ -11,7 +11,7 @@ VB.revenant=Object.assign({},VB.male,{thigh:.44,shin:.42,spine:.12,chest:.24,shW
 {const b=VB.revenant;b.key='revenant';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 const RV_SC=1.12;
 const RV_ARM={black:[['#4a4e54','#2e3136','#7a6440'],'blackened plate'],rust:[['#6a5446','#46362c','#8a6a3a'],'rusted plate'],steel:[['#8e949a','#61676d','#7a5a3a'],'pale old steel']};
-const RV_EYES={ice:['#d8f4ff','#5ec8ff','icy blue'],green:['#e0ffd8','#62f08a','pale green'],red:['#ffc0b0','#ff3a1e','red'],violet:['#f0d8ff','#b060ff','violet']};
+const RV_EYES={ice:['#e8f6ff','#5ab4ec','icy blue'],green:['#e4fbe8','#4cd88a','pale green'],red:['#ffe0d8','#dc3a32','red'],violet:['#f2e4ff','#9a5ae0','violet']};
 const RV_HELM={great:'closed great helm',horned:'horned great helm',crowned:'crowned great helm',open:'open helm over a withered face'};
 const RV_WPN={sword:'short sword',axe:'axe',mace:'mace'};
 
@@ -35,7 +35,7 @@ function buildRevenant(seed,o={}){const B=VB.revenant,r=mulberry32(((seed*265443
   const arm0=pick(['black','black','rust','steel']),eye0=pick(['ice','ice','green','red','violet']),helm0=pick(['great','great','horned','crowned','open']),wR0=pick(['sword','axe','mace']),wL0=pick(['sword','axe','mace']);
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,armK=opt('armor',arm0),eyeK=opt('eyes',eye0),helmK=opt('helm',helm0),wR=opt('weaponR',wR0),wL=opt('weaponL',wL0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),AC=RV_ARM[armK][0];
-  const P=bm(AC[0],'plain'),Pd=bm(AC[1],'plain'),T=bm(AC[2],'plain'),mail=bm(shade(AC[1],1.2),'plain'),rust=bm('#6e4630','plain'),leath=bm('#2e2018','leather'),dark=bm('#0e0c0b','plain');
+  const P=bm(AC[0],'plain'),Pd=bm(AC[1],'plain'),T=bm(AC[2],'plain'),mail=bm(shade(AC[1],1.2),'plain'),rust=bm('#6e4630','plain'),leath=bm('#2e2018','leather'),dark=bm('#161311','plain');
   const ey=RV_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.8,pxTex('plain')),skin=bm('#7e8078','skin'),skinD=bm('#585a52','skin'),teeth=bm('#b8ac88','plain'),horn=bm('#cfc4a6','plain'),hornD=bm('#8e846a','plain');
   const hips=J('hips',root,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
   /* hips: plated skirt over groin and seat (two lames), plate fauld and a broad belt with a buckle plate */

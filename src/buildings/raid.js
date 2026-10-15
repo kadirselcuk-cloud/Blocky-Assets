@@ -2,11 +2,11 @@
    Burnt and burning cottages, smashed huts and fences, a broken well, a goblin raid totem, plunder, siege engines.
    Fire and smoke are baked clips (Idle loops), so they play in the viewer and in the GLB. */
 VXD.plasterBurnt=(P,r)=>{const m=mulberry32(2101),st=[];for(let x=0;x<16;x++)st.push(m());for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r(),s=k<.22+st[x]*.45;P(x,y,s?(r()<.5?'#2a2420':'#4a423a'):k<.8?'#9a9080':'#b8ae98',nz(r,.9,1.05));}};
-VXD.timberChar=(P,r)=>{const c=[];for(let x=0;x<16;x++)c.push(nz(r,.8,1.1));for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.05?'#7a2a10':(y%4===0?'#0e0c0a':'#2a221c'),c[x]*nz(r,.9,1.06));}};
+VXD.timberChar=(P,r)=>{const c=[];for(let x=0;x<16;x++)c.push(nz(r,.8,1.1));for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.05?'#6b3726':(y%4===0?'#161310':'#2a221c'),c[x]*nz(r,.9,1.06));}};
 VXD.thatchBurnt=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){let f=nz(r,.8,1.1);if(y%4===3)f=.6;P(x,y,r()<.35?'#1e1a14':'#5a4a2e',f);}};
 VXD.smoke=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.3?'#3a3a3c':'#55555a',nz(r,.9,1.06));};
-const RFIRE=new THREE.MeshStandardMaterial({color:new THREE.Color(0xff8a2a).convertSRGBToLinear(),emissive:new THREE.Color(0xff4a0a).convertSRGBToLinear(),emissiveIntensity:1.1,roughness:.6,transparent:true,opacity:.9});
-const RFIRE2=new THREE.MeshStandardMaterial({color:new THREE.Color(0xffd060).convertSRGBToLinear(),emissive:new THREE.Color(0xffa020).convertSRGBToLinear(),emissiveIntensity:1.2,roughness:.6});
+const RFIRE=new THREE.MeshStandardMaterial({color:new THREE.Color(0xff8a2a).convertSRGBToLinear(),emissive:new THREE.Color(0xd8481a).convertSRGBToLinear(),emissiveIntensity:1.1,roughness:.6,transparent:true,opacity:.9});
+const RFIRE2=new THREE.MeshStandardMaterial({color:new THREE.Color(0xffd890).convertSRGBToLinear(),emissive:new THREE.Color(0xf0a838).convertSRGBToLinear(),emissiveIntensity:1.2,roughness:.6});
 const SMOKEMAT=new THREE.MeshStandardMaterial({map:vxTex('smoke'),transparent:true,opacity:.62,depthWrite:false,roughness:1});
 FOLDERS['wasteland'].children.push('wasteland/raid');
 FOLDERS['wasteland/raid']={name:'Raided village',blurb:'Burnt and burning cottages, smashed huts, fences and well, raid totem, plunder, catapult and battering ram',children:[]};
@@ -34,13 +34,13 @@ function rdCottage(s,op){const burning=op&&op.burning,state=(op&&op.state)||'smo
   if(burning){const rf=vRoof(Dz,Lx,2.6,vm('thatchBurnt'),{ov:.7,ovL:.6,step:.4,gable:pm,ridge:vm('wScorch')});put(root,rf,0,base+hw,0);
     for(const[x,z,y,sz]of[[-1.6,1.4,.9,.9],[.4,1.2,1.4,1.1],[1.9,.9,.8,.8],[-.6,-1.3,1.2,1],[1.4,-1.1,1,.9],[0,0,2.5,1.2],[-2,-.5,1.6,.8]])rdFire(root,x,base+hw+y,z,sz,flames);
     for(const[x,z]of[[-1.9,Dz/2+.02],[1.3,Dz/2+.02]])rdFire(root,x,base+1.0,z,.45,flames);rdFire(root,0,base+.1,Dz/2+.05,.5,flames);rdSmoke(root,0,base+hw+3,0,8,smokes,.9);
-    const pl=new THREE.PointLight(0xff7a2a,0,14,2);pl.position.set(0,base+hw+2,0);pl.userData.lamp=true;pl.userData.min=1.2;root.add(pl);L.push(pl);}
+    const pl=new THREE.PointLight(0xff8a2a,0,14,2);pl.position.set(0,base+hw+2,0);pl.userData.lamp=true;pl.userData.min=1.2;root.add(pl);L.push(pl);}
   else{for(const x of[-2,-.7,.6,1.9]){const ok=r()<.6;if(ok){for(const sd of[-1,1])wlBeam(root,[x,base+hw,sd*(Dz/2-.1)],[x,base+hw+2.2,0],.16,tc);}else wlBeam(root,[x,base+hw,-(Dz/2-.1)],[x+.4,.5,Dz/2-1],.16,tc);}
     wlBeam(root,[-2.4,base+hw+2.1,0],[.8,base+hw+2.15,0],.18,tc);wlBeam(root,[.8,base+hw+2.15,0],[2.4,.6,.6],.18,tc);
     bx(root,1.2,.4,.8,vm('thatchBurnt'),1.2,base+hw+.2,-1.6,.5,0,0);const ash=bx(root,Lx-.4,.06,Dz-.4,vm('wAsh'),0,base+.03,0);ash.castShadow=false;
     for(let i=0;i<5;i++)vlog(root,1.2+r()*1.4,.18,.18,'x',(r()-.5)*3,base+.15,(r()-.5)*2.4).material=tc;bx(root,1.2,.06,2,vm('planksDark'),.3,.03,Dz/2+1.4,0,.3,0);
     if(state==='smoulder'){for(const[x,z]of[[-1,.4],[.9,-.6],[1.6,1]]){const e=bx(root,.5,.08,.5,EMBER,x,base+.1,z);e.castShadow=false;rdFire(root,x,base+.14,z,.22,flames);}rdSmoke(root,.4,base+.4,0,6,smokes,.3,.45);
-      const pl=new THREE.PointLight(0xff6a24,0,6,2);pl.position.set(0,base+.8,0);pl.userData.lamp=true;pl.userData.min=.7;root.add(pl);L.push(pl);}}
+      const pl=new THREE.PointLight(0xff8a2a,0,6,2);pl.position.set(0,base+.8,0);pl.userData.lamp=true;pl.userData.min=.7;root.add(pl);L.push(pl);}}
   rdUniq(flames);rdUniq(smokes);if(flames.length||smokes.length)rdFireAnim(root,flames,smokes,3.4,extra);for(let i=0;i<6;i++)wlTuft(root,(r()-.5)*7,0,(r()<.5?-1:1)*(3+r()*.6),r,r()<.4);return root;}
 function rdHut(s){const root=wlRoot(3.8),r=mulberry32((s||1)*1307),pl=vm('planks'),pd=vm('planksDark');bx(root,3.6,.2,3.6,vm('dirt'),0,.1,0);
   for(const[x,z,ry,len,ok]of[[0,-1.6,0,3.2,1],[-1.6,0,Math.PI/2,3.2,1],[1.6,.4,Math.PI/2,2.4,0]]){const g=new THREE.Group();put(root,g,x,.2,z,0,ry,0);for(let i=0;i<Math.round(len/.4);i++){const h=ok?2:(.4+r()*.9);bx(g,.38,h,.12,pl,-len/2+.2+i*.4,h/2,0);}}

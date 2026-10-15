@@ -9,7 +9,7 @@
 VB.ghoul=Object.assign({},VB.male,{sex:'male'});
 {const b=VB.ghoul;b.key='ghoul';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 const GH_SKIN={grey:['#8c9286','ashen grey'],green:['#7e8a62','grey-green'],blue:['#7a8796','bluish'],bruised:['#887480','bruised'],brown:['#8a7658','leathery brown']};
-const GH_EYES={milky:['#d8dccc',null,'milky eyes'],yellow:['#ffe9a0','#ffc23a','yellow glowing eyes'],red:['#ffb0a0','#ff3a1e','red glowing eyes']};
+const GH_EYES={milky:['#d8dccc',null,'milky eyes'],yellow:['#ffd890','#f0a838','yellow glowing eyes'],red:['#f49488','#dc3a32','red glowing eyes']};
 const GH_CLOTH={rags:'ragged shirt and trousers',shroud:'burial shroud',bare:'torn trousers, bare chest'};
 const GH_WPN={none:'claws',knife:'knife',cleaver:'small cleaver'};
 
@@ -29,7 +29,7 @@ function buildGhoul(seed,o={}){const B=VB.ghoul,r=mulberry32(((seed*2654435761)>
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,skinK=opt('skin',skin0),cloth=opt('clothes',cloth0),wpn=opt('weapon',wpn0),eyeK=opt('eyes',eye0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),SK=GH_SKIN[skinK][0];
   const skin=bm(SK,'skin'),skinD=bm(shade(SK,.72),'skin'),skinL=bm(shade(SK,1.12),'skin'),vein=bm(shade(SK,.5),'skin');
-  const wound=bm('#5e2420','plain'),woundD=bm('#36140f','plain'),flesh=bm('#86403a','plain'),bone=bm('#d6caa6','plain'),dark=bm('#16120e','plain'),nail=bm('#3a3226','plain'),teeth=bm('#c4b88a','plain'),hair=bm('#2a2622','hair');
+  const wound=bm('#5e2420','plain'),woundD=bm('#341612','plain'),flesh=bm('#86403a','plain'),bone=bm('#d6caa6','plain'),dark=bm('#16120e','plain'),nail=bm('#3a3226','plain'),teeth=bm('#c4b88a','plain'),hair=bm('#2a2622','hair');
   const ey=GH_EYES[eyeK],eyeM=ey[1]?wrGlow(ey[0],ey[1],1.4,pxTex('plain')):bm(ey[0],'plain');
   const shroud=cloth==='shroud',lin=bm('#b3a684','cloth'),linD=bm('#8e8266','cloth'),top=cloth==='rags'?bm(rag0[0],'cloth'):lin,topD=cloth==='rags'?bm(shade(rag0[0],.72),'cloth'):linD;
   const pants=shroud?lin:bm(rag1[0],'cloth'),pantsD=shroud?linD:bm(shade(rag1[0],.72),'cloth'),rope=vm('rope'),shirt=cloth!=='bare';

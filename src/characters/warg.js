@@ -3,7 +3,7 @@
    sampled by wgClip, which grounds every frame on the lowest point of the model and, for most clips, also pitches
    the body so the front half and the hind half both touch the ground ("level"). Fronts face +z. */
 const WG_COAT={dkgrey:['#4a4846','Dark grey'],black:['#2a2826','Black'],brown:['#5a4232','Brown'],tan:['#8a7456','Dusty tan'],greybrown:['#6a5e50','Grey-brown'],pale:['#9a968e','Pale grey']};
-const WG_EYE={yellow:['#ffc830','Yellow'],red:['#ff3a22','Red'],green:['#a0e040','Green'],pale:['#e8ecd8','Pale']};
+const WG_EYE={yellow:['#ffd890','Yellow'],red:['#dc3a32','Red'],green:['#a5de4e','Green'],pale:['#e8ecd8','Pale']};
 const WGEM={};
 function wgEye(hex){return WGEM[hex]||(WGEM[hex]=new THREE.MeshStandardMaterial({color:new THREE.Color(hex).convertSRGBToLinear(),emissive:new THREE.Color(hex).convertSRGBToLinear(),emissiveIntensity:.9,roughness:.5}));}
 

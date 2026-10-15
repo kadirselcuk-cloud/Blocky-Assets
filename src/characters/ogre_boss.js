@@ -20,7 +20,7 @@ function buildOgreBoss(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x2
   const kind=o.staff&&o.staff!=='random'?o.staff:pick(Object.keys(OM_STAFF)),hornC=pick([['#d8ccaa','ivory'],['#c8b48a','yellowed'],['#9a8e7a','grey']]),hairC=pick(['#1e1a18','#3a2a1e','#6a6660','#a8a49a']);
   const heads=({head,neck,skin,skinD,skinM,skinX,eyeM,dark,ivory,ir,warts})=>{
     const wood=bm('#7a5634','leather'),woodD=bm('#54402a','leather'),horn=bm(hornC[0],'plain'),hornD=bm('#'+new THREE.Color(hornC[0]).multiplyScalar(.55).getHexString(),'plain'),
-      gold=bm('#c8a050','plain'),goldD=bm('#9a7838','plain'),ruby=wrGlow('#ff8090','#d01830',1.2,pxTex('plain')),hairM=bm(hairC,'hair');
+      gold=bm('#c8a050','plain'),goldD=bm('#9a7838','plain'),ruby=wrGlow('#f49488','#dc3a32',1.2,pxTex('plain')),hairM=bm(hairC,'hair');
     /* the main neck under the warrior head, a little right of the middle; the mage head grows out of the left shoulder on a
        thinner neck of its own, leaning out (a second, smaller head grown later) */
     bx(neck,1.1,.24,.58,skin,.08,-.04,.08);bx(neck,.6,.34,.56,skin,OB_HX,.06,.1);

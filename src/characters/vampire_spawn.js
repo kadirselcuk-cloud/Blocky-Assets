@@ -9,7 +9,7 @@
 VB.vspawn=Object.assign({},VB.male,{sex:'male',g:1.45});
 {const b=VB.vspawn;b.key='vspawn';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 const VS_SKIN={chalk:['#c8c6bc','chalk white'],bluish:['#9ea6ac','grey-blue'],green:['#9ea692','grey-green'],sallow:['#c0b696','sallow']};
-const VS_EYES={red:['#ffc0b0','#ff2a14','red glowing eyes'],amber:['#fff0c0','#ffaa1e','amber glowing eyes'],white:['#ffffff','#d8e8ff','white glowing eyes']};
+const VS_EYES={red:['#ffe0d8','#dc3a32','red glowing eyes'],amber:['#fff2d0','#f0a838','amber glowing eyes'],white:['#f6f0e4','#e8f6ff','white glowing eyes']};
 const VS_CLOTH={rags:'a torn grave shirt and ragged breeches',bare:'bare chest and ragged breeches'};
 const VS_SHIRT=[['#8a8472','grave linen'],['#6e6a5e','grey'],['#5a4e44','brown']];
 const VS_BREECH=[['#3a3430','black-brown'],['#4a4038','brown'],['#3c3a40','grey'],['#4a2e2c','faded red']];
@@ -19,7 +19,7 @@ function buildVampireSpawn(seed,o={}){const B=VB.vspawn,r=mulberry32(((seed*2654
   const skin0=pick(Object.keys(VS_SKIN)),eye0=pick(['red','red','amber','white']),cl0=pick(['rags','bare','bare']),shc=pick(VS_SHIRT),brc=pick(VS_BREECH),notch=r()<.35,scar=r()<.4;
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,skinK=opt('skin',skin0),eyeK=opt('eyes',eye0),cloth=opt('clothes',cl0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),SK=VS_SKIN[skinK][0];
-  const skin=bm(SK,'skin'),skinD=bm(shade(SK,.76),'skin'),skinX=bm(shade(SK,.55),'skin'),vein=bm('#'+new THREE.Color(SK).multiplyScalar(.8).lerp(new THREE.Color('#6a7a9a'),.2).getHexString(),'plain'),dark=bm('#120c0c','plain'),claw=bm('#1c1814','plain'),
+  const skin=bm(SK,'skin'),skinD=bm(shade(SK,.76),'skin'),skinX=bm(shade(SK,.55),'skin'),vein=bm('#'+new THREE.Color(SK).multiplyScalar(.8).lerp(new THREE.Color('#6a7a9a'),.2).getHexString(),'plain'),dark=bm('#160f0f','plain'),claw=bm('#1c1814','plain'),
     teeth=bm('#e4dcc4','plain'),gum=bm('#5a2228','plain'),dirt=bm('#4a3a2a','plain');
   const ey=VS_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.7,pxTex('plain')),shM=bm(shc[0],'cloth'),shD=bm(shade(shc[0],.72),'cloth'),brM=bm(brc[0],'cloth'),brD=bm(shade(brc[0],.7),'cloth'),rope=vm('rope');
   const shirt=cloth==='rags',top=shirt?shM:skin,topD=shirt?shD:skinD;

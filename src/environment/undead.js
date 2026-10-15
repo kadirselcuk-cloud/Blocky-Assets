@@ -19,9 +19,9 @@ VXD.udMoss=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.3?'#4e54
 VXD.wax=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#e4dcc4',nz(r,.93,1.03));};
 VXD.deadFlower=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.3?'#5a2a2a':'#6e4a3a',nz(r,.86,1.08));};
 /* emissive materials: necromantic green fire, glowing runes, purple fungus, ground mist */
-const NFIRE=new THREE.MeshStandardMaterial({color:new THREE.Color(0x9affb0).convertSRGBToLinear(),emissive:new THREE.Color(0x30e070).convertSRGBToLinear(),emissiveIntensity:1.8,roughness:.6,transparent:true,opacity:.88});
-const RUNEMAT=new THREE.MeshStandardMaterial({color:new THREE.Color(0x8affa8).convertSRGBToLinear(),emissive:new THREE.Color(0x30e070).convertSRGBToLinear(),emissiveIntensity:.9,roughness:.6});RUNEMAT.userData={glowScale:1.2,base:.9};GLOW.push(RUNEMAT);
-const UDGLOW=new THREE.MeshStandardMaterial({color:new THREE.Color(0xc89ae8).convertSRGBToLinear(),emissive:new THREE.Color(0x9a40e0).convertSRGBToLinear(),emissiveIntensity:.6,roughness:.6});UDGLOW.userData={glowScale:1,base:.6};GLOW.push(UDGLOW);
+const NFIRE=new THREE.MeshStandardMaterial({color:new THREE.Color(0xa4ecbc).convertSRGBToLinear(),emissive:new THREE.Color(0x4cd88a).convertSRGBToLinear(),emissiveIntensity:1.8,roughness:.6,transparent:true,opacity:.88});
+const RUNEMAT=new THREE.MeshStandardMaterial({color:new THREE.Color(0xa4ecbc).convertSRGBToLinear(),emissive:new THREE.Color(0x4cd88a).convertSRGBToLinear(),emissiveIntensity:.9,roughness:.6});RUNEMAT.userData={glowScale:1.2,base:.9};GLOW.push(RUNEMAT);
+const UDGLOW=new THREE.MeshStandardMaterial({color:new THREE.Color(0xcca8f4).convertSRGBToLinear(),emissive:new THREE.Color(0x9a5ae0).convertSRGBToLinear(),emissiveIntensity:.6,roughness:.6});UDGLOW.userData={glowScale:1,base:.6};GLOW.push(UDGLOW);
 const MISTMAT=(()=>{const c=document.createElement('canvas');c.width=c.height=16;const g=c.getContext('2d'),r=mulberry32(4711);for(let y=0;y<16;y++)for(let x=0;x<16;x++){const d=Math.hypot((x-7.5)/7.5,(y-7.5)/7.5),a=Math.max(0,1-d*d)*(.7+r()*.3);g.fillStyle='rgba(255,255,255,'+a.toFixed(3)+')';g.fillRect(x,y,1,1);}
   const t=new THREE.CanvasTexture(c);t.magFilter=t.minFilter=THREE.NearestFilter;t.generateMipmaps=false;return new THREE.MeshStandardMaterial({color:new THREE.Color(0xd8dce4).convertSRGBToLinear(),map:t,transparent:true,opacity:.32,depthWrite:false,roughness:1});})();
 const UDWATER=new THREE.MeshStandardMaterial({color:new THREE.Color(0x14181a).convertSRGBToLinear(),roughness:.08,metalness:.2,transparent:true,opacity:.94});
@@ -31,7 +31,7 @@ function udRoot(g){const r=new THREE.Group();r.userData.lights=[];r.userData.gro
 /* green necromantic flame with a light of its own (always on) */
 function udFlame(par,L,x,y,z,s=.2,minI=1){const g=new THREE.Group();put(par,g,x,y,z);const a=new THREE.Mesh(new THREE.BoxGeometry(s,s*1.5,s),NFIRE);a.position.y=s*.75;g.add(a);const b=new THREE.Mesh(new THREE.BoxGeometry(s*.55,s*.9,s*.55),NFIRE);b.position.y=s*1.75;g.add(b);
   a.onBeforeRender=()=>{const t=performance.now()/1000;NFIRE.emissiveIntensity=1.6+.5*Math.sin(t*7.3);b.position.x=Math.sin(t*5.1+x)*s*.08;b.scale.y=1+.15*Math.sin(t*9+z);};
-  if(L){const pl=new THREE.PointLight(0x60ff90,0,7,2);pl.position.set(0,s*2,0);pl.userData.lamp=true;pl.userData.min=minI;g.add(pl);L.push(pl);}return g;}
+  if(L){const pl=new THREE.PointLight(0xa4ecbc,0,7,2);pl.position.set(0,s*2,0);pl.userData.lamp=true;pl.userData.min=minI;g.add(pl);L.push(pl);}return g;}
 function udCandle(par,x,y,z,h=.2,w=.06){bx(par,w,h,w,vm('wax'),x,y+h/2,z);bx(par,w*1.4,.02,w*1.4,vm('wax'),x+.01,y+.01,z);const f=new THREE.Mesh(new THREE.BoxGeometry(.03,.05,.03),VFLAME);f.position.set(x,y+h+.03,z);par.add(f);}
 /* headstone, base at y = 0, inscription facing +z; style: rounded, slab, pointed, obelisk, skull, broken */
 const UD_STYLES=['rounded','slab','pointed','obelisk','skull','broken'];
@@ -94,7 +94,7 @@ function udTree(size){return s=>{const root=udRoot(size==='large'?5:3.2),r=mulbe
   for(let i=0;i<5;i++){const a=r()*6.28,d=.8+r()*1.2;wlTuft(root,Math.cos(a)*d,0,Math.sin(a)*d,r,r()<.5);}return root;};}
 function udShrooms(s){const root=udRoot(2),r=mulberry32((s||1)*919);for(let k=0;k<12;k++){const a=r()*6.28,d=Math.sqrt(r()),sc=.6+r()*1.5,x=Math.cos(a)*d,z=Math.sin(a)*d;
   bx(root,.06*sc,.22*sc,.06*sc,vm('woolWhite'),x,.11*sc,z);bx(root,.22*sc,.08*sc,.22*sc,UDGLOW,x,.25*sc,z);bx(root,.12*sc,.05*sc,.12*sc,UDGLOW,x,.315*sc,z);}
-  vlog(root,1.4,.3,.3,'x',-.3,.15,.6).rotation.y=.4;const pl=new THREE.PointLight(0xb070ff,0,4,2);pl.position.set(0,.6,0);pl.userData.lamp=true;pl.userData.min=.4;root.add(pl);root.userData.lights.push(pl);return root;}
+  vlog(root,1.4,.3,.3,'x',-.3,.15,.6).rotation.y=.4;const pl=new THREE.PointLight(0x9a5ae0,0,4,2);pl.position.set(0,.6,0);pl.userData.lamp=true;pl.userData.min=.4;root.add(pl);root.userData.lights.push(pl);return root;}
 /* ground mist: thin translucent slabs drifting slowly */
 function udMist(par,x,z,R,n,r){for(let i=0;i<n;i++){const a=r()*6.28,d=Math.sqrt(r())*R,w=1+r()*1.8,dd=.8+r()*1.4,y=.12+r()*.35,m=new THREE.Mesh(new THREE.PlaneGeometry(w,dd).rotateX(-Math.PI/2),MISTMAT);const px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,ph=r()*6.28;
   m.position.set(px,y,pz);m.castShadow=false;m.receiveShadow=false;m.renderOrder=2;m.onBeforeRender=()=>{const t=performance.now()/1000;m.position.x=px+Math.sin(t*.13+ph)*.6;m.position.z=pz+Math.cos(t*.11+ph)*.5;m.position.y=y+Math.sin(t*.4+ph)*.05;};par.add(m);}}

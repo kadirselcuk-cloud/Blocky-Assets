@@ -21,7 +21,7 @@ function omStaff(kind){const w=new THREE.Group(),wd=bm('#5a4028','leather'),wdD=
     bx(w,.13,.14,.035,moss,.005,-.95,.065);bx(w,.035,.12,.1,moss,-.068,.42,0);bx(w,.14,.2,.14,wrap,0,0,0);
     bx(w,.18,.12,.18,wdD,0,1.32,0);
     for(const[x,z]of[[1,0],[-1,0],[0,1],[0,-1]]){bx(w,.06,.24,.06,wd,x*.11,1.46,z*.11,-z*.35,0,x*.35);bx(w,.055,.18,.055,wd,x*.13,1.66,z*.13,z*.3,0,-x*.3);bx(w,.05,.05,.05,wdD,x*.08,1.76,z*.08);}
-    bx(w,.16,.3,.16,omGlow('#7ad0e8'),0,1.6,0,0,Math.PI/4,0);bx(w,.1,.1,.1,omGlow('#b8ecf8'),0,1.78,0,0,Math.PI/4,0);}
+    bx(w,.16,.3,.16,omGlow('#7cc4f0'),0,1.6,0,0,Math.PI/4,0);bx(w,.1,.1,.1,omGlow('#ccecfc'),0,1.78,0,0,Math.PI/4,0);}
   else if(kind==='skull'){
     /* straight pole with an iron foot and a leather grip; a horned beast skull on top, horns sweeping out and up; bones on cords */
     bx(w,.11,2.86,.11,wd,0,-.07,0);bx(w,.13,.1,.13,ir,0,-1.45,0);bx(w,.13,.36,.13,wrap,0,0,0);bx(w,.125,.04,.125,ir,0,-.2,0);bx(w,.125,.04,.125,ir,0,.2,0);

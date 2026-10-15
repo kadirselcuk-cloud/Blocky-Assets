@@ -14,18 +14,18 @@
 const SPG=new THREE.BoxGeometry(1,1,1),SP_TAU=Math.PI*2;
 /* palettes: hot core, bright, mid, dark, smoke, light colour */
 const SP_PAL={
-  fire:{n:'Fire',c:['#fff6c8','#ffd048','#ff7a18','#c02808','#3a2a24'],l:0xff8a30},
-  hell:{n:'Hellfire',c:['#ffd8a0','#ff6a20','#e0200a','#6a0a04','#1e1210'],l:0xff4020},
-  fel:{n:'Fel green',c:['#eaffc8','#b0ff40','#4ade20','#1a7a10','#1a2a14'],l:0x80ff40},
-  frost:{n:'Frost',c:['#ffffff','#d0f4ff','#78ccff','#2a78d0','#c8dcec'],l:0x90d0ff},
-  arcane:{n:'Arcane',c:['#fff0ff','#e070ff','#a040ff','#5a20b0','#2a1440'],l:0xc070ff},
-  shadow:{n:'Shadow',c:['#e0c8ff','#9050e0','#4a1a8a','#1a0a30','#08060c'],l:0x8040ff},
-  blood:{n:'Blood',c:['#ffd0c8','#ff3a3a','#c8101a','#600810','#1a0406'],l:0xff2a2a},
-  holy:{n:'Holy light',c:['#ffffff','#fff6c0','#ffe070','#e8b030','#fffae8'],l:0xffe8a0},
-  storm:{n:'Lightning',c:['#ffffff','#e0f4ff','#90d0ff','#3a80ff','#2a3040'],l:0xa0d0ff},
-  poison:{n:'Poison',c:['#f4ffc8','#c8f048','#80c020','#3a6a10','#3a4a20'],l:0xa0e040},
-  soul:{n:'Soul',c:['#f0ffff','#b0fcff','#48d8ff','#1878b0','#14243a'],l:0x60e0ff},
-  necro:{n:'Necrotic',c:['#e8ffe8','#90ffb0','#30e070','#0a6a30','#0e1a12'],l:0x40ff80}};
+  fire:{n:'Fire',c:['#fff2d0','#ffcc5c','#ff8a2a','#d8481a','#3a2a24'],l:0xff8a2a},
+  hell:{n:'Hellfire',c:['#ffdcb8','#ff9a5a','#f0502a','#a8281a','#1e1210'],l:0xf0502a},
+  fel:{n:'Fel green',c:['#ecfce0','#b4f088','#6cd040','#28761a','#1a2a14'],l:0x6cd040},
+  frost:{n:'Frost',c:['#f2fbff','#ccecfc','#7cc4f0','#2e6eb0','#c8dcec'],l:0x7cc4f0},
+  arcane:{n:'Arcane',c:['#fcf0ff','#e6b8fc','#b86af0','#6228ac','#29163d'],l:0xb86af0},
+  shadow:{n:'Shadow',c:['#ece0f8','#a888d4','#6a44a8','#2e1850','#0f0b16'],l:0xa888d4},
+  blood:{n:'Blood',c:['#ffe0d8','#f49488','#dc3a32','#7a1218','#160809'],l:0xdc3a32},
+  holy:{n:'Holy light',c:['#fffbea','#fff0b8','#f4d06a','#c09a3a','#fffae8'],l:0xf4d06a},
+  storm:{n:'Lightning',c:['#f4f4ff','#d4dcff','#94a8ff','#4652d8','#2a3040'],l:0x94a8ff},
+  poison:{n:'Poison',c:['#f8fcd8','#e0f080','#b4cc38','#5e6e18','#3a4a20'],l:0xb4cc38},
+  soul:{n:'Soul',c:['#e8f6ff','#a8dcfa','#5ab4ec','#1e5e94','#14243a'],l:0x5ab4ec},
+  necro:{n:'Necrotic',c:['#e4fbe8','#a4ecbc','#4cd88a','#1e8a54','#0e1a12'],l:0x4cd88a}};
 const SP_MC=new Map();
 /* glow: unlit, full colour; soft: unlit see-through; add: additive halo; smoke: lit see-through; solid: lit */
 function spM(hex,kind='glow',op){const k=hex+kind+(op||'');if(SP_MC.has(k))return SP_MC.get(k);const c=new THREE.Color(hex).convertSRGBToLinear();let m;

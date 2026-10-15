@@ -12,8 +12,8 @@ const LI_SC=1.05,LI_LB=1.0;
 /* float height option (metres above the ground in the hover; the clips are authored for 0.45 body units and scaled to it) */
 const LI_FLOAT={low:[.12,'just off the ground'],medium:[.3,'knee height'],high:[.5,'half a metre']};
 const LI_ROBE={purple:['#3a2a4e','deep purple'],black:['#1f1d24','black'],red:['#5a1e24','blood red'],blue:['#22304a','midnight blue'],green:['#2c3a2a','grave green'],grey:['#57524a','ash grey'],brown:['#5e4a30','faded brown']};
-const LI_EYES={blue:['#bfe6ff','#5ab8ff','pale blue glow'],green:['#c8ffb0','#3aff5a','green glow'],purple:['#e8ccff','#a650ff','purple glow'],red:['#ffb0a0','#ff3a1e','red glow'],gold:['#ffe9a0','#ffb02a','golden glow'],white:['#ffffff','#b8ccff','white glow']};
-const LI_GEM={emerald:['#8af0a8','#20c060','emerald'],ruby:['#ffa0aa','#e0203a','ruby'],sapphire:['#a8c4ff','#2a5ae8','sapphire']};
+const LI_EYES={blue:['#a8dcfa','#5ab4ec','pale blue glow'],green:['#a4ecbc','#4cd88a','green glow'],purple:['#f2e4ff','#9a5ae0','purple glow'],red:['#f49488','#dc3a32','red glow'],gold:['#ffd890','#f0a838','golden glow'],white:['#f6f0e4','#a8dcfa','white glow']};
+const LI_GEM={emerald:['#a4ecbc','#4cd88a','emerald'],ruby:['#f49488','#dc3a32','ruby'],sapphire:['#a8dcfa','#1e5e94','sapphire']};
 const LI_STAFF={gnarled:'gnarled staff',bone:'bone staff',emerald:'staff with an emerald',ruby:'staff with a ruby',sapphire:'staff with a sapphire'};
 const LI_HEAD={crown:'crown',coif:'chain mail coif',diadem:'diadem with a gem',none:'bare skull'};
 const liGlow=c=>wrGlow(c[0],c[1],1.6,pxTex('plain'));
@@ -86,8 +86,8 @@ function buildLich(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x71c4)
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,headK=opt('head',head0),kind=opt('staff',staff0),robeK=opt('robe',robe0),eyeK=opt('eyes',eye0),boneK=opt('bones',bone0);
   const body=buildSkeleton(seed,{B:VB.lich,bones:boneK,eyes:eyeK,eyeTab:LI_EYES,armor:'none',gear:true,noClips:true});
   const Jn=n=>body.getObjectByName(n),shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),RC=LI_ROBE[robeK][0],boneHex=SK_BONE[boneK][0];
-  const rb=bm(RC,'cloth'),rbD=bm(shade(RC,.65),'cloth'),hole=bm('#0c0a0a','plain'),cord=bm('#2a2420','leather'),trim=bm('#8a7444','plain'),eyeM=liGlow(LI_EYES[eyeK]);
-  const gold=bm('#c9a24a','plain'),goldD=bm('#8a6a2a','plain'),chain=bm('#5a5650','plain');
+  const rb=bm(RC,'cloth'),rbD=bm(shade(RC,.65),'cloth'),hole=bm('#161212','plain'),cord=bm('#2a2420','leather'),trim=bm('#8a7444','plain'),eyeM=liGlow(LI_EYES[eyeK]);
+  const gold=bm('#c9a24a','plain'),goldD=bm('#886a30','plain'),chain=bm('#5a5650','plain');
   const pv=Jn('bone_pelvis'),sp=Jn('bone_spine'),rc=Jn('bone_ribs'),sk=Jn('bone_skull');
   /* torso: a shell over the ribs (back, sides, two front halves that leave the ribcage bare down the middle, shoulders round the neck) */
   bx(rc,.3,.38,.024,rb,0,.03,-.112);
@@ -126,7 +126,7 @@ function buildLich(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x71c4)
   wr.userData.restRule={long:'z',up:'x',L:'fwd',yaw:8,first:true,sd:.5,fw:.2,late:true};sk.userData.restRule={long:'z',up:'y',sgn:1,yaw:50,tilt:18,bounce:true,fw:.3,sd:-.3};
   /* spell orb in front of the left palm, hidden (tiny) unless a clip grows it */
   const orb=new THREE.Group();orb.name='orb_L';orb.userData.gear=true;orb.position.set(-.06,-.12,0);orb.scale.setScalar(.001);Jn('hand_L').add(orb);
-  const oc=LI_EYES[eyeK];bx(orb,.09,.09,.09,liGlow(oc),0,0,0,.6,.6,0);bx(orb,.06,.06,.06,wrGlow('#ffffff',oc[1],2.2,pxTex('plain')),0,0,0,0,.8,.6);
+  const oc=LI_EYES[eyeK];bx(orb,.09,.09,.09,liGlow(oc),0,0,0,.6,.6,0);bx(orb,.06,.06,.06,wrGlow('#f6f0e4',oc[1],2.2,pxTex('plain')),0,0,0,0,.8,.6);
   /* the right fist stays closed round the staff (until a death lets it go); the left hand follows the clips */
   const D2=Math.PI/180;
   body.userData.post=()=>{skirt.post(Jn('thigh_L'),Jn('thigh_R'),body);if(Math.abs(wr.quaternion.w)<.9999||wr.position.lengthSq()>1e-6)return;Jn('fingers_R').rotation.set(0,0,95*D2);Jn('fingerTips_R').rotation.set(0,0,90*D2);Jn('thumb_R').rotation.set(14*D2,0,33*D2);};

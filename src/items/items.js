@@ -1,11 +1,11 @@
 /* ======================= ITEMS ======================= */
-VXD.wine=liquid('#4a1020');VXD.ale=liquid('#a8701e');VXD.oil=liquid('#6a5a1a');VXD.milk=liquid('#ece8de');
+VXD.wine=liquid('#491221');VXD.ale=liquid('#a57229');VXD.oil=liquid('#6a5a1a');VXD.milk=liquid('#ece8de');
 VXD.grain=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(x+y*3)%4===0?'#a88a3a':'#d8b860',nz(r,.85,1.1));};
-VXD.flour=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#f2eee4',nz(r,.93,1.03));};
+VXD.flour=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#ebe7dd',nz(r,.93,1.03));};
 VXD.mail=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const ring=((x+(y>>1)%2*2)%4===0)||(y%2===0&&x%4===2);P(x,y,ring?'#5a5e66':'#9aa0a8',nz(r,.9,1.08));}};
 VXD.blanket=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(Math.floor(x/4)+Math.floor(y/4))%2?'#8a3a3a':'#a85040',nz(r,.9,1.05));};
 VXD.paper=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,y%3===1&&x>2&&x<13?'#8a7a60':'#e8dcc0',nz(r,.94,1.02));};
-const GLASSMAT=new THREE.MeshStandardMaterial({color:0xd8ecf0,transparent:true,opacity:.32,roughness:.08,metalness:.1,depthWrite:false});
+const GLASSMAT=new THREE.MeshStandardMaterial({color:0xd3e7eb,transparent:true,opacity:.32,roughness:.08,metalness:.1,depthWrite:false});
 const liquidMat=hex=>{const k='lq'+hex;if(VXM[k])return VXM[k];const c=new THREE.Color(hex).convertSRGBToLinear();return VXM[k]=new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:.35,roughness:.2,transparent:true,opacity:.9});};
 function iRoot(g=2){const r=new THREE.Group();r.userData.lights=[];r.userData.ground=g;return r;}
 /* stand a long item upright with its lowest point on the ground */
@@ -61,7 +61,7 @@ function pBottle(shape,hex){const root=iRoot(1.2);const lq=liquidMat(hex),G=GLAS
   if(shape!=='vial')bx(root,w*.6,h*.3,.005,vm('paper'),0,h*.45,d/2+.003);if(shape==='jug')bx(root,.04,.18,.04,G,w/2+.03,h*.6,0);
   const pl=new THREE.PointLight(new THREE.Color(hex),0,1.5,2);pl.position.set(0,h*.4,0);pl.userData.lamp=true;pl.userData.min=.15;root.add(pl);root.userData.lights.push(pl);return root;}
 function pRack(){const root=iRoot(1.8);const sh=new THREE.Group();root.add(sh);for(const s of[-1,1])bx(sh,.06,1.3,.3,wdd(),s*.6,.65,0);for(const y of[.05,.5,.95])bx(sh,1.26,.05,.3,wd(),0,y,0);bx(sh,1.26,1.3,.03,wd(),0,.65,-.14);
-  const cols=['#c02a2a','#2a5ac0','#3a9a3a','#7a3a9a','#e0b030','#e06a2a'];for(let k=0;k<3;k++)for(let i=0;i<5;i++){const hx=cols[(i+k*2)%6],w=.1+((i+k)%3)*.03,h=.16+((i*2+k)%3)*.05,x=-.48+i*.24,y=.08+k*.45;
+  const cols=['#bd2f2f','#2f5bbb','#3a9a3a','#7a3a9a','#deb137','#d96f36'];for(let k=0;k<3;k++)for(let i=0;i<5;i++){const hx=cols[(i+k*2)%6],w=.1+((i+k)%3)*.03,h=.16+((i*2+k)%3)*.05,x=-.48+i*.24,y=.08+k*.45;
     const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,w),GLASSMAT);b.position.set(x,y+h/2,0);root.add(b);const l=new THREE.Mesh(new THREE.BoxGeometry(w*.8,h*.65,w*.8),liquidMat(hx));l.position.set(x,y+h*.34,0);root.add(l);bx(root,w*.4,.05,w*.4,vm('cattail'),x,y+h+.03,0);}
   return root;}
 /* ---------- containers with contents ---------- */
@@ -70,7 +70,7 @@ function fillTop(par,kind,w,y,d){if(FILL[kind]){const m=box(w,.04,d,vm(FILL[kind
   const r=mulberry32(hashStr(kind));const piece={apples:['woolRed',.1],potatoes:['leather',.11],cabbages:['leaves',.17],carrots:['gold',.07],fish:['fish',.1],nails:['iron',.04],bread:['hay',.14],eggs:['woolWhite',.07],mushrooms:['woolRed',.09],flowers:['woolPurple',.07],bottles:['glass',.08],ingots:['gold',.12]}[kind];if(!piece)return;
   bx(par,w,.03,d,vm(kind==='fish'?'water':'dark'),0,y-.06,0);const[mat,s]=piece,n=Math.max(4,Math.floor(w*d/(s*s)*.7));
   for(let i=0;i<n;i++){const x=(r()-.5)*(w-s),z=(r()-.5)*(d-s),yy=y-.03+r()*s*.6;if(kind==='fish'){const f=vFish(par,x,yy+.06,z,r()*3);f.rotation.x=Math.PI/2;}else if(kind==='ingots')bx(par,s*1.6,s*.6,s*.8,vm('gold'),x*.6,yy,z*.6,0,(i%2)*Math.PI/2,0);
-    else if(kind==='bottles'){const b=new THREE.Mesh(new THREE.BoxGeometry(s,s*2.4,s),GLASSMAT);b.position.set(x*.7,y+s,z*.7);par.add(b);bx(par,s*.8,s*1.2,s*.8,liquidMat(['#4a1020','#2a5a2a','#a8701e'][i%3]),x*.7,y+s*.6,z*.7);}
+    else if(kind==='bottles'){const b=new THREE.Mesh(new THREE.BoxGeometry(s,s*2.4,s),GLASSMAT);b.position.set(x*.7,y+s,z*.7);par.add(b);bx(par,s*.8,s*1.2,s*.8,liquidMat(['#491221','#2a5a2a','#a57229'][i%3]),x*.7,y+s*.6,z*.7);}
     else bx(par,s,s*.85,s,vm(mat),x,yy,z,0,r()*3,0);}
   if(kind==='mushrooms')for(let i=0;i<5;i++)bx(par,.05,.06,.05,vm('woolWhite'),(r()-.5)*w*.7,y+.02,(r()-.5)*d*.7);}
 function iBarrel(o={}){const root=iRoot(1.6),c=o.contents||'water',b=new THREE.Group();root.add(b);if(c==='closed')bx(b,.6,.8,.6,vm('barrel'),0,.4,0);else hollow(b,.6,.8,.6,.06,vm('barrel'));
@@ -136,7 +136,7 @@ Object.assign(FOLDERS,{'items/tools':{name:'Tools',blurb:'Work tools',children:[
   'items/furniture':{name:'Furniture',blurb:'Tables, seats, beds and storage',children:[]},'items/lighting':{name:'Lighting',blurb:'Candles, lamps, lanterns, torches and fires',children:[]}});
 const IT=(id,f,name,build,desc,opts)=>ASSETS.push({id:'it-'+id,folder:'items/'+f,name,build,desc,opts});
 for(const n of['Axe','Pickaxe','Sledgehammer','Hammer','Hoe','Shovel','Pitchfork','Sickle','Scythe','Saw','Tongs','Bucket','Fishing rod','Crook','Ladle'])IT('tool-'+n.toLowerCase().replace(' ','-'),'tools',n,()=>upright(TOOLS[n].build()),`${n}, shown standing on end.`);
-const BOOKC=[['#8a2a2a','Red'],['#2a4a8a','Blue'],['#2e6a3a','Green'],['#6e4428','Brown'],['#26242a','Black'],['#5a2e6e','Purple'],['#c8a030','Ochre'],['#2a6e6e','Teal'],['#b85a24','Orange'],['#6a6a70','Grey']];
+const BOOKC=[['#8a2a2a','Red'],['#2a4a8a','Blue'],['#2e6a3a','Green'],['#6e4428','Brown'],['#26242a','Black'],['#5a2e6e','Purple'],['#c8a030','Ochre'],['#2a6e6e','Teal'],['#b35e2d','Orange'],['#6a6a70','Grey']];
 IT('book','tools','Book',(s,o)=>upright(TOOLS.Book.build(o.cover||'#8a2a2a'),true),'Book with stiff covers larger than its white pages, a spine and gilt bands.',[{key:'cover',label:'Cover colour',choices:BOOKC,def:'#8a2a2a'}]);
 IT('books','tools','Book stack',()=>{const root=iRoot(1.2);BOOKC.forEach(([c],i)=>{const b=TOOLS.Book.build(c);const g=new THREE.Group();g.add(b);b.rotation.set(0,0,Math.PI/2);put(root,g,(i%2-.5)*.06,.05+i*.08,0,0,(i*.37)%1-.5,0);});return root;},'Stack of ten books, one in each cover colour.');
 [['sword','Arming sword',()=>wSword()],['longsword','Longsword',()=>wSword(1.15,.08,.24)],['dagger','Dagger',()=>wSword(.34,.05,.12)],['falchion','Falchion',wFalchion],['mace','Flanged mace',wMace],['warhammer','War hammer',wWarhammer],['battleaxe','Battle axe',wBattleAxe],['halberd','Halberd',wHalberd],['spear','Spear',()=>TOOLS.Spear.build()],['bow','Bow',()=>TOOLS.Bow.build()],['arrows','Arrow bundle',wArrows],['roundshield','Round shield',()=>wRoundShield()],['heater','Heater shield',()=>wHeater()]]
@@ -144,7 +144,7 @@ IT('books','tools','Book stack',()=>{const root=iRoot(1.2);BOOKC.forEach(([c],i)
 IT('a-kettle','armor','Kettle helm',()=>upright(aHelmKettle()),'Iron kettle helm with a wide brim.');IT('a-nasal','armor','Nasal helm',()=>upright(aHelmNasal()),'Rounded iron helm with a nose guard.');IT('a-great','armor','Great helm',()=>upright(aHelmGreat()),'Flat-topped great helm with an eye slit, breathing holes and a gold band.');
 IT('a-coif','armor','Mail coif',()=>upright(aCoif()),'Hood of chain mail.');IT('a-mail','armor','Mail shirt',()=>aOnStand('mail'),'Chain-mail shirt and coif on a wooden stand.');IT('a-leather','armor','Leather armour',()=>aOnStand('leather'),'Hardened leather cuirass with straps and a belt.');IT('a-gambeson','armor','Gambeson',()=>aOnStand('gambeson'),'Quilted padded jacket and kettle helm on a stand.');
 IT('a-gauntlets','armor','Gauntlets',aGauntlets,'Pair of iron gauntlets.');IT('a-boots','armor','Riding boots',aBoots,'Pair of tall leather boots.');
-[['health','Health potion','round','#d02a2a'],['mana','Mana potion','tall','#2a5ad0'],['stamina','Stamina potion','square','#3aaa3a'],['poison','Poison','vial','#7a2a9a'],['elixir','Elixir','vial','#f0c030'],['fire','Fire tonic','jug','#f06a1a']].forEach(([id,name,sh,c])=>IT('p-'+id,'potions',name,()=>pBottle(sh,c),`${name} in a glass ${sh==='jug'?'jug':sh+' bottle'} with a cork.`));
+[['health','Health potion','round','#cc3333'],['mana','Mana potion','tall','#325cc6'],['stamina','Stamina potion','square','#3aaa3a'],['poison','Poison','vial','#7a2a9a'],['elixir','Elixir','vial','#ebbf3b'],['fire','Fire tonic','jug','#e17738']].forEach(([id,name,sh,c])=>IT('p-'+id,'potions',name,()=>pBottle(sh,c),`${name} in a glass ${sh==='jug'?'jug':sh+' bottle'} with a cork.`));
 IT('p-rack','potions','Potion shelf',pRack,'Shelf of fifteen bottles in six colours.');
 const BAR=[['water','Water'],['wine','Wine'],['ale','Ale'],['oil','Oil'],['milk','Milk'],['grain','Grain'],['flour','Flour'],['apples','Apples'],['potatoes','Potatoes'],['fish','Fish'],['nails','Nails'],['arrows','Arrows'],['coal','Coal'],['empty','Empty'],['closed','Closed']];
 IT('c-barrel','containers','Barrel',(s,o)=>iBarrel(o),'Open barrel; pick its contents.',[{key:'contents',label:'Contents',choices:BAR,def:'wine'}]);

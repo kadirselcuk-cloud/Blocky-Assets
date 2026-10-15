@@ -2,6 +2,7 @@
   "comment": "Load order matters: later files use helpers defined by earlier ones. Every file is a classic script sharing one global scope.",
   "vendor": ["vendor/three.min.js", "vendor/GLTFExporter.js"],
   "library": [
+    "src/core/palette.js",
     "src/core/models.js",
     "src/core/anim.js",
     "src/characters/villager.js",

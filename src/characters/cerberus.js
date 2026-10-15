@@ -13,7 +13,7 @@ function buildCerberus(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x3
     fur=HH_FUR[fk][0],glow=HH_GLOW[gk][0],shag=maneK==='shaggy',K=CBK;
   const cM=cm('hair',fur),dM=cm('hair',darker(fur,.6)),sM=cm('hair','#'+new THREE.Color(fur).lerp(new THREE.Color('#8a8aa0'),.18).getHexString()),
     eyeM=hhGlow(glow,1.6),hotM=hhGlow(glow,.9),skinM=hhGlow(darker(glow,.5),.55),inM=hhGlow(darker(glow,.65),.8),
-    nail=bm('#3a332c','plain'),pad=bm('#1a1618','plain'),ivory=bm('#e0d4b0','plain'),gum=bm('#6a1c18','skin'),nose=bm('#121014','plain'),scarM=bm('#7a5a5a','skin'),
+    nail=bm('#3a332c','plain'),pad=bm('#1a1618','plain'),ivory=bm('#e0d4b0','plain'),gum=bm('#622622','skin'),nose=bm('#121014','plain'),scarM=bm('#7a5a5a','skin'),
     leather=bm('#3a2418','leather'),iron=vm('iron');
   /* everything is laid out in hellhound units and scaled by K here */
   const b=(p,w,h,d,m,x,y,z,rx,ry,rz)=>bx(p,w*K,h*K,d*K,m,x*K,y*K,z*K,rx,ry,rz),J=(p,n,x,y,z,rest)=>aJ(p,n,x*K,y*K,z*K,rest);

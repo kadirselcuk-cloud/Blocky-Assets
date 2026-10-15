@@ -15,7 +15,7 @@ function buildTroll(seed,o={}){const B=VB.troll,r=mulberry32(((seed*2654435761)>
   const rk=pick(Object.keys(TR_SKIN)),rh=pick(['stringy','stringy','mane','bald']),hideC=pick(TR_HIDE),hairC=pick(TR_HAIR),moss=r()<.6,warts=r()<.75,scar=r()<.5,necklace=r()<.5,ring=r()<.4;
   const skinK=o.skin&&o.skin!=='random'?o.skin:rk,hair=o.hair&&o.hair!=='random'?o.hair:rh;
   const sk=TR_SKIN[skinK],shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),skin=bm(sk[0],'skin'),skinD=bm(shade(sk[0],.84),'skin'),skinM=bm(shade(sk[0],.64),'skin'),skinX=bm(shade(sk[0],.42),'skin'),
-    hide=bm(hideC[0],'leather'),hideD=bm(shade(hideC[0],.7),'leather'),hairM=bm(hairC[0],'hair'),dark=bm('#140e0a','plain'),eyeM=bm('#d8b040','plain'),ivory=bm('#d8ccaa','plain'),
+    hide=bm(hideC[0],'leather'),hideD=bm(shade(hideC[0],.7),'leather'),hairM=bm(hairC[0],'hair'),dark=bm('#140e0a','plain'),eyeM=bm('#d5b04b','plain'),ivory=bm('#d8ccaa','plain'),
     claw=bm('#2e2620','plain'),mossM=bm('#4e6228','plain'),mossL=bm('#6a7a34','plain'),gum=bm('#5a2a26','plain'),cord=bm('#2a1e16','leather'),rope=vm('rope'),ir=vm('iron');
   /* joints: same names, offsets and order as buildVillager */
   const hips=J('hips',root,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);

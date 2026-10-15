@@ -12,9 +12,9 @@ VB.vlord=Object.assign({},VB.male,{sex:'male'});
 {const b=VB.vlord;b.key='vlord';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 const VL_SKIN={pale:['#e4ddd2','pale ivory'],ashen:['#cac6c0','ashen'],grey:['#b8bec6','grey-blue']};
 const VL_HAIR={black:['#16131a','black'],silver:['#b4b4bc','silver'],brown:['#3a2a22','dark brown']};
-const VL_EYES={red:['#ffc0b0','#ff2a14','red glowing eyes'],amber:['#fff0c0','#ffaa1e','amber glowing eyes'],violet:['#f0d8ff','#b040ff','violet glowing eyes']};
+const VL_EYES={red:['#ffe0d8','#dc3a32','red glowing eyes'],amber:['#fff2d0','#f0a838','amber glowing eyes'],violet:['#f2e4ff','#9a5ae0','violet glowing eyes']};
 const VL_COAT={black:['#1e1c22','black'],blue:['#1e2438','midnight blue'],wine:['#4a1a24','burgundy']};
-const VL_LINING={crimson:['#8a1424','crimson'],purple:['#4a2066','purple'],black:['#2a262e','black']};
+const VL_LINING={crimson:['#7c2b36','crimson'],purple:['#492263','purple'],black:['#2a262e','black']};
 /* float height (metres above the ground; the clips are authored for 0.3 and scaled to it) */
 const VL_FLOAT={low:[.15,'just off the ground'],medium:[.3,'knee height'],high:[.5,'half a metre']};
 /* cape grid: VL_CN strips round the back from the right shoulder (0) to the left (VL_CN-1), VL_CK points each, VL_SEG apart;
@@ -32,10 +32,10 @@ function buildVampire(seed,o={}){const B=VB.vlord,r=mulberry32(((seed*2654435761
   const skin0=pick(Object.keys(VL_SKIN)),hair0=pick(['black','black','silver','brown']),eye0=pick(['red','red','amber','violet']),coat0=pick(Object.keys(VL_COAT)),lin0=pick(['crimson','crimson','purple','black']);
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,skinK=opt('skin',skin0),hairK=opt('hair',hair0),eyeK=opt('eyes',eye0),coatK=opt('coat',coat0),linK=opt('lining',lin0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),SK=VL_SKIN[skinK][0],HC=VL_HAIR[hairK][0],CC=VL_COAT[coatK][0],LC=VL_LINING[linK][0];
-  const skin=bm(SK,'skin'),skinD=bm(shade(SK,.8),'skin'),hair=bm(HC,'hair'),hairD=bm(shade(HC,.75),'hair'),dark=bm('#120c0e','plain'),teeth=bm('#ece6d6','plain'),lip=bm(shade('#7a3a44',.9),'plain'),nail=bm('#2a1a20','plain');
+  const skin=bm(SK,'skin'),skinD=bm(shade(SK,.8),'skin'),hair=bm(HC,'hair'),hairD=bm(shade(HC,.75),'hair'),dark=bm('#160f11','plain'),teeth=bm('#ece6d6','plain'),lip=bm(shade('#7a3a44',.9),'plain'),nail=bm('#2a1a20','plain');
   const coat=bm(CC,'cloth'),coatD=bm(shade(CC,.7),'cloth'),vest=bm(linK==='black'?'#3a3640':shade(LC,.75),'cloth'),white=bm('#ece8de','cloth'),trous=bm('#1c1a1e','cloth'),boot=bm('#1a1614','leather'),bootD=bm('#2a221c','leather');
   const silver=bm('#b8bcc4','plain'),gold=bm('#c9a24a','plain'),capeO=bm('#151318','cloth'),capeL=bm(LC,'cloth');
-  const ey=VL_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.7,pxTex('plain')),ruby=wrGlow('#ff8090','#c0101e',1.4,pxTex('plain')),blood=wrGlow('#ff6a6a','#d0101a',2.2,pxTex('plain'));
+  const ey=VL_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.7,pxTex('plain')),ruby=wrGlow('#f49488','#dc3a32',1.4,pxTex('plain')),blood=wrGlow('#f49488','#dc3a32',2.2,pxTex('plain'));
   const vb=new THREE.Group();vb.name='vbody';root.add(vb);
   const hips=J('hips',vb,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
   /* hips: trousers, belt with a silver buckle, the short skirt of the coat */
@@ -75,7 +75,7 @@ function buildVampire(seed,o={}){const B=VB.vlord,r=mulberry32(((seed*2654435761
     if(sd==='R'){const rg=new THREE.Group();rg.position.set(0,0,.011);fg.add(rg);bx(rg,.024,.012,.024,gold,0,-.02,0);bx(rg,.012,.01,.012,ruby,-s*.012,-.02,0);}
     /* blood orb in front of the palm, hidden (tiny) unless a clip grows it */
     const orb=new THREE.Group();orb.name='orb_'+sd;orb.userData.gear=true;orb.position.set(-s*.07,-.08,.02);orb.scale.setScalar(.001);hd.add(orb);
-    bx(orb,.09,.09,.09,blood,0,0,0,.6,.6,0);bx(orb,.055,.055,.055,wrGlow('#ffffff','#ff3030',2.4,pxTex('plain')),0,0,0,0,.8,.6);}
+    bx(orb,.09,.09,.09,blood,0,0,0,.6,.6,0);bx(orb,.055,.055,.055,wrGlow('#ffe0d8','#dc3a32',2.4,pxTex('plain')),0,0,0,0,.8,.6);}
   /* legs: dark trousers, tall black riding boots with turned-down cuffs and pointed toes */
   for(const[sd,s]of[['L',1],['R',-1]]){const th=J('thigh_'+sd,hips,s*B.hipW,-(B.hipOff+.01),0),sn=J('shin_'+sd,th,0,-B.thigh,0),ft=J('foot_'+sd,sn,0,-B.shin,0);
     bx(th,.12,.43,.13,trous,0,-.2,0);

@@ -9,10 +9,10 @@
    laying (wtHairTracks). Charm spells are gestures only: the owner adds the spell effects separately. */
 VB.succ=Object.assign({},VB.female,{thigh:.44,shin:.42,g:.95,sex:'female'});
 {const b=VB.succ;b.key='succ';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
-const SU_SKIN={crimson:['#b83a40','crimson'],rose:['#d8908e','rose'],lilac:['#a68cc2','lilac'],fair:['#ecd0c4','fair']};
-const SU_HAIR={black:['#16101a','jet black'],crimson:['#7a1020','crimson'],platinum:['#e4dacc','platinum'],violet:['#4c2270','violet']};
-const SU_EYES={pink:['#ffd8f4','#ff3cc8','pink'],violet:['#f0d8ff','#b040ff','violet'],gold:['#fff0c0','#ffb41e','gold'],red:['#ffc0b0','#ff2a14','red']};
-const SU_OUT={black:['#1a141c','black'],crimson:['#5c0e1c','crimson'],purple:['#3e1852','purple']};
+const SU_SKIN={crimson:['#b43f45','crimson'],rose:['#d8908e','rose'],lilac:['#a68cc2','lilac'],fair:['#ecd0c4','fair']};
+const SU_HAIR={black:['#16101a','jet black'],crimson:['#6c2631','crimson'],platinum:['#e4dacc','platinum'],violet:['#4b266b','violet']};
+const SU_EYES={pink:['#ffe6f6','#e05ab8','pink'],violet:['#f2e4ff','#9a5ae0','violet'],gold:['#fff2d0','#f0a838','gold'],red:['#ffdcb8','#f0502a','red']};
+const SU_OUT={black:['#1a141c','black'],crimson:['#521d26','crimson'],purple:['#3d1b4e','purple']};
 const SU_HORN={curved:'curved horns swept back',ram:'ram horns curling back',tall:'tall horns rising up and out'};
 const SU_WING={dark:'dark',black:'black',crimson:'crimson'};
 const SU_TAIL=10,SU_TL=.11;
@@ -23,10 +23,10 @@ function buildSuccubus(seed,o={}){const B=VB.succ,r=mulberry32(((seed*2654435761
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,skinK=opt('skin',skin0),hairK=opt('hair',hair0),eyeK=opt('eyes',eye0),outK=opt('outfit',out0),hornK=opt('horns',horn0),wingK=opt('wings',wing0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),SK=SU_SKIN[skinK][0],HC=SU_HAIR[hairK][0],OC=SU_OUT[outK][0];
   const skin=bm(SK,'skin'),skinD=bm(shade(SK,.82),'skin'),hair=bm(HC,'hair'),hairS=bm(shade(HC,hairK==='platinum'?.86:1.4),'hair'),hairD=bm(shade(HC,.7),'hair');
-  const dark=bm('#0e0a0e','plain'),smoky=bm(skinK==='crimson'?'#3a1024':'#3c1c40','plain'),redLip=skinK==='fair'||skinK==='rose',lip=bm(redLip?'#b0182e':'#3c0a22','plain'),lipD=bm(redLip?'#7a0e1e':'#24061a','plain'),teeth=bm('#f2ece2','plain');
-  const lea=bm(OC,'leather'),leaL=bm(shade(OC,1.6),'leather'),boot=bm('#141114','leather'),bootD=bm('#08070a','leather'),gold=bm('#d8b04a','plain'),goldD=bm('#9a7428','plain'),nail=bm('#2a0a14','plain');
+  const dark=bm('#161016','plain'),smoky=bm(skinK==='crimson'?'#371325':'#3c1c40','plain'),redLip=skinK==='fair'||skinK==='rose',lip=bm(redLip?'#9e3746':'#351223','plain'),lipD=bm(redLip?'#6b2630':'#200b19','plain'),teeth=bm('#ebe5db','plain');
+  const lea=bm(OC,'leather'),leaL=bm(shade(OC,1.6),'leather'),boot=bm('#141114','leather'),bootD=bm('#120f16','leather'),gold=bm('#d8b04a','plain'),goldD=bm('#967534','plain'),nail=bm('#270d15','plain');
   const horn=bm('#1a1418','plain'),hornD=bm('#342a32','plain');
-  const WB={dark:[shade(SK,.62),shade(SK,.42)],black:['#2a2228','#141016'],crimson:['#6a1420','#4a0c18']}[wingK],wingB=bm(WB[0],'skin'),memb=bm(WB[1],'plain'),membD=bm(shade(WB[1],.7),'plain'),claw=bm('#1a1414','plain');
+  const WB={dark:[shade(SK,.62),shade(SK,.42)],black:['#2a2228','#141016'],crimson:['#60212a','#41171f']}[wingK],wingB=bm(WB[0],'skin'),memb=bm(WB[1],'plain'),membD=bm(shade(WB[1],.7),'plain'),claw=bm('#1a1414','plain');
   const ey=SU_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.8,pxTex('plain')),gemM=wrGlow(ey[0],ey[1],1.5,pxTex('plain'));
   const col=m=>{m.userData.hairCol=true;return m;};
   const vb=new THREE.Group();vb.name='vbody';root.add(vb);

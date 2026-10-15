@@ -25,7 +25,7 @@ function buildVampireBeast(seed,o={}){const B=VB.vbeast,r=mulberry32(((seed*2654
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,skinK=opt('skin',skin0),eyeK=opt('eyes',eye0),wingK=opt('wings',wing0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),SK=VBB_SKIN[skinK][0],WC=VBB_WING[wingK][0];
   const skin=bm(SK,'skin'),skinD=bm(shade(SK,.78),'skin'),skinX=bm(shade(SK,.6),'skin'),dark=bm('#140c0e','plain'),claw=bm('#1e1816','plain'),teeth=bm('#e6dcc6','plain'),
-    lip=bm('#9a3036','plain'),gum=bm('#7a1e26','plain'),tongue=bm('#b4444c','plain'),earIn=bm('#'+new THREE.Color(SK).multiplyScalar(.85).lerp(new THREE.Color('#b07070'),.35).getHexString(),'skin'),memb=bm(WC,'plain');
+    lip=bm('#96343a','plain'),gum=bm('#73282f','plain'),tongue=bm('#b4444c','plain'),earIn=bm('#'+new THREE.Color(SK).multiplyScalar(.85).lerp(new THREE.Color('#b07070'),.35).getHexString(),'skin'),memb=bm(WC,'plain');
   const ey=VL_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.8,pxTex('plain'));
   const vb=new THREE.Group();vb.name='vbody';root.add(vb);
   const hips=J('hips',vb,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
@@ -82,7 +82,7 @@ function buildVampireBeast(seed,o={}){const B=VB.vbeast,r=mulberry32(((seed*2654
   const sm=new THREE.Group();sm.name='vsmoke';sm.scale.setScalar(.001);root.add(sm);
   VL_PUFF.forEach((P,j)=>{const g=new THREE.Group();g.name='vsmoke_'+j;g.scale.setScalar(.001);sm.add(g);const m1=vlSmokeMat(j%3===0?'#4a3a52':'#2e2a34',.78),m2=vlSmokeMat(j%4===1?'#5a1e2a':'#3e3846',.7);
     bx(g,1,1,1,m1,0,0,0,0,P.a,0);bx(g,.62,.62,.62,m2,.36*Math.sin(P.a*3),.28,.3*Math.cos(P.a*2),.3,P.a,0);});
-  const rm=vlSmokeMat('#ffb4b4',.6);
+  const rm=vlSmokeMat('#eba6a6',.6);
   for(let i=0;i<VBB_RING;i++){const g=new THREE.Group();g.name='vring_'+i;g.scale.setScalar(.001);root.add(g);for(let a=0;a<8;a++){const an=a*Math.PI/4;bx(g,.8,.07,.03,rm,Math.sin(an)*.97,Math.cos(an)*.97,0,0,0,-an);}}
   if(!o.noClips){root.userData.clips=vampireBeastClips();const mx=new THREE.AnimationMixer(root);mx.clipAction(root.userData.clips[0]).play();mx.update(0);}
   root.userData.ground=3.1;

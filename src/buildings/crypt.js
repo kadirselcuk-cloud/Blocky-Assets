@@ -36,7 +36,7 @@ function cwVault(s,op){const root=udRoot(-1),c=vm('crypt'),dk=vm('cryptDark');ro
   if((op&&op.chandelier)==='bones'){const sw=new THREE.Group();sw.name='chandelier';put(root,sw,0,4.8,0);for(let i=0;i<10;i++)bx(sw,i%2?.03:.06,.12,i%2?.06:.03,vm('iron'),0,-.06-i*.11,0);
     const ring=new THREE.Group();put(sw,ring,0,-1.25,0);bx(ring,.16,.16,.16,vm('bone'),0,.05,0);for(let k=0;k<8;k++){const a=k/8*Math.PI*2;wlBone(ring,.62,Math.cos(a)*.5,-.03,Math.sin(a)*.5,-a+Math.PI/2);if(k%2===0){wlSkull(ring,Math.cos(a)*.58,.03,Math.sin(a)*.58,.6,-a+Math.PI/2);}else udCandle(ring,Math.cos(a)*.52,.04,Math.sin(a)*.52,.14);}
     for(let k=0;k<4;k++){const a=k/4*Math.PI*2+.4;wlBeam(sw,[0,-.9,0],[Math.cos(a)*.5,-1.22,Math.sin(a)*.5],.03,vm('iron'));}
-    const pl=new THREE.PointLight(0xffb060,0,7,2);pl.position.set(0,3.4,0);pl.userData.lamp=true;pl.userData.min=.5;root.add(pl);root.userData.lights.push(pl);
+    const pl=new THREE.PointLight(0xffcc5c,0,7,2);pl.position.set(0,3.4,0);pl.userData.lamp=true;pl.userData.min=.5;root.add(pl);root.userData.lights.push(pl);
     propAnim(root,[sw],[{name:'Idle',dur:5,loop:true,fn:(t,S)=>{const a=t/5*Math.PI*2;S.chandelier={r:[Math.sin(a)*.03,a*.1,Math.cos(a)*.03]};}}]);}
   else for(let k=0;k<2;k++){const ch=new THREE.Group();put(root,ch,0,4.8,k?1:-1);for(let i=0;i<4;i++)bx(ch,i%2?.03:.06,.12,i%2?.06:.03,vm('iron'),0,-.06-i*.11,0);}return root;}
 function cwFloor(){return vTile((x,z)=>wlNoise(x*1.3,z*1.3,1)>1.8?'cryptDust':'cryptFloor',(root,at)=>{const r=mulberry32(91);wlPebbles(root,10,93,['cryptFloor'],at,['crypt','bone']);for(let i=0;i<3;i++){const x=(r()-.5)*3,z=(r()-.5)*3;wlBone(root,.3+r()*.3,x,at(x,z)==='cryptDust'?T-.02:T,z,r()*3);}});}
@@ -79,10 +79,10 @@ function udAltar(s){const root=udRoot(2),r=mulberry32((s||1)*1051),dk=vm('cryptD
   bx(root,.32,.02,.05,vm('iron'),.45,1.13,.25,0,.6,0);bx(root,.08,.03,.06,vm('leather'),.32,1.135,.33,0,.6,0);for(const[x,z,h]of[[-.9,-.4,.3],[-.75,-.42,.2],[.85,.3,.26],[.95,-.35,.18],[-.2,-.42,.14]])udCandle(root,x,1.12,z,h);
   for(let i=0;i<3;i++)udCandle(root,-.7+i*.7,.2,.65,.14+i*.04);return root;}
 function udCandles(s){const root=udRoot(1.2),r=mulberry32((s||1)*1061);for(let i=0;i<9;i++){const a=r()*6.28,d=Math.sqrt(r())*.45;udCandle(root,Math.cos(a)*d,0,Math.sin(a)*d,.08+r()*.3,.05+r()*.04);}
-  bx(root,.6,.02,.5,vm('wax'),0,.01,0);const pl=new THREE.PointLight(0xffb060,0,4,2);pl.position.set(0,.6,0);pl.userData.lamp=true;pl.userData.min=.5;root.add(pl);root.userData.lights.push(pl);return root;}
+  bx(root,.6,.02,.5,vm('wax'),0,.01,0);const pl=new THREE.PointLight(0xffcc5c,0,4,2);pl.position.set(0,.6,0);pl.userData.lamp=true;pl.userData.min=.5;root.add(pl);root.userData.lights.push(pl);return root;}
 function udCandelabra(s){const root=udRoot(1.2),ib=vm('ironB');bx(root,.4,.06,.4,ib,0,.03,0);for(const[a,b]of[[1,0],[-1,0],[0,1]])bx(root,.06,.06,.3,ib,a*.12,.06,b*.12,0,Math.atan2(a,b),0);bx(root,.06,1.6,.06,ib,0,.86,0);
   bx(root,.9,.05,.05,ib,0,1.5,0);for(const x of[-.42,-.21,0,.21,.42]){const y=1.53+(x===0?.2:Math.abs(x)<.3?.1:0);if(y>1.6)bx(root,.04,y-1.52,.04,ib,x,(y+1.52)/2,0);bx(root,.1,.03,.1,ib,x,y,0);udCandle(root,x,y+.015,0,.16);}
-  const pl=new THREE.PointLight(0xffb060,0,5,2);pl.position.set(0,1.9,0);pl.userData.lamp=true;pl.userData.min=.5;root.add(pl);root.userData.lights.push(pl);return root;}
+  const pl=new THREE.PointLight(0xffcc5c,0,5,2);pl.position.set(0,1.9,0);pl.userData.lamp=true;pl.userData.min=.5;root.add(pl);root.userData.lights.push(pl);return root;}
 function udBrazier(s){const root=udRoot(1.4),ib=vm('ironB');for(let i=0;i<3;i++){const a=i/3*Math.PI*2;wlBeam(root,[Math.cos(a)*.42,0,Math.sin(a)*.42],[Math.cos(a)*.24,.85,Math.sin(a)*.24],.06,ib);}
   hollow(root,.7,.2,.7,.05,ib,0,.85,0);bx(root,.6,.06,.6,vm('coal'),0,.94,0);udFlame(root,root.userData.lights,0,.97,0,.3,1);return root;}
 function udRitual(s){const root=udRoot(-1),L=root.userData.lights,r=mulberry32((s||1)*1063),c=.2;root.userData.ground=-1;
@@ -90,7 +90,7 @@ function udRitual(s){const root=udRoot(-1),L=root.userData.lights,r=mulberry32((
   for(let i=-10;i<10;i++)for(let k=-10;k<10;k++){const x=(i+.5)*c,z=(k+.5)*c,d=Math.hypot(x,z);if((d>1.6&&d<1.8)||(d>1.1&&d<1.28)||(d<.15)){const m=bx(root,c,.02,c,RUNEMAT,x,.05,z);m.castShadow=false;}}
   for(let k=0;k<12;k++){const a=k/12*Math.PI*2,R=1.44;const g=new THREE.Group();put(root,g,Math.cos(a)*R,.05,Math.sin(a)*R,0,-a,0);const sh=k%3;bx(g,.06,.02,.2,RUNEMAT,0,0,0);if(sh===0)bx(g,.16,.02,.06,RUNEMAT,.05,0,.07);else if(sh===1)bx(g,.06,.02,.06,RUNEMAT,.08,0,-.07);else bx(g,.12,.02,.06,RUNEMAT,-.03,0,.07);}
   for(let k=0;k<5;k++){const a=k/5*Math.PI*2+.3;udCandle(root,Math.cos(a)*1.95,.04,Math.sin(a)*1.95,.18+r()*.1);}for(let k=0;k<4;k++){const a=k/4*Math.PI*2+.8;wlSkull(root,Math.cos(a)*2.05,.04,Math.sin(a)*2.05,.9,-a-Math.PI/2);}
-  const pl=new THREE.PointLight(0x60ff90,0,6,2);pl.position.set(0,.8,0);pl.userData.lamp=true;pl.userData.min=.6;root.add(pl);L.push(pl);return root;}
+  const pl=new THREE.PointLight(0xa4ecbc,0,6,2);pl.position.set(0,.8,0);pl.userData.lamp=true;pl.userData.min=.6;root.add(pl);L.push(pl);return root;}
 function udOssuary(s){const root=udRoot(1.8),r=mulberry32((s||1)*1069),w=vm('planksDark');for(const sd of[-1,1])bx(root,.1,2,.5,w,sd*1,1,0);for(let t=0;t<4;t++){const y=.1+t*.6;bx(root,2.1,.06,.5,w,0,y,0);
   if(t<3)for(let k=0;k<6;k++){if(t%2===0)wlSkull(root,-.75+k*.3,y+.03,.02,.9,(r()-.5)*.3);else for(let j=0;j<3;j++)wlBone(root,.4,-.7+k*.28,y+.03+j*.06,0,Math.PI/2);}}bx(root,2.1,1.9,.04,w,0,1,-.27);return root;}
 function udBonePile(s){const root=udRoot(2),r=mulberry32((s||1)*1087);wlMound(root,0,0,.9,r,vm('gSoil'));for(let i=0;i<18;i++){const a=r()*6.28,d=Math.sqrt(r())*1.2,y=Math.max(0,(.9-d)*1.2);wlBone(root,.3+r()*.4,Math.cos(a)*d,Math.min(y,1.2),Math.sin(a)*d,r()*3);}

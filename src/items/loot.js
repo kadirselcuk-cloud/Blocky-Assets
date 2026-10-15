@@ -13,14 +13,14 @@ FOLDERS['loot/potions']={name:'Potions',blurb:'Ten brews in six bottle shapes an
 FOLDERS['loot/treasure']={name:'Treasure',blurb:'Coins, gems, ingots, jewellery, scrolls, books, keys, crystals, sacks and chests',children:[]};
 FOLDERS['loot/supplies']={name:'Supplies',blurb:'Food, ammunition and a bomb',children:[]};
 
-const LT_RAR={common:['Common','#d8d8d8',0],uncommon:['Uncommon','#3ad84a',1],rare:['Rare','#3a8cff',2],epic:['Epic','#b44cff',3],legendary:['Legendary','#ff9a1a',4]};
+const LT_RAR={common:['Common','#c8c4bc',0],uncommon:['Uncommon','#62c04c',1],rare:['Rare','#4a90f0',2],epic:['Epic','#aa60ec',3],legendary:['Legendary','#f49a30',4]};
 const LT_METAL={steel:['Steel','#a8b2bc',{r:.4,m:.25}],iron:['Iron','#8a9098',{r:.7,m:.15}],rusty:['Rusty iron','#7a5f4a',{r:.95,tex:'leather'}],bronze:['Bronze','#b47c3a',{r:.5,m:.25}],
-  gold:['Gold','#e6b832',{r:.4,m:.25}],silver:['Silver','#d6dce4',{r:.35,m:.25}],mithril:['Mithril','#d4e4f6',{r:.3,m:.2,e:'#5aa0ff',ei:.2}],obsidian:['Obsidian','#2a2632',{r:.25,m:.1}],
-  crystal:['Crystal','#9adcf4',{r:.1,op:.8,e:'#3aa8d8',ei:.45}],bone:['Bone','#d6caa8',{r:.9}],leather:['Leather','#6e4a2a',{r:.9,tex:'leather'}]};
-const LT_ENCH={none:['None'],fire:['Fire','#ff5a10'],frost:['Frost','#4ac8ff'],poison:['Poison','#5aff2a'],lightning:['Lightning','#ffe94a'],holy:['Holy','#ffe6a0'],shadow:['Shadow','#8a3aff'],arcane:['Arcane','#ff3ad0'],blood:['Blood','#e0102a']};
+  gold:['Gold','#e0b840',{r:.4,m:.25}],silver:['Silver','#d6dce4',{r:.35,m:.25}],mithril:['Mithril','#cad9eb',{r:.3,m:.2,e:'#7cc4f0',ei:.2}],obsidian:['Obsidian','#2a2632',{r:.25,m:.1}],
+  crystal:['Crystal','#94d4eb',{r:.1,op:.8,e:'#7cc4f0',ei:.45}],bone:['Bone','#d6caa8',{r:.9}],leather:['Leather','#6e4a2a',{r:.9,tex:'leather'}]};
+const LT_ENCH={none:['None'],fire:['Fire','#ff8a2a'],frost:['Frost','#7cc4f0'],poison:['Poison','#b4cc38'],lightning:['Lightning','#94a8ff'],holy:['Holy','#f4d06a'],shadow:['Shadow','#6a44a8'],arcane:['Arcane','#b86af0'],blood:['Blood','#dc3a32']};
 const LT_GLOW={soft:['Soft',.6],normal:['Normal',1],bright:['Bright',1.6]};
-const LT_LEATHER=['#5a3a22','#3a2618','#6e4a2a','#2a2a2e','#7a2a22','#24364e'],LT_CLOTH=['#8a2a2a','#2a4a8a','#2e6a3a','#5a2e6e','#c8a030','#26242a','#b85a24','#e8e0d0'],LT_WOOD=['#7a5236','#5e3e26','#8a6440'];
-const LT_GEMS={ruby:['Ruby','#e0102a'],sapphire:['Sapphire','#1a4aff'],emerald:['Emerald','#10c050'],amethyst:['Amethyst','#9a3aff'],topaz:['Topaz','#ffb81a'],diamond:['Diamond','#e8f6ff'],onyx:['Onyx','#2a2830']};
+const LT_LEATHER=['#5a3a22','#3a2618','#6e4a2a','#2a2a2e','#7a2a22','#24364e'],LT_CLOTH=['#8a2a2a','#2a4a8a','#2e6a3a','#5a2e6e','#c8a030','#26242a','#b35e2d','#e8e0d0'],LT_WOOD=['#7a5236','#5e3e26','#8a6440'];
+const LT_GEMS={ruby:['Ruby','#dc3a32'],sapphire:['Sapphire','#3759da'],emerald:['Emerald','#2fbd63'],amethyst:['Amethyst','#903beb'],topaz:['Topaz','#ebb43b'],diamond:['Diamond','#e8f6ff'],onyx:['Onyx','#2a2830']};
 const LT_WM=['steel','iron','rusty','bronze','gold','mithril','obsidian','crystal','bone'],LT_AM=['steel','iron','rusty','bronze','gold','mithril','obsidian','leather'],LT_TM=['gold','silver','bronze','iron','mithril'];
 const LT_FLAT=new THREE.Matrix4().set(0,1,0,0, 0,0,1,0, 1,0,0,0, 0,0,0,1);   // blade +y -> +x, flat side +z -> up
 
@@ -45,7 +45,7 @@ function ltPal(o,seed){const r=mulberry32(hashStr('lt'+seed)),R=LT_RAR[o.rarity]
   const P={r,lvl,rc:R[1],ek:ec?o.ench:'none',ec,seed,mh:M[1],v:[...Array(8)].map(()=>r())},pk=a=>a[Math.floor(r()*a.length)];
   P.m=ltMat(M[1],M[2]);P.md=ltMat(ltShade(M[1],.7),M[2]);P.ml=ltMat(ltShade(M[1],1.25),M[2]);
   P.blade=ec?ltMat(ltMix(M[1],ec,.35),Object.assign({},M[2],{e:ec,ei:.6})):P.ml;P.rune=ec?ltMat(ltShade(ec,1.3),{e:ec,ei:2.2}):P.md;
-  P.t=ltMat(lvl>=3?'#e6b832':lvl===2?'#d8dce4':lvl===1?'#b47c3a':'#5a5e66',{r:.45,m:.2});
+  P.t=ltMat(lvl>=3?'#e0b840':lvl===2?'#d8dce4':lvl===1?'#b47c3a':'#5a5e66',{r:.45,m:.2});
   const lh=pk(LT_LEATHER);P.g=ltMat(lh,{tex:'leather',r:.9});P.gd=ltMat(ltShade(lh,.7),{tex:'leather',r:.9});const wh=pk(LT_WOOD);P.w=ltMat(wh,{tex:'leather',r:.9});P.wd=ltMat(ltShade(wh,.7),{tex:'leather',r:.9});
   P.clh=pk(LT_CLOTH);P.cl2=pk(LT_CLOTH.filter(c=>c!==P.clh));P.cloth=ltMat(P.clh,{tex:'cloth',r:.95});P.cloth2=ltMat(P.cl2,{tex:'cloth',r:.95});
   P.gem=ltMat(ltShade(R[1],1.15),{e:R[1],ei:lvl?1.1:.15,r:.15});P.dark=ltMat('#161412',{r:1});P.paper=ltMat('#e8dcb8',{tex:'cloth',r:.95});
@@ -167,11 +167,11 @@ function ltCloak(P){const g=new THREE.Group();bx(g,.5,.05,.4,P.cloth,0,.025,0);b
   bx(g,.07,.025,.07,P.t,0,.163,.06,0,Math.PI/4,0);if(P.lvl>=2)bx(g,.035,.02,.035,P.gem,0,.18,.06,0,Math.PI/4,0);if(P.ec)for(const x of[-.15,.15])bx(g,.03,.012,.03,P.rune,x,.156,.12,0,Math.PI/4,0);return g;}
 
 /* ---------- potions (upright) ---------- */
-const LT_BREW={health:['Health potion','#e01828','flask'],mana:['Mana potion','#1a5aff','tall'],stamina:['Stamina potion','#2ad048','square'],rejuv:['Rejuvenation potion','#c03ae0','heart'],
-  poison:['Poison','#8ae010','vial'],antidote:['Antidote','#b8f0a0','cone'],strength:['Strength potion','#ff6a10','square'],swift:['Swiftness potion','#3ae8ff','tall'],invis:['Invisibility potion','#d8f0ff','flask'],luck:['Luck potion','#ffc020','cone']};
+const LT_BREW={health:['Health potion','#d43542','flask'],mana:['Mana potion','#3765dd','tall'],stamina:['Stamina potion','#34d050','square'],rejuv:['Rejuvenation potion','#c03ae0','heart'],
+  poison:['Poison','#98dc37','vial'],antidote:['Antidote','#b4eb9c','cone'],strength:['Strength potion','#ea7d3b','square'],swift:['Swiftness potion','#3bd6eb','tall'],invis:['Invisibility potion','#c7ddeb','flask'],luck:['Luck potion','#ebb93b','cone']};
 const LT_BOTTLE={flask:{L:[[.14,.03],[.22,.04],[.27,.09],[.22,.04],[.14,.03]],n:[.07,.1]},tall:{L:[[.13,.03],[.16,.24],[.12,.03]],n:[.06,.1]},square:{L:[[.2,.2],[.14,.03]],n:[.07,.07]},
   vial:{L:[[.06,.02],[.075,.22]],n:[.06,.02]},cone:{L:[[.24,.04],[.21,.05],[.17,.05],[.13,.05],[.09,.04]],n:[.07,.09]},heart:{L:[[.04,.035,.1],[.1,.035,.1],[.15,.035,.1],[.19,.035,.1],[.21,.035,.1],[.21,.035,.1]],n:[.05,.09]}};
-const LT_GLASS=new THREE.MeshStandardMaterial({color:0xd8ecf0,transparent:true,opacity:.36,roughness:.08,metalness:.1,depthWrite:false}),LT_GLASSN=new THREE.MeshStandardMaterial({color:0xc8e0e8,transparent:true,opacity:.6,roughness:.1,metalness:.1,depthWrite:false});
+const LT_GLASS=new THREE.MeshStandardMaterial({color:0xd3e7eb,transparent:true,opacity:.36,roughness:.08,metalness:.1,depthWrite:false}),LT_GLASSN=new THREE.MeshStandardMaterial({color:0xc8e0e8,transparent:true,opacity:.6,roughness:.1,metalness:.1,depthWrite:false});
 function ltGlass(g,w,h,d,x,y,z,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);g.add(m);return m;}
 function ltPotion(P,o,brew){const g=new THREE.Group(),b=new THREE.Group();g.add(b);const[,hex]=LT_BREW[brew],sh=o.shape==='default'||!o.shape?LT_BREW[brew][2]:o.shape,B=LT_BOTTLE[sh],G=LT_GLASS,GN=LT_GLASSN,lq=ltLiquid(hex,brew==='invis'?.3:.8);
   b.scale.setScalar({small:.75,medium:1,large:1.35}[o.size]||1);const H=B.L.reduce((a,l)=>a+l[1],0),fill=H*(sh==='vial'?.82:.8);let y=0,big=B.L[0];
@@ -185,7 +185,7 @@ function ltPotion(P,o,brew){const g=new THREE.Group(),b=new THREE.Group();g.add(
   P.bubble=ltShade(hex,1.4);P.lq=hex;return g;}
 
 /* ---------- treasure ---------- */
-const LT_COIN={gold:'#e6b832',silver:'#d6dce4',bronze:'#c06a3a',iron:'#8a9098',mithril:'#d4e4f6'};
+const LT_COIN={gold:'#e0b840',silver:'#d6dce4',bronze:'#c06a3a',iron:'#8a9098',mithril:'#cad9eb'};
 function ltCoin(g,cm,x,y,z,k,ry){const h=k*.013;bx(g,.07,h,.07,cm,x,y+h/2,z,0,ry,0);bx(g,.07,h,.07,cm,x,y+h/2,z,0,ry+Math.PI/4,0);return h;}
 function ltCoins(P,o){const g=new THREE.Group(),r=P.r,cm=ltMat(LT_COIN[o.metal]||LT_COIN.gold,{r:.4,m:.25}),amt=o.amount||'pile';
   if(amt==='few'){[[0,0,4],[.1,.03,2],[-.06,.09,1],[.04,-.1,1],[-.11,-.04,1]].forEach(([x,z,n])=>{let y=0;for(let i=0;i<n;i++)y+=ltCoin(g,cm,x+(r()-.5)*.012,y,z+(r()-.5)*.012,1,r()*1.5);});return g;}
@@ -209,15 +209,15 @@ function ltAmulet(P){const g=new THREE.Group(),n=26;for(let i=0;i<n;i++){const u
   const pd=new THREE.Group();put(g,pd,0,0,.15);bx(pd,.12,.02,.12,P.t,0,.01,0,0,Math.PI/4,0);bx(pd,.08,.024,.08,P.m,0,.014,0,0,Math.PI/4,0);bx(pd,.03,.016,.04,P.t,0,.008,-.085);bx(pd,.05,.03,.05,P.gem,0,.03,0,0,Math.PI/4,0).userData.ench=1;
   for(const s of[-1,1])bx(pd,.025,.022,.025,P.gem,s*.06,.016,0,0,Math.PI/4,0);return g;}
 function ltCrown(P){const g=new THREE.Group(),n=12,R=.12;for(let i=0;i<n;i++){const a=i/n*Math.PI*2;bx(g,.068,.07,.022,P.m,Math.cos(a)*R,.035,Math.sin(a)*R,0,-a-Math.PI/2,0);if(i%2===0){bx(g,.04,.06,.02,P.m,Math.cos(a)*R,.1,Math.sin(a)*R,0,-a-Math.PI/2,0);bx(g,.024,.04,.016,P.m,Math.cos(a)*R,.15,Math.sin(a)*R,0,-a-Math.PI/2,0);bx(g,.025,.025,.025,P.ml,Math.cos(a)*R,.18,Math.sin(a)*R,0,0,Math.PI/4);}
-    else{bx(g,.03,.03,.012,i%4===1?P.gem:ltMat('#e0102a',{e:'#e0102a',ei:.6,r:.15}),Math.cos(a)*(R+.012),.035,Math.sin(a)*(R+.012),0,-a-Math.PI/2,Math.PI/4);}}
+    else{bx(g,.03,.03,.012,i%4===1?P.gem:ltMat('#dc3a32',{e:'#dc3a32',ei:.6,r:.15}),Math.cos(a)*(R+.012),.035,Math.sin(a)*(R+.012),0,-a-Math.PI/2,Math.PI/4);}}
   bx(g,.27,.014,.27,P.t,0,.007,0,0,Math.PI/8,0);if(P.lvl>=2){bx(g,.2,.05,.2,P.cloth,0,.07,0);bx(g,.14,.04,.14,P.cloth,0,.11,0);}return g;}
 function ltGoblet(P){const g=new THREE.Group();bx(g,.14,.02,.14,P.m,0,.01,0);bx(g,.14,.02,.14,P.m,0,.01,0,0,Math.PI/4,0);bx(g,.08,.02,.08,P.m,0,.03,0);bx(g,.03,.12,.03,P.m,0,.1,0);bx(g,.06,.03,.06,P.t,0,.11,0);
-  bx(g,.08,.02,.08,P.m,0,.17,0);const c=new THREE.Group();put(g,c,0,.18,0);hollow(c,.14,.13,.14,.018,P.m);bx(c,.15,.02,.15,P.t,0,.12,0);bx(c,.11,.006,.11,ltMat('#5a0a18',{r:.2}),0,.1,0);
+  bx(g,.08,.02,.08,P.m,0,.17,0);const c=new THREE.Group();put(g,c,0,.18,0);hollow(c,.14,.13,.14,.018,P.m);bx(c,.15,.02,.15,P.t,0,.12,0);bx(c,.11,.006,.11,ltMat('#541520',{r:.2}),0,.1,0);
   for(let i=0;i<4;i++){const a=i*Math.PI/2;bx(g,.03,.03,.012,P.gem,Math.sin(a)*.076,.24,Math.cos(a)*.076,0,a,Math.PI/4);}return g;}
 function ltScroll(P){const g=new THREE.Group(),pp=P.paper,pd=ltMat('#c8b890',{tex:'cloth',r:1});bx(g,.36,.08,.06,pp,0,.04,0);bx(g,.36,.06,.08,pp,0,.04,0);for(const s of[-1,1])bx(g,.02,.05,.05,pd,s*.185,.04,0);
   bx(g,.05,.085,.085,P.cloth,0,.04,0);bx(g,.05,.05,.02,ltMat(ltShade(P.rc,.7),{r:.5}),0,.04,.05);bx(g,.025,.025,.006,ltMat(ltShade(P.rc,.5),{r:.5}),0,.04,.062,0,0,Math.PI/4);
   bx(g,.3,.008,.18,pp,0,.004,.13);const ink=P.ec?P.rune:ltMat('#3a2a1a',{r:1});for(let l=0;l<3;l++)for(let i=0;i<6;i++)if((i+l)%4!==3)bx(g,.03,.004,.012,ink,-.1+i*.04,.01,.08+l*.04);return g;}
-function ltBook(P){const g=new THREE.Group(),cv=P.lvl>=3?ltMat(ltShade(P.clh,.8),{tex:'leather',r:.8}):P.g,pg=ltMat('#f0e6d0',{r:1});bx(g,.32,.025,.4,cv,0,.0125,0);bx(g,.29,.09,.37,pg,.01,.07,0);bx(g,.32,.025,.4,cv,0,.1275,0);bx(g,.03,.14,.4,cv,-.155,.07,0);
+function ltBook(P){const g=new THREE.Group(),cv=P.lvl>=3?ltMat(ltShade(P.clh,.8),{tex:'leather',r:.8}):P.g,pg=ltMat('#ebe1cb',{r:1});bx(g,.32,.025,.4,cv,0,.0125,0);bx(g,.29,.09,.37,pg,.01,.07,0);bx(g,.32,.025,.4,cv,0,.1275,0);bx(g,.03,.14,.4,cv,-.155,.07,0);
   for(const x of[-1,1])for(const z of[-1,1])bx(g,.05,.03,.05,P.t,x*.14,.13,z*.18);bx(g,.03,.1,.06,P.t,.16,.09,0);bx(g,.02,.03,.04,P.t,.155,.14,0);
   bx(g,.13,.012,.13,P.t,0,.144,0,0,Math.PI/4,0);bx(g,.09,.014,.09,cv,0,.146,0,0,Math.PI/4,0);bx(g,.05,.03,.05,P.ec?P.orb:P.gem,0,.155,0,0,Math.PI/4,0).userData.ench=1;
   if(P.ec)for(let i=0;i<8;i++){const a=i/8*Math.PI*2;bx(g,.02,.006,.02,P.rune,Math.cos(a)*.11,.143,Math.sin(a)*.14,0,Math.PI/4,0);}return g;}
@@ -248,14 +248,14 @@ function ltMeat(P){const g=new THREE.Group(),mt=ltMat('#8a4a24',{tex:'leather',r
   bx(g,.04,.04,.14,bn,.24,.04,0,0,Math.PI/2,0);bx(g,.06,.06,.04,bn,.3,.03,-.015);bx(g,.06,.06,.04,bn,.3,.03,.015);return g;}
 function ltBread(P){const g=new THREE.Group(),c=ltMat('#c08a44',{tex:'leather',r:.9}),cd=ltMat('#8a5a24',{tex:'leather',r:.9});bx(g,.3,.1,.16,c,0,.05,0);bx(g,.26,.05,.12,c,0,.12,0);bx(g,.2,.03,.08,c,0,.155,0);
   for(const x of[-.08,0,.08])bx(g,.02,.012,.1,ltMat('#e8d0a0',{r:1}),x,.146,0,0,.5,0);bx(g,.31,.02,.17,cd,0,.01,0);return g;}
-function ltCheese(P){const g=new THREE.Group(),y=ltMat('#f0c840',{r:.8}),rd=ltMat('#d87a1a',{r:.8}),h=ltMat('#c8a030',{r:1});for(let i=0;i<5;i++){const w=.3-i*.055;bx(g,w,.12,.05,y,-.15+w/2,.06,-.1+i*.05);}
+function ltCheese(P){const g=new THREE.Group(),y=ltMat('#ebc43f',{r:.8}),rd=ltMat('#ce8133',{r:.8}),h=ltMat('#c8a030',{r:1});for(let i=0;i<5;i++){const w=.3-i*.055;bx(g,w,.12,.05,y,-.15+w/2,.06,-.1+i*.05);}
   bx(g,.012,.12,.25,rd,-.156,.06,.025);bx(g,.3,.012,.05,rd,0,.126,-.1);for(const[x,yy,z]of[[-.05,.04,-.126],[.06,.08,-.126],[-.1,.08,-.126]])bx(g,.03,.03,.004,h,x,yy,z);return g;}
-function ltApple(P){const g=new THREE.Group(),a=ltMat(P.v[6]>.5?'#c81a1a':'#7ac83a',{r:.6});bx(g,.1,.06,.1,a,0,.03,0);bx(g,.12,.06,.12,a,0,.08,0);bx(g,.1,.03,.1,a,0,.125,0);bx(g,.012,.04,.012,ltMat('#5a3a1a'),0,.15,0);bx(g,.04,.008,.025,ltMat('#3a8a2a'),.02,.15,0,0,0,.4);return g;}
+function ltApple(P){const g=new THREE.Group(),a=ltMat(P.v[6]>.5?'#be3030':'#7ac83a',{r:.6});bx(g,.1,.06,.1,a,0,.03,0);bx(g,.12,.06,.12,a,0,.08,0);bx(g,.1,.03,.1,a,0,.125,0);bx(g,.012,.04,.012,ltMat('#5a3a1a'),0,.15,0);bx(g,.04,.008,.025,ltMat('#3a8a2a'),.02,.15,0,0,0,.4);return g;}
 function ltQuiver(P){const g=new THREE.Group(),L=P.g,c=new THREE.Group();put(g,c,0,.07,0,0,0,Math.PI/2);bx(c,.12,.5,.12,L,0,0,0);bx(c,.14,.04,.14,P.gd,0,.23,0);bx(c,.14,.04,.14,P.gd,0,-.15,0);bx(c,.13,.02,.13,P.t,0,-.25,0);
   for(let i=0;i<6;i++){const x=(i%3-1)*.03,z=(i<3?-1:1)*.025;bx(c,.012,.26,.012,P.w,x,.37,z);bx(c,.008,.08,.034,P.cloth,x,.44,z);bx(c,.008,.08,.034,P.cloth,x,.44,z,0,Math.PI/2,0);}
   bx(g,.02,.012,.4,L,.02,.006,.08,0,.3,0);return g;}
 function ltBomb(P){const g=new THREE.Group(),m=ltMat('#2a2a30',{r:.5,m:.2});bx(g,.2,.2,.2,m,0,.12,0);bx(g,.24,.14,.14,m,0,.12,0);bx(g,.14,.24,.14,m,0,.12,0);bx(g,.14,.14,.24,m,0,.12,0);bx(g,.07,.05,.07,P.t,0,.255,0);
-  bx(g,.016,.06,.016,ltMat('#c8b890'),.0,.3,0,0,0,.3);const sp=bx(g,.03,.03,.03,ltMat('#ffd060',{e:'#ff8a1a',ei:2}),-.015,.335,0,0,0,Math.PI/4);sp.userData.ench=1;return g;}
+  bx(g,.016,.06,.016,ltMat('#c8b890'),.0,.3,0,0,0,.3);const sp=bx(g,.03,.03,.03,ltMat('#ebbf58',{e:'#ff8a2a',ei:2}),-.015,.335,0,0,0,Math.PI/4);sp.userData.ench=1;return g;}
 
 /* ---------- placing: lay down or hover ---------- */
 function ltSettle(tilt,obj){tilt.updateMatrixWorld(true);const inv=new THREE.Matrix4().copy(tilt.matrixWorld).invert(),pts=[];
@@ -272,11 +272,11 @@ function ltFx(root,it,o,P,sp){const parts=[],R=LT_RAR[o.rarity]||LT_RAR.rare,lvl
   const inv=new THREE.Matrix4().copy(it.matrixWorld).invert(),src=[],liq=[];let ic=new THREE.Vector3();new THREE.Box3().setFromObject(it).getCenter(ic).applyMatrix4(inv);
   it.traverse(m=>{if(!m.isMesh)return;const b=()=>new THREE.Box3().setFromObject(m).applyMatrix4(inv);if(m.userData.liquid)liq.push(b());else if(m.material===P.blade||m.material===P.rune||m.userData.ench)src.push(b());});
   const motes=[],ek=sp.emit||P.ek;
-  if(ek!=='none'&&src.length){const ec=sp.emit?'#ff8a1a':P.ec,shadow=ek==='shadow',blood=ek==='blood',n=Math.round((sp.emit?6:12)*B);
-    const mat=shadow?ltNorm('#1a0c24',.75):blood?ltNorm('#9a0818',.95):ltAdd(ltShade(ec,ek==='lightning'?1.6:1.25),.95),geo=new THREE.BoxGeometry(...(ek==='lightning'?[.014,.09,.014]:shadow?[.07,.07,.07]:sp.emit?[.025,.025,.025]:[.04,.04,.04]));
+  if(ek!=='none'&&src.length){const ec=sp.emit?'#eb913b':P.ec,shadow=ek==='shadow',blood=ek==='blood',n=Math.round((sp.emit?6:12)*B);
+    const mat=shadow?ltNorm('#22122e',.75):blood?ltNorm('#7a1218',.95):ltAdd(ltShade(ec,ek==='lightning'?1.6:1.25),.95),geo=new THREE.BoxGeometry(...(ek==='lightning'?[.014,.09,.014]:shadow?[.07,.07,.07]:sp.emit?[.025,.025,.025]:[.04,.04,.04]));
     for(let i=0;i<n;i++){const b=src[Math.floor(r()*src.length)],m=new THREE.Mesh(geo,mat);m.name='lt_mote_'+i;m.userData.fx=1;m.renderOrder=3;it.add(m);paHide(m);
       motes.push({m,i,p:[b.min.x+(b.max.x-b.min.x)*r(),b.min.y+(b.max.y-b.min.y)*r(),b.min.z+(b.max.z-b.min.z)*r()],ph:i/n,a:r()*6.283,k:r(),ek:sp.emit?'fire':ek});parts.push(m);}}
-  if(liq.length){const mat=ltAdd(P.bubble||'#ffffff',.9),geo=new THREE.BoxGeometry(.02,.02,.02);
+  if(liq.length){const mat=ltAdd(P.bubble||'#f6f0e4',.9),geo=new THREE.BoxGeometry(.02,.02,.02);
     for(let i=0;i<7;i++){const b=liq[Math.floor(r()*liq.length)],m=new THREE.Mesh(geo,mat);m.name='lt_bub_'+i;m.userData.fx=1;m.renderOrder=3;it.add(m);paHide(m);
       const bot=liq.reduce((a,l)=>Math.min(a,l.min.y),1e9),top=liq.reduce((a,l)=>Math.max(a,l.max.y),-1e9);
       motes.push({m,i,p:[b.min.x+(b.max.x-b.min.x)*(.2+.6*r()),bot+.01,b.min.z+(b.max.z-b.min.z)*(.2+.6*r())],h:top-bot-.02,ph:i/7,a:r()*6.283,k:r(),ek:'bubble'});parts.push(m);}}

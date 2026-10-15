@@ -4,9 +4,9 @@
    Clips are authored in metres (the warrior's are in leg-length units) and converted by gbU before solving. */
 VB.goblin={thigh:.25,shin:.23,ankle:.05,hipOff:.04,spine:.08,chest:.15,neck:.2,headY:.04,shW:.23,ua:.235,fa:.22,g:1.05,hipW:.088,head:1.25,chestSx:1,hipsR:1,waist:1,hand:1.2,arm:1.2,td:1.4,hipK:1.05,waistK:1,sex:'male'};
 {const b=VB.goblin;b.key='goblin';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
-const GB_SKIN={yellow:['#a08a34','dark yellow'],green:['#62903a','green'],dkgreen:['#3c6228','dark green'],red:['#7e3024','dark red'],grey:['#545652','dark grey']};
+const GB_SKIN={yellow:['#a08a34','dark yellow'],green:['#62903a','green'],dkgreen:['#3c6228','dark green'],red:['#78352a','dark red'],grey:['#545652','dark grey']};
 const GB_RAG=[['#6e5e44','mud-brown'],['#5a5446','grey-brown'],['#7a6a4a','sackcloth'],['#4a3e32','dark brown'],['#5e5a3a','dirty olive'],['#6a4a3a','rust-brown'],
-  ['#8a3a2e','faded red'],['#4a5a7a','dull blue'],['#a08a3a','mustard'],['#4e6a34','moss-green'],['#5e4a6a','faded purple'],['#3e6a66','grimy teal'],['#9a6a3a','ochre'],['#b0a68a','dirty white'],['#2e2a28','soot-black'],['#a0522d','rust-orange'],['#7a3a52','wine']];
+  ['#8a3a2e','faded red'],['#4a5a7a','dull blue'],['#a08a3a','mustard'],['#4e6a34','moss-green'],['#5e4a6a','faded purple'],['#3e6a66','grimy teal'],['#9a6a3a','ochre'],['#b0a68a','dirty white'],['#2e2a28','soot-black'],['#9b5636','rust-orange'],['#7a3a52','wine']];
 const GB_WPN={sword:'crude shortsword',axe:'one-handed axe',club:'spiked club'};
 
 /* weapons: grip at the origin, along +y, striking edge towards +x */
@@ -28,7 +28,7 @@ function buildGoblin(seed,o={}){const B=o.B||VB.goblin,r=mulberry32(((seed*26544
   const skinK=o.skin&&o.skin!=='random'?o.skin:rk,top=o.top&&o.top!=='random'?o.top:(hb?hb.top:rt),legs=o.legs&&o.legs!=='random'?o.legs:rl,wpn=o.weapon||'sword',jerk=top==='jerkin',shirt=top==='shirt'||jerk;
   if(hb&&hb.hair)hairS=hb.hair;
   const sk=SK[skinK],shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),skin=bm(sk[0],'skin'),skinD=bm(shade(sk[0],.74),'skin'),skinM=bm(shade(sk[0],.55),'skin'),skinX=bm(shade(sk[0],.4),'skin'),browM=bm(shade(sk[0],.3),'skin'),
-    shirtM=jerk?bm(hb.jerkC[0],'leather'):bm(shirtC[0]),legM=bm(legC[0]),patchM=bm(patchC[0]),dark=bm('#1c1410','plain'),eyeM=bm('#e0c43a','plain'),ivory=bm('#e2d8b8','plain'),claw=bm('#3a3028','plain'),hairM=bm(hairC,'hair'),rope=vm('rope');
+    shirtM=jerk?bm(hb.jerkC[0],'leather'):bm(shirtC[0]),legM=bm(legC[0]),patchM=bm(patchC[0]),dark=bm('#1c1410','plain'),eyeM=bm('#ddc44d','plain'),ivory=bm('#e2d8b8','plain'),claw=bm('#3a3028','plain'),hairM=bm(hairC,'hair'),rope=vm('rope');
   const torso=shirt?shirtM:skin;
   /* joints: same names, offsets and order as buildVillager */
   const hips=J('hips',root,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);

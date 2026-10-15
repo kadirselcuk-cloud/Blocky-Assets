@@ -6,7 +6,7 @@ VXD.caveRock=(P,r)=>{const m=mulberry32(83),tone=[];for(let i=0;i<16;i++)tone.pu
   P(x,y,edge?'#2c2926':'#4e4944',edge?nz(r,.9,1.05):tone[cell]*nz(r,.9,1.08));}};
 VXD.caveFloor=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.1?'#6a645c':k<.22?'#3a3530':'#544c42',nz(r,.88,1.06));}};
 VXD.caveMoss=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.25?'#2e3e26':'#3e5230',nz(r,.85,1.1));};
-const CAVEGLOW=new THREE.MeshStandardMaterial({color:new THREE.Color(0x8ae0c8).convertSRGBToLinear(),emissive:new THREE.Color(0x3ad0a8).convertSRGBToLinear(),emissiveIntensity:.6,roughness:.6});CAVEGLOW.userData={glowScale:1,base:.6};GLOW.push(CAVEGLOW);
+const CAVEGLOW=new THREE.MeshStandardMaterial({color:new THREE.Color(0xa4ecbc).convertSRGBToLinear(),emissive:new THREE.Color(0x4cd88a).convertSRGBToLinear(),emissiveIntensity:.6,roughness:.6});CAVEGLOW.userData={glowScale:1,base:.6};GLOW.push(CAVEGLOW);
 FOLDERS['wasteland/cave']={name:'Cave',blurb:'Cave mouth in a hillside, modular rock walls, corners, ceiling, floor and tunnel, cave dressing',children:[]};
 const wlTileMats2=tileMats;tileMats=function(){const m=wlTileMats2();Object.assign(m,{caveFloor:{top:vm('caveFloor'),side:vm('caveRock')},caveBump:{top:vm('caveRock'),side:vm('caveRock'),h:T+.12},caveMud:{top:vm('mud'),side:vm('caveRock'),h:T-.04}});return m;};
 /* columns of rock in plan: cells [{x,z,h,y0}] of size c merged along x */
@@ -53,7 +53,7 @@ function cvColumn(s){const root=wlRoot(2),r=mulberry32((s||1)*881),m=vm('caveRoc
   wlRubble(root,0,0,5,r,1.2,[m],.25);return root;}
 function cvShrooms(s){const root=wlRoot(2),r=mulberry32((s||1)*883);for(let k=0;k<11;k++){const a=r()*6.28,d=Math.sqrt(r())*1,sc=.6+r()*1.4,x=Math.cos(a)*d,z=Math.sin(a)*d;
   bx(root,.06*sc,.22*sc,.06*sc,vm('woolWhite'),x,.11*sc,z);bx(root,.2*sc,.08*sc,.2*sc,CAVEGLOW,x,.25*sc,z);bx(root,.12*sc,.05*sc,.12*sc,CAVEGLOW,x,.315*sc,z);}
-  bx(root,.6,.2,.5,vm('caveRock'),-.6,.1,.5);const pl=new THREE.PointLight(0x5af0c8,0,4,2);pl.position.set(0,.6,0);pl.userData.lamp=true;pl.userData.min=.5;root.add(pl);root.userData.lights.push(pl);return root;}
+  bx(root,.6,.2,.5,vm('caveRock'),-.6,.1,.5);const pl=new THREE.PointLight(0xa4ecbc,0,4,2);pl.position.set(0,.6,0);pl.userData.lamp=true;pl.userData.min=.5;root.add(pl);root.userData.lights.push(pl);return root;}
 function cvPool(s){const root=wlRoot(3.6),r=mulberry32((s||1)*887),c=.4,R=1.7;for(let i=-5;i<5;i++)for(let k=-5;k<5;k++){const x=(i+.5)*c,z=(k+.5)*c,d=Math.hypot(x,z)+(r()-.5)*.2;if(d>R+.5)continue;
   if(d>R)bx(root,c,.16+r()*.12,c,vm('caveRock'),x,.1,z);else bx(root,c,.02,c,vm('caveFloor'),x,.01,z);}
   for(let k=-4;k<4;k++){let run=null;const flush=()=>{if(run){const w=bx(root,(run[1]-run[0]+1)*c,.02,c,BOGMAT,((run[0]+run[1])/2+.5)*c,.09,(k+.5)*c);w.castShadow=false;run=null;}};for(let i=-5;i<5;i++){const x=(i+.5)*c,z=(k+.5)*c;if(Math.hypot(x,z)<R-.25){if(run)run[1]=i;else run=[i,i];}else flush();}flush();}

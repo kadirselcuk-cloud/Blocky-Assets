@@ -10,7 +10,7 @@
 VB.wight=Object.assign({},VB.male,{sex:'male',g:1.45});
 {const b=VB.wight;b.key='wight';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 const WT_SKIN={grey:['#9a9e98','pale grey'],blue:['#8692a0','corpse blue'],ash:['#a8a294','ashen'],dark:['#6e6a62','withered dark']};
-const WT_EYES={ice:['#d8f4ff','#5ec8ff','icy blue glowing eyes'],green:['#e0ffd8','#62f08a','pale green glowing eyes'],red:['#ffc0b0','#ff3a1e','red glowing eyes']};
+const WT_EYES={ice:['#e8f6ff','#5ab4ec','icy blue glowing eyes'],green:['#e4fbe8','#4cd88a','pale green glowing eyes'],red:['#ffe0d8','#dc3a32','red glowing eyes']};
 const WT_HAIRC={white:['#d8d6cc','white'],grey:['#8e8c86','grey'],black:['#24221f','black'],brown:['#4a3828','dark brown'],blond:['#a8946a','faded blond']};
 /* hair length: back curtain and front locks (metres) */
 const WT_HAIRL={shoulder:[.3,.2,'shoulder-length'],long:[.5,.34,'long'],verylong:[.74,.46,'very long']};
@@ -23,7 +23,7 @@ function buildWight(seed,o={}){const B=VB.wight,r=mulberry32(((seed*2654435761)>
     hs0=pick(['full','full','thin']),cl0=pick(['rags','rags','mail','bare']),tun=pick(WT_TUNIC),circ=r()<.35,torn=r()<.5;
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,skinK=opt('skin',skin0),eyeK=opt('eyes',eye0),hcK=opt('hairColour',hc0),hlK=opt('hairLength',hl0),hsK=opt('hairStyle',hs0),cloth=opt('clothes',cl0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),SK=WT_SKIN[skinK][0];
-  const skin=bm(SK,'skin'),skinD=bm(shade(SK,.74),'skin'),skinX=bm(shade(SK,.52),'skin'),dark=bm('#120e0c','plain'),claw=bm('#1c1814','plain'),teeth=bm('#bcb08a','plain');
+  const skin=bm(SK,'skin'),skinD=bm(shade(SK,.74),'skin'),skinX=bm(shade(SK,.52),'skin'),dark=bm('#16110f','plain'),claw=bm('#1c1814','plain'),teeth=bm('#bcb08a','plain');
   const ey=WT_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.6,pxTex('plain')),hairM=bm(WT_HAIRC[hcK][0],'hair'),hairD=bm(shade(WT_HAIRC[hcK][0],.78),'hair');
   const tunM=bm(tun[0],'cloth'),tunD=bm(shade(tun[0],.72),'cloth'),wrapM=bm('#6e6450','cloth'),wrapD=bm('#544c3c','cloth'),rope=vm('rope'),mail=bm('#6a5e50','plain'),mailD=bm('#4e4236','plain'),rust=bm('#7a4a2e','plain'),bronze=bm('#8a6a34','plain');
   const shirt=cloth!=='bare',isMail=cloth==='mail';

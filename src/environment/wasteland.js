@@ -10,7 +10,7 @@ VXD.wCracked=(P,r)=>{const m=mulberry32(77),g=[];for(let y=0;y<16;y++)g.push(new
   for(let c=0;c<6;c++){let x=Math.floor(m()*16),y=Math.floor(m()*16),h=m()<.5;for(let s=0;s<11;s++){g[y&15][x&15]=1;if(m()<.3)h=!h;if(h)x+=m()<.85?1:-1;else y+=m()<.85?1:-1;}}
   for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,g[y][x]?'#4e3e2c':'#a48c66',g[y][x]?nz(r,.9,1.05):nz(r,.88,1.06));};
 VXD.wAsh=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.14?'#3e3a36':k<.24?'#8e8a84':'#6c6862',nz(r,.88,1.08));}};
-VXD.wScorch=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.03?'#7a3a1a':k<.2?'#1e1c1a':k<.35?'#4e4842':'#34302c',nz(r,.88,1.08));}};
+VXD.wScorch=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.03?'#724028':k<.2?'#1e1c1a':k<.35?'#4e4842':'#34302c',nz(r,.88,1.08));}};
 VXD.wDeadGrass=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.2?'#6a5a2e':k<.32?'#a8945a':k<.4?'#7c6c54':'#8c7a44',nz(r,.86,1.08));}};
 VXD.wDeadGrassSide=(P,r)=>{const e=[];for(let x=0;x<16;x++)e.push(2+Math.floor(r()*3));for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,y<e[x]?'#8c7a44':y%5===1?'#5e4e3c':'#6e5e48',nz(r,.85,1.08));};
 VXD.wTrack=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.08?'#b8ab92':k<.14?'#7a6a52':'#a48e6c',nz(r,.9,1.05));}};
@@ -23,7 +23,7 @@ function wlRockDraw(P,r,base,crack,seedN){const m=mulberry32(seedN),T=new Float3
 VXD.wRock=(P,r)=>wlRockDraw(P,r,'#645e56','#2e2a26',31);
 VXD.wRockTop=(P,r)=>{const m=mulberry32(35);for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.3?'#645e56':k<.4?'#4e4943':'#76685a',nz(r,.86,1.08));}};
 VXD.wDeadBark=(P,r)=>{const c=[];for(let x=0;x<16;x++)c.push(nz(r,.8,1.08));for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(y+((x>>2)*5))%6===0?'#3a3430':'#6a625a',c[x]*nz(r,.92,1.05));};
-VXD.wCharBark=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.04?'#6a2a10':k<.3?'#141210':k<.45?'#4a3e34':'#2a2420',nz(r,.88,1.08));}};
+VXD.wCharBark=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.04?'#5f3321':k<.3?'#141210':k<.45?'#4a3e34':'#2a2420',nz(r,.88,1.08));}};
 VXD.wTwig=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#3e2e22',nz(r,.82,1.1));};
 VXD.bone=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.1?'#b8ae90':'#d8cfb4',nz(r,.92,1.04));};
 VXD.rustIron=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.3?'#7a4e30':k<.45?'#3a2a20':'#5a3e2c',nz(r,.88,1.08));}};

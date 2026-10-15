@@ -11,6 +11,7 @@ How assets in this library should look and behave. Most rules here come straight
 ## Style
 - **Blocky voxel look.** Every surface is a box (`bx` or `box`) with a 16×16 pixel texture made by `VXD` in `vxTex(kind)`, using nearest filtering. The world grid is 0.4 m (one "block"); building plinths, yards and terrain tiles use 0.8 m.
 - Use the existing materials (`vm('<kind>')`): planks, planksDark, planksV, logH, bark, cobble, stoneBrick, plaster, plasterOchre, timber, thatch, tiles, slate, shingle, brick, iron, gold, glass, hay, dirt, wool colours, and so on. Add a new `VXD` kind only when nothing fits.
+- **Colours follow the palette** (`docs/PALETTE.md`): earthy matter, richer dyes, strong saturation only on lights, one signature light per faction, no pure black or white. Take values from `PAL` and run `node tools/check-palette.mjs`.
 - **Same type, same look.** Numbered variants share walls, roof material, chimney style and plinth with variant 1. Only openings, chimney side, porch and props differ.
 - Real-world scale: a door is about 2 m, a storey 2.4–3 m, an adult villager about 1.8 m, a child about 1.3 m.
 - Fronts face **+z**, the default camera side. Doors face the road in scenes, so rotate the asset rather than rebuilding it.

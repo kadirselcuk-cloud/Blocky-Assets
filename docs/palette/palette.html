@@ -1,0 +1,295 @@
+<title>Blocky Assets Palette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column of plates, like a printed colour bible; swatches are 16x16 voxel tiles drawn the way VXD draws them */
+:root{
+  --bg:#ece6da; --panel:#f6f2ea; --ink:#2a2420; --muted:#6e665e; --rule:#d6cdbd; --accent:#9a5a2a;
+  --ok:#4e7a36; --bad:#b03a2e;
+  --f-display:"Pixelify Sans","Courier New",monospace; --f-body:"Source Sans 3","Segoe UI",system-ui,sans-serif; --f-mono:"JetBrains Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1e1a17;--panel:#2a2420;--ink:#e8dec0;--muted:#a89e8e;--rule:#443c36;--accent:#e0a868;--ok:#8ac06a;--bad:#f08a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1e1a17;--panel:#2a2420;--ink:#e8dec0;--muted:#a89e8e;--rule:#443c36;--accent:#e0a868;--ok:#8ac06a;--bad:#f08a7a;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--f-body);padding-inline:16px;padding-block:24px 64px}
+main{max-width:1080px;margin:0 auto;display:grid;gap:56px}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,5vw,3.1rem)}
+h2{font-size:1.7rem}
+h3{font-size:1.05rem;font-family:var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+p{margin:0;max-width:68ch}
+.eyebrow{font:600 .78rem var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+header{display:grid;gap:14px}
+.lede{font-size:1.12rem}
+.status{display:inline-flex;gap:8px;align-items:center;font:600 .8rem var(--f-mono);border:1px solid var(--rule);padding:4px 10px;width:max-content;max-width:100%}
+section{display:grid;gap:20px}
+.sec-head{display:grid;gap:8px;border-top:3px solid var(--ink);padding-top:14px}
+code,.mono{font-family:var(--f-mono);font-size:.85em}
+
+/* diagnosis chart */
+.chart{background:var(--panel);border:1px solid var(--rule);padding:18px;overflow-x:auto}
+.chart svg{display:block;min-width:620px;width:100%;height:auto}
+.chart text{fill:var(--ink);font-family:var(--f-body);font-size:13px}
+.chart .tick{fill:var(--muted);font-family:var(--f-mono);font-size:11px}
+.legend{display:flex;flex-wrap:wrap;gap:18px;font-size:.88rem;color:var(--muted);margin-top:10px}
+.legend i{display:inline-block;width:14px;height:10px;margin-right:6px;vertical-align:middle}
+
+/* rules */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.rule{background:var(--panel);border:1px solid var(--rule);padding:16px;display:grid;gap:6px;align-content:start;min-width:0}
+.rule b{font-family:var(--f-display);font-size:1.15rem}
+.rule .lim{font:600 .82rem var(--f-mono);color:var(--accent)}
+
+/* matrix */
+.matrix-wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--rule)}
+table.matrix{border-collapse:collapse;width:100%;min-width:720px}
+.matrix th,.matrix td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+.matrix thead th{font-family:var(--f-display);font-size:1.05rem}
+.matrix tbody th{font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.strip{display:flex}
+.strip canvas{width:30px;height:30px}
+
+/* ramps */
+.plate{display:grid;gap:22px}
+.group{display:grid;gap:12px}
+.ramps{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px 24px}
+.ramp{display:grid;gap:6px;min-width:0}
+.ramp-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ramp-name{font-weight:700}
+.tier{font:600 .68rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--rule);padding:1px 6px}
+.ramp-note{font-size:.86rem;color:var(--muted)}
+.tiles{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:0}
+.tile{display:grid;gap:4px;min-width:0}
+.tile canvas{width:100%;aspect-ratio:1;max-height:64px;image-rendering:pixelated;display:block}
+.tile.glow canvas{position:relative;z-index:1}
+.hex{font:400 .68rem var(--f-mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
+.hex.out{color:var(--bad);font-weight:600}
+.lightbox{background:#16120e;padding:10px;display:grid;gap:6px}
+.lightbox .hex{color:#a89e8e}
+
+/* before / after */
+.ba{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.pair{display:grid;grid-template-columns:44px 18px 44px 1fr;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--rule);padding:8px;min-width:0}
+.pair canvas{width:44px;height:44px;image-rendering:pixelated}
+.pair .arrow{color:var(--muted);text-align:center}
+.pair .lbl{font-size:.85rem;min-width:0}
+.pair .lbl .mono{display:block;color:var(--muted);font-size:.72rem}
+
+.next{background:var(--panel);border:1px solid var(--rule);padding:18px;display:grid;gap:10px}
+.next ol{margin:0;padding-left:1.3em;display:grid;gap:6px}
+.faction-note{font-size:.95rem}
+@media (prefers-reduced-motion:no-preference){.tile.glow canvas{transition:filter .2s}.tile.glow:hover canvas{filter:brightness(1.12)}}
+</style>
+
+<main>
+<header>
+  <span class="eyebrow">Art direction · approved palette</span>
+  <h1>Blocky Assets Palette</h1>
+  <p class="lede">One colour system for the whole library. Every surface is earthy and weathered, the way the medieval village already is. Brutes, undead and hell each get a narrow hue band so they read as their own world, and strong saturation is reserved for things that give off light: fire, spells, glowing eyes, enchantments.</p>
+  <span class="status">Status: approved and applied (2026-10-16). Source of truth: <code>src/core/palette.js</code>; check with <code>node tools/check-palette.mjs</code>.</span>
+</header>
+
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">01 · What is wrong today</span>
+    <h2>Measured from the code</h2>
+    <p>I read every hex colour in <code>src/</code> (about 2,600) and measured saturation (HSB S) per family. The medieval village is the reference look. Hell, spells and loot sit far above it, and the hell kit uses near-neon colours on 28% of its swatches. The undead surfaces are fine, but their glows use six different neon hues (blue, green, purple, red, gold, white), so the faction has no signature colour.</p>
+  </div>
+  <div class="chart"><svg id="diag" viewBox="0 0 760 330" role="img" aria-label="Saturation per family: median and 90th percentile, against the target band"></svg>
+    <div class="legend"><span><i style="background:var(--muted)"></i>median saturation</span><span><i style="background:var(--accent)"></i>90th percentile (the loudest colours)</span><span><i style="background:var(--ok);opacity:.25"></i>target band for non-glowing colours</span><span>● = share of near-neon colours (S &gt; 80%, B &gt; 85%)</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">02 · The rules</span>
+    <h2>Six rules every colour follows</h2>
+    <p>Each swatch on this page belongs to one of three tiers. The page checks every swatch against its tier; a value outside its tier would show in red.</p>
+  </div>
+  <div class="rules">
+    <div class="rule"><b>Matter</b><span class="lim">S ≤ 65% · B 8–92%</span><p>Anything that does not glow: stone, wood, soil, skin, fur, bone, metal. Weathered and earthy in every faction.</p></div>
+    <div class="rule"><b>Dye and metal</b><span class="lim">S ≤ 75% · B ≤ 92%</span><p>Painted, dyed or polished things: cloth, banners, roof tiles, war paint, gold, bronze. Allowed to be richer than matter, never glowing.</p></div>
+    <div class="rule"><b>Light</b><span class="lim">core S ≤ 88% · highlight S 5–35%</span><p>Only emissive things: flames, lava, spells, eyes, runes, enchantments. A light is always a 5-step ramp from a tinted white-hot to a deep ember, so bloom never clips to flat white.</p></div>
+    <div class="rule"><b>No pure black or white</b><span class="lim">darkest #16120e · lightest matter #e8dec0</span><p>Replaces <code>#000000</code>, <code>#08060a</code>, <code>#ffffff</code> and friends. Keeps shadows warm and lets bloom do the brightening.</p></div>
+    <div class="rule"><b>One signature light per faction</b><span class="lim">village amber · brute torch · grave green · hell ember</span><p>Eye and glow options stay, but they are drawn from the shared ramps so every option sits at the same brightness and saturation.</p></div>
+    <div class="rule"><b>Shared materials stay shared</b><span class="lim">one iron, one gold, one bone, one leather</span><p>A gold coin, a lich's diadem and the efreet's sash use the same gold ramp. Today there are four golds (<code>#e0b840</code>, <code>#e6b832</code>, <code>#c8a050</code>, <code>#ffb02a</code>).</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">03 · The four worlds side by side</span>
+    <h2>Same value ladder, different hue</h2>
+    <p>Read across a row: the ground, skin or light of each faction sits at a comparable brightness and saturation, only the hue family changes. This is what makes a goblin, a ghoul and an imp look like they belong to one game.</p>
+  </div>
+  <div class="matrix-wrap"><table class="matrix" id="matrix"></table></div>
+</section>
+
+<section class="plate" id="shared"></section>
+<section class="plate" id="medieval"></section>
+<section class="plate" id="brutes"></section>
+<section class="plate" id="undead"></section>
+<section class="plate" id="hell"></section>
+<section class="plate" id="magic"></section>
+
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">10 · Key changes</span>
+    <h2>Before and after</h2>
+    <p>A sample of what moves. Old value on the left, new value on the right. Red hex means the old value breaks its tier.</p>
+  </div>
+  <div class="ba" id="ba"></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <span class="eyebrow">11 · After approval</span>
+    <h2>How I will roll it out</h2>
+  </div>
+  <div class="next">
+    <ol>
+      <li>Put the palette in one file, <code>src/core/palette.js</code> (<code>PAL.fire</code>, <code>PAL.gold</code>, <code>PAL.hellSkin.crimson</code>…), loaded first, and write <code>docs/PALETTE.md</code> with these rules.</li>
+      <li>Hell kit and hell creatures: skins, brimstone, lava and every fire glow onto the shared ramps.</li>
+      <li>Spells and effects: all twelve schools onto the ramps above; no pure white highlights.</li>
+      <li>Undead: grave-light green as the signature, eye and gem options remapped to the shared glow ramps.</li>
+      <li>Brutes, loot rarity, shared metals; then a check script that flags any new hex outside its tier.</li>
+      <li>Look at every family in day, dusk and night, run <code>check-character</code> where rigs are touched, then commit and push per phase.</li>
+    </ol>
+    <p class="faction-note">Medieval buildings, villagers and animals stay as they are: they are the reference.</p>
+  </div>
+</section>
+</main>
+
+<script>
+const DATA={
+diag:[["Medieval (reference)",.49,.74,2],["Brutes",.38,.64,2],["Undead creatures",.30,.70,4],["Undead kit",.34,.65,0],["Hell creatures",.38,.84,8],["Hell kit",.56,.87,28],["Spells",.52,.87,8],["Loot",.62,.90,14]],
+plates:{
+shared:{n:"04",t:"Shared materials",p:"Used by every faction. Iron, gold, bone and leather are the same everywhere; only how worn they are changes.",groups:[
+ {h:"Neutrals",r:[["Warm neutrals","matter","Replaces pure black and mid greys.",["#16120e","#2a2420","#443c36","#6e665e","#9c968c","#e8dfca"]]]},
+ {h:"Materials",r:[
+  ["Wood","matter","Timber, dark planks, barrel, planks, end grain (unchanged).",["#4a3424","#6e5034","#8a6238","#a8804e","#c9a46c"]],
+  ["Leather and grips","matter","Weapon grips, belts, straps.",["#2a1e16","#3c2a1c","#4e3826","#6a4a2e","#8a6a44"]],
+  ["Iron","matter","Tools, weapons, armour.",["#2e3034","#4a4e54","#6e737a","#8a8e94","#b4bac0"]],
+  ["Blackened iron","matter","Hell and undead weapons and armour.",["#1a191c","#2c2a2e","#44424a","#6a6870","#a4a6ac"]],
+  ["Gold","metal","One gold for coins, crowns, trims, sashes.",["#6e5420","#9a7838","#c8a050","#e0b840","#e8d084"]],
+  ["Bronze and copper","metal","",["#5a3420","#8a5430","#b47c3a","#d0a060"]],
+  ["Silver and mithril","matter","",["#4e545c","#7a8088","#a8aeb6","#d6dce4"]],
+  ["Bone and ivory","matter","Skeletons, horns, teeth, tusks.",["#6e6450","#968a72","#b8ab8a","#d6caa6","#e8dec0"]],
+  ["Blood and gore","dye","Wounds, gore, butcher props. Dark and dried, never candy red.",["#2a0e0c","#4e1a16","#7a2420","#a0342c"]]]}]},
+medieval:{n:"05",t:"Medieval village",p:"The reference look, unchanged. Warm plaster, honey thatch, clay roofs, fresh greens and a few strong dyes on cloth and awnings.",groups:[
+ {h:"Buildings and nature",r:[
+  ["Building materials","matter","Timber, slate, stone brick, plaster, ochre plaster.",["#4a3424","#56606c","#9c9a94","#e8dfca","#ead096"]],
+  ["Roofs and straw","dye","Roof tile, thatch, hay.",["#b0583a","#c8a050","#d8b850"]],
+  ["Nature","matter","Dirt, leaves, dark grass, grass, water.",["#7a5a3c","#4e7a36","#4f7a30","#62903c","#3a6a8a"]],
+  ["Village dyes","dye","Cloth, awnings, banners.",["#b03a2e","#3e5a8a","#4e6e3a","#c09a3a","#5e4470","#e8e4dc"]],
+  ["Hearth light","light","Windows, lanterns, candles.",["#fff0d8","#ffd08a","#ffa24a","#c8641e","#4a2a14"]]]}]},
+brutes:{n:"06",t:"Brutes and the wasteland",p:"Dust and moss. Goblins, hobgoblins, ogres, trolls and wargs live in olive, ochre, mud and stone; their rags are faded versions of the village dyes. Hue band 30°–100°, nothing above 65% saturation except war paint.",groups:[
+ {h:"Wasteland",r:[
+  ["Earth and dust","matter","Dark earth to bleached dust.",["#4a3e34","#6e5e48","#7c6c54","#a48c66","#c8b48a"]],
+  ["Rock","matter","",["#34302c","#4e4842","#6c6862","#8e8a84"]]]},
+ {h:"Skin, hide and cloth",r:[
+  ["Goblin skin","matter","Olive, moss, sallow, blood-red, grey. Olive moves away from the grass green so goblins don't blend into meadows.",["#6a8440","#46602c","#9c8838","#7a3e2e","#545652"]],
+  ["Ogre and troll skin","matter","Grey-green, moss, mud, pale, dusky blue, swamp teal, dusky pink (unchanged).",["#7a8658","#6c7c4a","#86684a","#a49c88","#66767e","#52705e","#a87868"]],
+  ["Hide and fur","matter","",["#3e3630","#54463a","#6a5030","#7a5a3a","#9a7a52","#a08a6a"]],
+  ["Rag dyes","dye","Faded: mud, sackcloth, faded red, dull blue, moss, faded purple, grimy teal, mustard, rust, dirty white.",["#6e5e44","#7a6a4a","#7e4436","#4e5a6e","#56663e","#5e5068","#46625e","#94803e","#8a5430","#b0a68a"]],
+  ["War paint and rust","dye","",["#8a3a2a","#7a4a2e","#5a5e64"]]]},
+ {h:"Signature light",r:[["Amber","light","Torches, braziers, glowing eyes, shaman fetishes; also the gold eye option everywhere.",["#fff2d0","#ffd890","#f0a838","#8a5a14","#3a2410"]]]}]},
+undead:{n:"07",t:"Undead",p:"Grave and spirit. Cold, grey-violet stone, sodden soil, corpse flesh with almost no colour. Robes are deep jewel tones that read as black from a distance. One signature light: grave-light green, used by necrotic fire, runes and the default eyes.",groups:[
+ {h:"Graveyard and crypt",r:[
+  ["Grave soil","matter","",["#2a2018","#3a2e24","#4e4032","#6a5a46"]],
+  ["Grave grass and moss","matter","",["#2e3424","#434c30","#5a5e40","#6a7058"]],
+  ["Crypt stone","matter","Crypt dark to weathered tomb.",["#26262a","#3e3e42","#5e5c58","#86847c","#a8a69e"]]]},
+ {h:"Bodies and cloth",r:[
+  ["Corpse flesh","matter","Ashen, grey-green, bluish, bruised, leathery, vampire pallor.",["#8c9286","#7e8a62","#7a8796","#887480","#8a7658","#b4b0b6"]],
+  ["Robes and shrouds","dye","Black, deep purple, midnight, wine, grave green, ash, faded brown.",["#1f1d24","#3a2a4e","#22304a","#4e1c26","#2c3a2a","#57524a","#5e4a30"]],
+  ["Tarnished metal","matter","Tarnished silver, aged gold, rusted iron.",["#8a9098","#9a7838","#6a4a36"]]]},
+ {h:"Lights",r:[
+  ["Grave-light (signature)","light","Necrotic fire, runes, default eyes, Necrotic spells.",["#e4fbe8","#a4ecbc","#4cd88a","#1e8a54","#0e2a1a"]],
+  ["Soul blue","light","Eye option: pale blue. Ghosts and spirits.",["#e8f6ff","#a8dcfa","#5ab4ec","#1e5e94","#101c2a"]],
+  ["Necro violet","light","Eye option: purple. Necromancer magic.",["#f2e4ff","#cca8f4","#9a5ae0","#4a2280","#160c24"]],
+  ["Blood glow","light","Eye option: red. Vampire spells; same ramp as the Blood school.",["#ffe0d8","#f49488","#dc3a32","#7a1218","#22080a"]]]}]},
+hell:{n:"08",t:"Hell",p:"Char and ember. Surfaces are near-black basalt and ash; the heat comes from light, not from paint. Demon skins are one shared family (an imp, a fiend and an efreet in crimson now use the same crimson), dark enough that their fire glows read.",groups:[
+ {h:"Ground",r:[
+  ["Basalt and ash","matter","",["#16120e","#1e1a1a","#2e2828","#4a4240","#6a6260"]],
+  ["Cinder crust","matter","Around lava.",["#221414","#3c2422","#5a3022"]],
+  ["Brimstone","matter","Sulphur vents and crystals, toned down from near-yellow.",["#4a4420","#8a7c36","#b49a44","#d4c27a"]]]},
+ {h:"Demons",r:[
+  ["Demon skin","matter","Crimson, dark red, ember, charcoal, obsidian, violet, bronze.",["#9c3e3a","#6a2a26","#aa643c","#3a3232","#2a2326","#553048","#8e6438"]],
+  ["Horn, claw and hoof","matter","",["#1a1414","#2a2222","#4a3e36","#b4a078","#d6c49a"]],
+  ["Demon cloth","dye","Black, tattered brown, dried blood, wine.",["#1c1a1a","#2e2018","#3a1612","#4a1830"]]]},
+ {h:"Signature light",r:[["Ember fire","light","Lava, braziers, demon eyes, efreet flames, Fire spells. Same ramp as every torch in the game.",["#fff2d0","#ffcc5c","#ff8a2a","#d8481a","#7a2410"]]]}]},
+magic:{n:"09",t:"Spells, effects and loot",p:"Every school is a 5-step ramp on the same brightness ladder: tinted white-hot, light, core, deep, smoke. Swapping a spell's school changes its hue, never how loud it is. Rarity colours sit at one brightness so no tier shouts over the others.",groups:[
+ {h:"Spell schools",dark:1,r:[
+  ["Fire","light","",["#fff2d0","#ffcc5c","#ff8a2a","#d8481a","#7a2410"]],
+  ["Hellfire","light","Deeper and redder than Fire.",["#ffdcb8","#ff9a5a","#f0502a","#a8281a","#4a100a"]],
+  ["Holy light","light","",["#fffbea","#fff0b8","#f4d06a","#c09a3a","#5a4420"]],
+  ["Frost","light","",["#f2fbff","#ccecfc","#7cc4f0","#2e6eb0","#16263a"]],
+  ["Lightning","light","Leans violet-blue so it separates from Frost.",["#f4f4ff","#d4dcff","#94a8ff","#4652d8","#1c1e3a"]],
+  ["Arcane","light","",["#fcf0ff","#e6b8fc","#b86af0","#6228ac","#22122e"]],
+  ["Shadow","light","",["#ece0f8","#a888d4","#6a44a8","#2e1850","#0e0a14"]],
+  ["Necrotic","light","Same as undead grave-light.",["#e4fbe8","#a4ecbc","#4cd88a","#1e8a54","#0e2a1a"]],
+  ["Soul","light","Same as undead soul blue.",["#e8f6ff","#a8dcfa","#5ab4ec","#1e5e94","#101c2a"]],
+  ["Charm","light","Succubus pink.",["#ffe6f6","#f4a8dc","#e05ab8","#7a1a5e","#240a1c"]],
+  ["Poison","light","Acid yellow-green.",["#f8fcd8","#e0f080","#b4cc38","#5e6e18","#22280e"]],
+  ["Fel","light","Demonic green, between Poison and Necrotic.",["#ecfce0","#b4f088","#6cd040","#28761a","#121e0c"]],
+  ["Blood","light","",["#ffe0d8","#f49488","#dc3a32","#7a1218","#22080a"]]]},
+ {h:"Loot rarity",dark:1,r:[["Rarity glows","light","Common, uncommon, rare, epic, legendary.",["#c8c4bc","#62c04c","#4a90f0","#aa60ec","#f49a30"]]]}]}},
+matrix:{cols:["Medieval","Brutes","Undead","Hell"],rows:[
+ ["Ground",[["#7a5a3c","#62903c","#4f7a30"],["#6e5e48","#7c6c54","#a48c66"],["#3a2e24","#434c30","#5a5e40"],["#1e1a1a","#2e2828","#3c2422"]]],
+ ["Stone",[["#6e6e6a","#9c9a94","#8e8e8a"],["#4e4842","#6c6862","#8e8a84"],["#3e3e42","#5e5c58","#86847c"],["#2e2828","#4a4240","#6a6260"]]],
+ ["Skin",[["#e0b48c","#c08a64","#8a5a3c"],["#6a8440","#7a8658","#86684a"],["#8c9286","#7e8a62","#887480"],["#9c3e3a","#aa643c","#553048"]]],
+ ["Cloth",[["#b03a2e","#3e5a8a","#c09a3a"],["#7e4436","#4e5a6e","#94803e"],["#3a2a4e","#22304a","#4e1c26"],["#1c1a1a","#3a1612","#4a1830"]]],
+ ["Light",[["#fff0d8","#ffa24a","#c8641e"],["#ffd070","#e0a030","#8a5a14"],["#a4ecbc","#4cd88a","#1e8a54"],["#ffcc5c","#ff8a2a","#d8481a"]]]]},
+ba:[
+ ["#b02c24","#9c3e3a","Imp crimson skin","imp.js","matter"],["#a8302a","#9c3e3a","Fiend crimson skin","fiend.js","matter"],["#a8382a","#9c3e3a","Efreet red skin","efreet.js","matter"],
+ ["#c2522a","#aa643c","Imp ember skin","imp.js","matter"],["#e0c848","#b49a44","Brimstone","hell.js","matter"],["#e0200a","#f0502a","Hellfire core","spells.js","light"],
+ ["#ff7a18","#ff8a2a","Fire core","spells.js","light"],["#ffffff","#fff2d0","Spell white-hot","spells.js","light"],["#30e070","#4cd88a","Necrotic fire and runes","undead.js","light"],
+ ["#9a40e0","#9a5ae0","Undead violet glow","undead.js","light"],["#5aff6a","#4cd88a","Skeleton green eyes","skeleton.js","light"],["#ff3a1e","#d83a2e","Red glowing eyes","ghoul.js, lich.js","light"],
+ ["#5a1e24","#4e1c26","Lich blood-red robe","lich.js","dye"],["#62903a","#6a8440","Goblin green skin","goblin.js","matter"],["#a0522d","#8a5430","Goblin rust-orange rag","goblin.js","dye"],
+ ["#e6b832","#e0b840","Loot gold","loot.js","metal"],["#3ad84a","#62c04c","Uncommon rarity","loot.js","light"],["#ff9a1a","#f49a30","Legendary rarity","loot.js","light"]]
+};
+
+const TIER={matter:{s:.65,bmin:.08,bmax:.92},dye:{s:.75,bmax:.92},light:{s:.88}};TIER.metal=TIER.dye;
+function sv(h){const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));const mx=Math.max(...c),mn=Math.min(...c);return{s:mx?(mx-mn)/mx:0,b:mx/255};}
+function inTier(h,t){const{s,b}=sv(h),T=TIER[t];if(/^#(ffffff|000000)$/i.test(h))return false;if(t==='light')return b>.95?(s>=.04&&s<=.35)||s<=T.s:s<=T.s;return s<=T.s+1e-9&&b<=T.bmax+1e-9&&(T.bmin?b>=T.bmin-1e-9:true);}
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function tex(h,flat){const c=document.createElement('canvas');c.width=c.height=16;const x=c.getContext('2d'),r=rng(parseInt(h.slice(1),16)),[R,G,B]=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+  for(let y=0;y<16;y++)for(let i=0;i<16;i++){const f=flat?1:(.9+r()*.16);x.fillStyle=`rgb(${Math.min(255,R*f)|0},${Math.min(255,G*f)|0},${Math.min(255,B*f)|0})`;x.fillRect(i,y,1,1);}
+  c.setAttribute('aria-label',h);c.setAttribute('role','img');return c;}
+function el(t,cls,txt){const e=document.createElement(t);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+
+/* diagnosis chart */
+(function(){const s=document.getElementById('diag'),NS='http://www.w3.org/2000/svg',L=170,W=520,top=20,rh=34;
+ const mk=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);s.appendChild(e);return e;};
+ const X=v=>L+v*W;
+ mk('rect',{x:X(.25),y:top-8,width:X(.65)-X(.25),height:DATA.diag.length*rh+4,fill:'var(--ok)',opacity:.16});
+ for(const v of [0,.25,.5,.75,1]){mk('line',{x1:X(v),x2:X(v),y1:top-8,y2:top+DATA.diag.length*rh,stroke:'var(--rule)'});mk('text',{x:X(v),y:top+DATA.diag.length*rh+18,'text-anchor':'middle',class:'tick'}).textContent=Math.round(v*100)+'%';}
+ mk('text',{x:X(.45),y:top-12+0,'text-anchor':'middle',class:'tick'}).textContent='';
+ DATA.diag.forEach(([n,med,p90,neon],i)=>{const y=top+i*rh;
+  mk('text',{x:L-12,y:y+15,'text-anchor':'end'}).textContent=n;
+  mk('rect',{x:L,y:y+3,width:X(p90)-L,height:7,fill:'var(--accent)'});
+  mk('rect',{x:L,y:y+12,width:X(med)-L,height:7,fill:'var(--muted)'});
+  const r=4+Math.sqrt(neon)*2.2;mk('circle',{cx:L+W+46,cy:y+11,r,fill:neon>10?'var(--bad)':'var(--muted)'});
+  mk('text',{x:L+W+62,y:y+15,class:'tick'}).textContent=neon+'% neon';});
+ mk('text',{x:X(.45),y:top+DATA.diag.length*rh+34,'text-anchor':'middle',class:'tick'}).textContent='saturation (HSB S)';
+})();
+
+/* matrix */
+(function(){const t=document.getElementById('matrix'),M=DATA.matrix,th=el('thead'),tr=el('tr');tr.appendChild(el('th'));M.cols.forEach(c=>tr.appendChild(el('th',null,c)));th.appendChild(tr);t.appendChild(th);
+ const tb=el('tbody');M.rows.forEach(([n,cells])=>{const r=el('tr');r.appendChild(el('th',null,n));cells.forEach(cs=>{const td=el('td'),st=el('div','strip');cs.forEach(h=>st.appendChild(tex(h,n==='Light')));td.appendChild(st);r.appendChild(td);});tb.appendChild(r);});t.appendChild(tb);})();
+
+/* plates */
+for(const[id,P] of Object.entries(DATA.plates)){const s=document.getElementById(id),hd=el('div','sec-head');
+ hd.append(el('span','eyebrow',P.n+' · Palette'),el('h2',null,P.t),el('p',null,P.p));s.appendChild(hd);
+ P.groups.forEach(g=>{const G=el('div','group');G.appendChild(el('h3',null,g.h));const rs=el('div','ramps');
+  g.r.forEach(([name,tier,note,cols])=>{const R=el('div','ramp'),top=el('div','ramp-top');top.append(el('span','ramp-name',name),el('span','tier',tier));R.appendChild(top);if(note)R.appendChild(el('span','ramp-note',note));
+   const box=el('div',(g.dark||tier==='light')?'lightbox':null),tl=el('div','tiles');
+   cols.forEach(h=>{const T=el('div','tile'+(tier==='light'?' glow':'')),cv=tex(h,tier==='light');if(tier==='light')cv.style.boxShadow='0 0 14px '+h+'66';const hx=el('span','hex'+(inTier(h,tier)?'':' out'),h);T.append(cv,hx);tl.appendChild(T);});
+   box?(box.appendChild(tl),R.appendChild(box)):R.appendChild(tl);rs.appendChild(R);});
+  G.appendChild(rs);s.appendChild(G);});}
+
+/* before / after */
+(function(){const b=document.getElementById('ba');DATA.ba.forEach(([o,n,l,f,isL])=>{const p=el('div','pair'),lb=el('div','lbl');
+ lb.append(document.createTextNode(l));const m=el('span','mono');const a=el('span',inTier(o,isL)?'':'hex out',o);a.style.display='inline';m.append(a,document.createTextNode(' → '+n+' · '+f));lb.appendChild(m);
+ p.append(tex(o,isL==='light'),el('span','arrow','→'),tex(n,isL==='light'),lb);b.appendChild(p);});})();
+</script>

@@ -9,6 +9,7 @@
 ## Files
 | File | Contents |
 |---|---|
+| core/palette.js | `PAL`: the approved colour ramps (shared materials, faction skins, light ramps, rarity); loaded first; see PALETTE.md |
 | core/models.js | RNG (`mulberry32`, `hashStr`, `seed`), canvas texture helpers, `box()` with world-space UVs, `put()`, legacy smooth buildings (unused) |
 | core/anim.js | villager clip sampler (`sampleClip`) and the 13 villager clips scaled per body type `VB` |
 | characters/villager.js | `bm()` pixel materials for characters, `bx()` box helper, `villagerTraits`, `buildVillager(kind,seed,job,force)`, `TOOLS` (held tools plus workpieces), `buildWorkpiece` |
@@ -130,4 +131,4 @@ ASSETS.push({id:'vx-myhall',folder:'buildings/medieval/civil',name:'My hall',bui
 `sceneTerrain(root,size,cell,heightAt,surfAt)` builds the ground. Road tiles go at y = −0.8, so their tops sit at 0, and the terrain under them is lowered to −0.85. Static content goes in one group that is then passed to `mergeStatic`. People and animals are agents updated in `root.userData.tick`. Call `compactRig(agent.m)` on every agent once the scene is built (cuts draw calls about 15×), and `sceneStats(root,{buildings,houses,trees})` so the viewer can show FPS, buildings, population, animals, wildlife and trees (optional extra keys: `production`, `military`, `farm`). `root.userData.tick(dt, camera)` receives the camera. Scenes larger than about 320 m get a shadow box that follows the orbit target, and point lights are off in Day mode.
 
 ## Tooling
-`tools/dev-server.mjs` (static server, free port, live reload, background rebuild), `tools/build.mjs`, `tools/gen-catalog.mjs` (loads the library in Node with a canvas stub; also a quick check that every asset still builds), `tools/check-character.mjs` (per-clip check of a character for limb flips and twists, parts below the ground and the death pile; see CHARACTER_CREATION.md).
+`tools/dev-server.mjs` (static server, free port, live reload, background rebuild), `tools/build.mjs`, `tools/gen-catalog.mjs` (loads the library in Node with a canvas stub; also a quick check that every asset still builds), `tools/check-palette.mjs` (flags colours outside the palette tiers; see PALETTE.md), `tools/check-character.mjs` (per-clip check of a character for limb flips and twists, parts below the ground and the death pile; see CHARACTER_CREATION.md).

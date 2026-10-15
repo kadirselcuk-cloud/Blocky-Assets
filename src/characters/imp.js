@@ -9,8 +9,8 @@
    Wings and tail are rigid groups driven by baked tracks; the tail folds up wherever it would go into the ground. */
 VB.imp=Object.assign({},VB.male,{thigh:.2,shin:.19,ankle:.04,hipOff:.03,spine:.06,chest:.08,neck:.17,headY:.03,shW:.13,ua:.15,fa:.14,g:.55,hipW:.05,sex:'male'});
 {const b=VB.imp;b.key='imp';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
-const IMP_SKIN={crimson:['#b02c24','crimson'],dark:['#7a1c1c','dark red'],ember:['#c2522a','ember orange'],soot:['#463434','soot black']};
-const IMP_EYES={yellow:['#fff6c0','#ffd21e','yellow glowing eyes'],orange:['#ffe0b0','#ff7a14','orange glowing eyes'],green:['#e0ffc0','#6aff2a','green glowing eyes']};
+const IMP_SKIN={crimson:['#9c3e3a','crimson'],dark:['#6a2a26','dark red'],ember:['#aa643c','ember orange'],soot:['#463434','soot black']};
+const IMP_EYES={yellow:['#fff2d0','#ffd890','yellow glowing eyes'],orange:['#fff2d0','#ff8a2a','orange glowing eyes'],green:['#ecfce0','#b4f088','green glowing eyes']};
 const IMP_HORN={short:'short horns',swept:'swept-back horns',curved:'curved horns'};
 const IMP_TAIL=8,IMP_TL=.13,IMP_PIV=.15;
 /* the tail curl is keyed as six values (tc) spread over the eight segments, or one per segment */
@@ -21,7 +21,7 @@ function buildImp(seed,o={}){const B=VB.imp,r=mulberry32(((seed*2654435761)>>>0)
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,skinK=opt('skin',skin0),eyeK=opt('eyes',eye0),hornK=opt('horns',horn0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),SK=IMP_SKIN[skinK][0];
   const skin=bm(SK,'skin'),skinD=bm(shade(SK,.75),'skin'),skinX=bm(shade(SK,.55),'skin'),belly=bm('#'+new THREE.Color(SK).lerp(new THREE.Color('#e0a070'),.3).getHexString(),'skin'),
-    dark=bm('#140a0a','plain'),claw=bm('#1a1414','plain'),teeth=bm('#efe6cc','plain'),gum=bm('#5a1014','plain'),tongue=bm('#d0505a','plain'),
+    dark=bm('#140a0a','plain'),claw=bm('#1a1414','plain'),teeth=bm('#efe6cc','plain'),gum=bm('#511d1f','plain'),tongue=bm('#d0505a','plain'),
     horn=bm(hornDark?'#2a2222':'#d6c49a','plain'),hornD=bm(hornDark?'#3e3434':'#b4a078','plain'),memb=bm(shade(SK,skinK==='soot'?.8:.45),'plain'),cloth=bm('#2e2018','cloth'),belt=bm('#4a3020','plain');
   const ey=IMP_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.8,pxTex('plain'));
   const hips=J('hips',root,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);

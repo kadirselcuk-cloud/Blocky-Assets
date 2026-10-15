@@ -3,7 +3,7 @@
    shoulder hump, the back falling steeply to a small rump and thin hind legs, a huge low-slung head with big jaws full of fangs,
    shaggy dark fur, fire glowing through the throat, chest and belly and inside the mouth, a thin rat-like tail. Fronts face +z. */
 const HH_FUR={blueblack:['#262a36','Blue-black'],charcoal:['#2c2a2a','Charcoal'],dkbrown:['#33281f','Dark brown'],ashgrey:['#4a4a4c','Ash grey']};
-const HH_GLOW={red:['#ff3a1a','Ember red'],orange:['#ff7a1a','Fire orange'],green:['#7aff3a','Hellfire green'],blue:['#3aa8ff','Blue flame']};
+const HH_GLOW={red:['#f0502a','Ember red'],orange:['#ff8a2a','Fire orange'],green:['#b4f088','Hellfire green'],blue:['#5ab4ec','Blue flame']};
 const HHM={};
 /* leg layout shared by the builder and the gait IK (body-frame y,z; angles in radians): shoulder/hip pivots, rest angles, bone lengths, sole depth below the paw joint */
 const HHL={fk:1.1,bk:.95,bdy:.03,F:{o:.3,p:[-.12,.45],r1:.15,r2:-.15,a:.36,b:.42},B:{o:-.3,p:[-.06,-.25],rt:-.35,rk:.75,rh:-.4,a:.32,b:.29,c:.21}};
@@ -15,7 +15,7 @@ function buildHellhound(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x
     fur=HH_FUR[fk][0],glow=HH_GLOW[gk][0],shag=maneK==='shaggy';
   const cM=cm('hair',fur),dM=cm('hair',darker(fur,.6)),sM=cm('hair','#'+new THREE.Color(fur).lerp(new THREE.Color('#8a8aa0'),.18).getHexString()),
     eyeM=hhGlow(glow,1.6),hotM=hhGlow(glow,.9),skinM=hhGlow(darker(glow,.5),.55),inM=hhGlow(darker(glow,.65),.8),
-    claw=bm('#121014','plain'),nail=bm('#3a332c','plain'),pad=bm('#1a1618','plain'),ivory=bm('#e0d4b0','plain'),gum=bm('#6a1c18','skin'),nose=bm('#121014','plain'),scarM=bm('#7a5a5a','skin'),
+    claw=bm('#121014','plain'),nail=bm('#3a332c','plain'),pad=bm('#1a1618','plain'),ivory=bm('#e0d4b0','plain'),gum=bm('#622622','skin'),nose=bm('#121014','plain'),scarM=bm('#7a5a5a','skin'),
     leather=bm('#3a2418','leather'),iron=vm('iron');
   const root=new THREE.Group();root.userData.lights=[];root.userData.animal='hellhound';
   const body=new THREE.Group();body.name='body';body.userData.joint=true;body.position.set(0,.85,0);root.add(body);

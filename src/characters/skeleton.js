@@ -8,7 +8,7 @@ VB.skeleton=Object.assign({},VB.male,{sex:'male'});
 {const b=VB.skeleton;b.key='skeleton';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 /* bone tints: "New look" rolls the first three; dark and reddish (fire skeleton) only when picked in the options */
 const SK_BONE={bleached:['#e2dac2','bleached'],aged:['#cdbf98','aged'],grimy:['#ab9d7a','grimy'],dark:['#57504a','dark'],red:['#a85a3e','reddish']};
-const SK_EYES={blue:['#bfe6ff','#5ab8ff','pale blue glow'],green:['#c8ffb0','#5aff6a','green glow'],dark:null};
+const SK_EYES={blue:['#a8dcfa','#5ab4ec','pale blue glow'],green:['#a4ecbc','#4cd88a','green glow'],dark:null};
 const SK_ARMOR={leather:'leather',chain:'chain mail',plate:'plate'};
 /* armour areas, and how many of them each coverage choice wears (Random rolls every area on its own) */
 const SK_AREAS=['helm','chest','boots','gloves','shoulders','bracers','belt','thighs'],SK_COVER={few:[2,3],most:[5,6],full:[8,8]};

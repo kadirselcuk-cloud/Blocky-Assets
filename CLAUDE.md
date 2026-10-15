@@ -8,6 +8,7 @@ Read this file first in every session, then open only the doc you need:
 |---|---|
 | What has been built and why, the owner's feedback over time | `docs/HISTORY.md` |
 | Rules for designing or changing assets (style, mistakes to avoid) | `docs/DESIGN_GUIDE.md` |
+| Colours: the palette tiers, faction lights, shared material ramps (`PAL`), `tools/check-palette.mjs` | `docs/PALETTE.md` |
 | Creating or changing a character: rig and clip rules, no twisted limbs, the required check | `docs/CHARACTER_CREATION.md` |
 | How the code is organised, helper functions, how to add an asset | `docs/ARCHITECTURE.md` |
 | Every asset id, folder, options (generated) | `docs/ASSET_CATALOG.md` |
