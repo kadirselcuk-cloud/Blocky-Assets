@@ -85,6 +85,7 @@
     "src/scenes/scenes6.js",
     "src/scenes/scenes7.js",
     "src/scenes/scenes8.js",
+    "src/scenes/scenes9.js",
     "src/export/export.js"
   ],
   "app": ["src/app/app.js"]
