@@ -12,7 +12,7 @@ const PAL=new Function(read('src/core/palette.js')+';return PAL;')();
 const VERB=process.argv.includes('-v');
 let files=process.argv.slice(2).filter(a=>!a.startsWith('-'));
 if(!files.length){const m=JSON.parse(read('src/manifest.json')).library;
-  files=m.filter(f=>/(imp|fiend|oni|devil_lord|demon_prince|efreet|succubus|cerberus|hellhound|hell_mound|skeleton|ghoul|lich|wight|revenant|vampire|necromancer|goblin|ogre|troll|warg|hell|undead|wasteland|cave|crypt|catacombs|necro_castle|ruins|raid|spells|loot|items)/.test(f));}
+  files=m.filter(f=>/(imp|fiend|oni|devil_lord|demon_prince|efreet|succubus|cerberus|hellhound|hell_mound|skeleton|ghoul|lich|wight|revenant|vampire|necromancer|goblin|ogre|troll|warg|hell|undead|wasteland|cave|crypt|catacombs|necro_castle|ruins|raid|spells|loot|items|mercenary)/.test(f));}
 const rgb=h=>[0,2,4].map(i=>parseInt(h.slice(i,i+2),16));
 const sv=h=>{const c=rgb(h),mx=Math.max(...c),mn=Math.min(...c);return[mx?(mx-mn)/mx:0,mx/255];};
 const INPAL=new Set();(function w(o){for(const v of Object.values(o))typeof v==='string'?INPAL.add(v.slice(1)):w(v);})(PAL);

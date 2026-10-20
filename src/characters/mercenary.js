@@ -1,0 +1,372 @@
+/* ======================= PLAYER CHARACTERS: the Mercenary =======================
+   Built from scratch (docs/MERCENARY.md): own body, own gear slots, own clip system.
+   The joints use the villager names (hips, spine, chest, neck, head, upperArm/foreArm/hand, thigh/shin/foot), so the viewer's rig
+   overlay and tools/check-character.mjs apply. Gear is boxes on the joints, one builder per slot (MC_GEAR), so new pieces are one entry.
+   Clips are baked from poses solved by mcSolve: two-bone IK for the legs (feet planted, heel and ball pivots, toes bend) and the arms
+   (wrist targets and elbow poles in the chest's frame), the sword hand aimed by a clamped wrist, prop and body ground clamps. */
+const MC_SKIN={pale:['#d6b8a4','Pale'],light:['#c99a7c','Light'],tan:['#a67a60','Tan'],dark:['#7a5644','Dark'],black:['#4a342a','Black']};
+const MC_HAIR={white:['#d6d2c8','White'],red:['#855c4a','Red'],brown:['#5a4232','Brown'],black:['#221c19','Black'],blonde:['#b89a68','Blonde'],gray:['#77736e','Gray']};
+const MC_EYE={green:['#4f6a44','Green'],blue:['#4a6680','Blue'],brown:['#4e3a2c','Brown']};
+const MC_SLOTS={weapon:{sword:'Arming sword',none:'None'},shield:{heater:'Heater shield',none:'None'},helmet:{none:'None',nasal:'Nasal helm'},
+  armor:{mail:'Mail hauberk',gambeson:'Gambeson',none:'Linen shirt'},gloves:{leather:'Leather gloves',none:'None'},
+  boots:{leather:'Leather boots',none:'None (barefoot)'},pants:{wool:'Wool trousers',leather:'Leather trousers',none:'None (linen braies)'}};
+const MC_DEF={skin:'light',hair:'brown',eyes:'brown',weapon:'sword',shield:'heater',helmet:'none',armor:'mail',gloves:'leather',boots:'leather',pants:'wool'};
+/* body: real metres; ground at y = 0, ankle 0.08 above it, hips joint 1.06 with straight legs; about 1.97 m tall */
+const MCB={ank:.08,shin:.46,thigh:.46,hipDrop:.06,hipX:.11,hipsY:1.06,spine:.10,chest:.18,neck:.28,headY:.08,shX:.31,shY:.22,ua:.32,fa:.28,grip:.06,ball:.12,heel:-.07};
+const MC_COL={linen:'#cbc2ae',quiltDye:'#7c6748',wool:'#4f4740',woolD:'#3c3530',leather:PAL.leather[3],leatherD:PAL.leather[2],leatherL:PAL.leather[4],boot:PAL.leather[2],sole:PAL.leather[0],
+  iron:PAL.iron[2],ironD:PAL.iron[1],steel:PAL.iron[3],steelL:PAL.iron[4],brass:PAL.bronze[2],wood:PAL.wood[1],paint:'#7a4238',paintD:'#5c332c',lip:'#7c5048',eyeW:'#d3cbbc',mouth:'#3a2620'};
+
+/* own textures (16 px): mail rings, brushed steel, wood planks */
+const MCT={};
+function mcTex(kind){if(MCT[kind])return MCT[kind];const N=16,c=document.createElement('canvas');c.width=c.height=N;const g=c.getContext('2d'),r=mulberry32(hashStr('mc'+kind));
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){let v=.88+.12*r();
+    if(kind==='mail')v=y%2?.8+.06*r():((x+(y>>1))%2?.66:.95)+.04*r();
+    if(kind==='steel')v=.9+.1*r()-(y%6===0?.1:0);
+    if(kind==='planks')v=(x%5===0?.72:.9)+.1*r();
+    const b=Math.round(Math.min(1,v)*255);g.fillStyle=`rgb(${b},${b},${b})`;g.fillRect(x,y,1,1);}
+  const t=new THREE.CanvasTexture(c);t.magFilter=THREE.NearestFilter;t.minFilter=THREE.NearestFilter;t.generateMipmaps=false;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.encoding=THREE.sRGBEncoding;return MCT[kind]=t;}
+const MCM={};
+function mcMat(hex,kind){const k=hex+kind;if(MCM[k])return MCM[k];if(!['mail','steel','planks'].includes(kind))return MCM[k]=bm(hex,kind);
+  const metal=kind!=='planks';return MCM[k]=new THREE.MeshStandardMaterial({map:mcTex(kind),color:new THREE.Color(hex).convertSRGBToLinear(),roughness:metal?.55:.9,metalness:metal?.45:0});}
+const mcShade=(hex,f)=>'#'+new THREE.Color(hex).multiplyScalar(f).getHexString();
+
+/* ---------- gear: one builder per slot and choice; each gets the joints J and the materials M ---------- */
+const MC_GEAR={
+  /* torso and sleeves: what the body boxes are made of */
+  armor:{
+    mail:(J,M)=>{const mail=M.mail;mcTorso(J,M,mail,mail,mail);mcSleeves(J,M,mail,M.quilt,true);
+      bx(J.chest,.25,.07,.23,mail,0,.3,-.005);                                        /* mail collar */
+      for(const sd of['L','R']){bx(J['thigh_'+sd],.215,.2,.225,mail,0,-.08,0);}      /* hauberk skirt, split per thigh */
+      mcBelt(J,M);for(const sd of['L','R'])mcPauldron(J['upperArm_'+sd],M);},
+    gambeson:(J,M)=>{mcTorso(J,M,M.quilt,M.quilt,M.quilt);mcSleeves(J,M,M.quilt,M.quilt,true);bx(J.chest,.24,.06,.22,M.quilt,0,.3,-.005);
+      for(const sd of['L','R'])bx(J['thigh_'+sd],.21,.17,.22,M.quilt,0,-.065,0);mcBelt(J,M);},
+    none:(J,M)=>{mcTorso(J,M,M.linen,M.linen,M.pantsTop);mcSleeves(J,M,M.linen,null,false);bx(J.chest,.11,.07,.01,M.skin,0,.25,.149);mcBelt(J,M);}},
+  pants:{
+    wool:(J,M)=>mcLegs(J,M,M.wool,M.wool),
+    leather:(J,M)=>{mcLegs(J,M,M.leather,M.leather);for(const sd of['L','R'])bx(J['shin_'+sd],.155,.07,.03,M.leatherD,0,-.02,.08);},
+    none:(J,M)=>mcLegs(J,M,M.linen,M.skin,true)},
+  boots:{
+    leather:(J,M)=>{for(const sd of['L','R']){const sn=J['shin_'+sd];bx(sn,.165,.27,.175,M.boot,0,-.325,-.005);bx(sn,.175,.05,.185,M.leatherL,0,-.19,-.005);mcFoot(J,sd,M.boot,M.sole);}},
+    none:(J,M)=>{for(const sd of['L','R'])mcFoot(J,sd,M.skin,null);}},
+  gloves:{
+    leather:(J,M)=>{for(const sd of['L','R']){mcFist(J['hand_'+sd],M.leather,sd);bx(J['foreArm_'+sd],.15,.07,.15,M.leatherL,0,-.245,0);}},
+    none:(J,M)=>{for(const sd of['L','R'])mcFist(J['hand_'+sd],M.skin,sd);}},
+  helmet:{
+    none:(J,M)=>mcHair(J,M,false),
+    nasal:(J,M)=>{mcHair(J,M,true);const h=J.head,ir=M.steel;
+      bx(h,.272,.06,.292,M.ironD,0,.245,0);bx(h,.262,.05,.282,ir,0,.295,0);bx(h,.22,.035,.24,ir,0,.335,0);bx(h,.14,.025,.16,ir,0,.362,0);bx(h,.05,.02,.06,ir,0,.382,0);
+      bx(h,.036,.05,.045,M.ironD,0,.235,.165);bx(h,.032,.085,.02,M.ironD,0,.185,.186);}},
+  weapon:{
+    sword:(J,M)=>{const g=new THREE.Group();g.name='mc_sword';J.socket_R.add(g);
+      bx(g,.034,.034,.12,M.leatherD,0,0,0);bx(g,.03,.2,.03,M.ironD,0,0,.075);bx(g,.04,.04,.05,M.ironD,0,0,-.083);bx(g,.052,.052,.026,M.brass,0,0,-.118);
+      bx(g,.018,.052,.68,M.steel,0,0,.43);bx(g,.022,.012,.6,M.ironD,0,0,.4);bx(g,.018,.034,.06,M.steel,0,0,.8);bx(g,.016,.014,.04,M.steel,0,0,.85);return g;},
+    none:()=>null},
+  shield:{
+    heater:(J,M)=>{const mt=new THREE.Group();mt.name='mc_shmount';mt.position.set(0,-.15,0);J.foreArm_L.add(mt);
+      const s=new THREE.Group();s.name='mc_shield';mt.add(s);s.position.set(.075,0,0);s.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(0,0,-1),new THREE.Vector3(0,1,0),new THREE.Vector3(1,0,0)));
+      /* shield frame: z = face normal, y = up; the solver turns it every frame (mcShield) */
+      for(const y of[-.07,-.2])bx(J.foreArm_L,.15,.035,.15,M.leatherD,0,y,0);
+      const rows=[[.56,.36,.12],[.52,.08,-.1],[.46,.07,-.175],[.38,.07,-.245],[.28,.06,-.31],[.16,.05,-.365],[.06,.04,-.41]];
+      for(const[w,h,y]of rows){bx(s,w,h,.035,M.planks,0,y,.0175);bx(s,w-.04,h,.01,M.paint,0,y,.04);}
+      bx(s,.585,.03,.05,M.ironD,0,.3,.02);for(const x of[-.28,.28])bx(s,.03,.38,.05,M.ironD,x,.115,.02);
+      return s;},
+    none:()=>null}};
+
+function mcTorso(J,M,chestM,bellyM,hipsM){bx(J.hips,.38,.2,.25,hipsM,0,-.03,0);bx(J.spine,.36,.22,.24,bellyM,0,.08,0);
+  bx(J.chest,.5,.3,.29,chestM,0,.14,0);bx(J.chest,.42,.13,.04,chestM,0,.17,.155);bx(J.chest,.3,.06,.18,chestM,0,.3,-.01);}
+function mcSleeves(J,M,upper,fore,long){for(const sd of['L','R']){const ua=J['upperArm_'+sd],fa=J['foreArm_'+sd];
+  bx(ua,.18,.15,.18,upper,0,-.04,0);bx(ua,.15,.3,.15,long?upper:M.skin,0,-.17,0);if(!long)bx(ua,.16,.08,.16,upper,0,-.1,0);
+  bx(fa,.14,.12,.14,fore||M.skin,0,-.06,0);bx(fa,.13,.28,.13,fore||M.skin,0,-.13,0);}}
+function mcBelt(J,M){bx(J.spine,.375,.06,.255,M.leatherD,0,0,0);bx(J.spine,.05,.045,.02,M.brass,0,0,.13);bx(J.spine,.08,.1,.04,M.leather,.12,-.06,.13);}
+function mcPauldron(ua,M){bx(ua,.21,.04,.21,M.leather,0,.045,0);bx(ua,.215,.05,.215,M.leatherD,0,-.005,0);bx(ua,.218,.045,.218,M.leather,0,-.05,0);
+  const s=Math.sign(ua.position.x);for(const z of[-.06,.06])bx(ua,.02,.02,.02,M.brass,s*.11,.0,z);}
+function mcLegs(J,M,top,low,braies){for(const sd of['L','R']){const th=J['thigh_'+sd],sn=J['shin_'+sd];
+  if(braies){bx(th,.19,.2,.2,top,0,-.09,0);bx(th,.18,.27,.19,M.skin,0,-.315,0);}else bx(th,.19,.46,.2,top,0,-.22,0);
+  bx(sn,.15,.47,.16,low,0,-.225,-.005);bx(sn,.155,.1,.17,braies?M.skin:top,0,-.005,0);}}
+function mcFoot(J,sd,mat,sole){const ft=J['foot_'+sd],toe=J['toes_'+sd];bx(ft,.12,.08,.19,mat,0,-.04,.025);bx(toe,.12,.05,.07,mat,0,.025,.035);
+  if(sole){bx(ft,.125,.02,.195,sole,0,-.07,.025);bx(toe,.125,.02,.075,sole,0,.01,.035);}}
+function mcFist(hd,mat,sd){bx(hd,.09,.11,.11,mat,0,-.06,0);bx(hd,.1,.03,.1,mat,0,-.1,0);bx(hd,.04,.06,.03,mat,(sd==='L'?-1:1)*.0,-.04,.06);}
+function mcHair(J,M,helm){const h=J.head,hr=M.hair;
+  if(!helm){bx(h,.25,.05,.27,hr,0,.28,0);bx(h,.02,.08,.2,hr,.126,.21,-.01);bx(h,.02,.08,.2,hr,-.126,.21,-.01);bx(h,.25,.06,.03,hr,0,.25,.13);}
+  bx(h,.25,helm?.11:.17,.045,hr,0,helm?.165:.195,-.128);}
+
+function buildMercenary(o={}){const opt=k=>o[k]!==undefined&&o[k]!=='random'?o[k]:MC_DEF[k];const sel={};for(const k in MC_DEF)sel[k]=opt(k);
+  const skinHex=MC_SKIN[sel.skin][0],hairHex=MC_HAIR[sel.hair][0],root=new THREE.Group();root.userData.lights=[];
+  const M={skin:bm(skinHex,'skin'),skinD:bm(mcShade(skinHex,.85),'skin'),hair:bm(hairHex,'hair'),eye:bm(MC_EYE[sel.eyes][0],'plain'),eyeW:bm(MC_COL.eyeW,'plain'),lip:bm(MC_COL.lip,'plain'),mouth:bm(MC_COL.mouth,'plain'),
+    linen:bm(MC_COL.linen),quilt:bm(MC_COL.quiltDye,'quilt'),wool:bm(MC_COL.wool),leather:bm(MC_COL.leather,'leather'),leatherD:bm(MC_COL.leatherD,'leather'),leatherL:bm(MC_COL.leatherL,'leather'),
+    boot:bm(MC_COL.boot,'leather'),sole:bm(MC_COL.sole,'leather'),brass:mcMat(MC_COL.brass,'steel'),iron:mcMat(MC_COL.iron,'steel'),ironD:mcMat(MC_COL.ironD,'steel'),steel:mcMat(MC_COL.steel,'steel'),
+    mail:mcMat(MC_COL.iron,'mail'),planks:mcMat(MC_COL.wood,'planks'),paint:bm(MC_COL.paint),paintD:bm(MC_COL.paintD)};
+  M.pantsTop={wool:M.wool,leather:M.leather,none:M.linen}[sel.pants];
+  /* joints */
+  const Jt={};const jn=(n,p,x,y,z)=>Jt[n]=J(n,p,x,y,z);
+  jn('hips',root,0,MCB.hipsY,0);jn('spine',Jt.hips,0,MCB.spine,0);jn('chest',Jt.spine,0,MCB.chest,0);jn('neck',Jt.chest,0,MCB.neck,0);jn('head',Jt.neck,0,MCB.headY,0);
+  for(const[sd,s]of[['L',1],['R',-1]]){jn('upperArm_'+sd,Jt.chest,s*MCB.shX,MCB.shY,0);jn('foreArm_'+sd,Jt['upperArm_'+sd],0,-MCB.ua,0);jn('hand_'+sd,Jt['foreArm_'+sd],0,-MCB.fa,0);
+    jn('socket_'+sd,Jt['hand_'+sd],0,-MCB.grip,0).userData.socket=true;
+    jn('thigh_'+sd,Jt.hips,s*MCB.hipX,-MCB.hipDrop,0);jn('shin_'+sd,Jt['thigh_'+sd],0,-MCB.thigh,0);jn('foot_'+sd,Jt['shin_'+sd],0,-MCB.shin,0);jn('toes_'+sd,Jt['foot_'+sd],0,-MCB.ank,MCB.ball);}
+  /* neck and head: square jaw, heavy brow, short full beard */
+  const h=Jt.head;bx(Jt.neck,.16,.13,.15,M.skin,0,.025,0);
+  bx(h,.24,.27,.26,M.skin,0,.135,.01);bx(h,.25,.08,.245,M.skin,0,.05,.012);bx(h,.22,.03,.02,M.skinD,0,.165,.146);
+  for(const s of[1,-1]){bx(h,.05,.028,.01,M.eyeW,s*.055,.142,.142);bx(h,.026,.028,.012,M.eye,s*.05,.142,.143);bx(h,.065,.016,.014,M.hair,s*.055,.172,.158);
+    bx(h,.03,.07,.05,M.skin,s*.127,.13,.0);bx(h,.012,.04,.03,M.skinD,s*.142,.13,.0);}
+  bx(h,.045,.07,.04,M.skin,0,.108,.155);bx(h,.05,.02,.02,M.skinD,0,.078,.163);
+  bx(h,.11,.022,.03,M.hair,0,.072,.145);bx(h,.07,.01,.01,M.mouth,0,.055,.149);
+  bx(h,.21,.065,.04,M.hair,0,.018,.13);bx(h,.032,.1,.2,M.hair,.115,.055,.03);bx(h,.032,.1,.2,M.hair,-.115,.055,.03);bx(h,.2,.03,.16,M.hair,0,-.0,.05);
+  /* bare hands and arms under the gear come from the slot builders */
+  for(const slot of['armor','pants','boots','gloves','helmet','weapon','shield'])MC_GEAR[slot][sel[slot]](Jt,M);
+  const joints=[];root.traverse(q=>{if(q.userData.joint&&!q.userData.socket)joints.push(q);});root.userData.joints=joints;root.userData.ground=2.2;root.userData.sel=sel;
+  const nm=(k)=>MC_SLOTS[k][sel[k]];
+  root.userData.variantText=`${MC_SKIN[sel.skin][1]} skin, ${MC_HAIR[sel.hair][1].toLowerCase()} hair and beard, ${MC_EYE[sel.eyes][1].toLowerCase()} eyes. ${nm('armor')}, ${nm('pants').toLowerCase()}, ${nm('boots').toLowerCase()}, gloves: ${nm('gloves').toLowerCase()}, helmet: ${nm('helmet').toLowerCase()}. ${nm('weapon')} and ${nm('shield').toLowerCase()}.`;
+  if(!o.noClips)root.userData.clips=mercenaryClips(sel.weapon,sel.shield);
+  return root;}
+
+/* ======================= the solver ======================= */
+const MC_R=Math.PI/180;
+function mcIK(S,T,a,b,pole,leg){const V3=THREE.Vector3,d0=T.clone().sub(S);let d=d0.length();const u=d0.clone().divideScalar(d||1);d=Math.min(Math.max(d,Math.abs(a-b)+1e-3),a+b-1e-4);
+  const v=pole.clone().sub(u.clone().multiplyScalar(pole.dot(u)));if(v.lengthSq()<1e-8)v.set(0,0,leg?1:-1);v.normalize();
+  const ca=(a*a+d*d-b*b)/(2*a*d),sa=Math.sqrt(Math.max(0,1-ca*ca)),Eo=u.clone().multiplyScalar(ca).add(v.clone().multiplyScalar(sa));
+  const y=Eo.clone().negate(),z=leg?v.clone():v.clone().negate();z.sub(y.clone().multiplyScalar(z.dot(y))).normalize();const x=new V3().crossVectors(y,z);
+  const q=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x,y,z)),cg=(a*a+b*b-d*d)/(2*a*b),bend=Math.PI-Math.acos(Math.max(-1,Math.min(1,cg)));
+  return{q,bend:leg?bend:-bend};}
+/* pose fields (degrees, metres): P hips offset, H/S/C hips, spine, chest (x pitch forward, y yaw left, z roll), N/Hd neck and head on top of the automatic
+   head steadying (hc = how much of the torso's turn the head undoes); FL/FR feet [x, z, yaw, lift, pitch toe-down]; kL/kR knees out (deg);
+   hL/hR wrists and eL/eR elbow poles in the chest's frame; bR blade direction in the body's frame (world turned by Y), rR edge roll; sn shield facing (body frame), st its tilt; wL left wrist; sh shield turn on
+   the forearm; fr 0..1 frees the right arm from the blade (empty hand: keyed elbow eR, neutral wrist); Y turns the whole body about the vertical (feet included, the head not steadied against it); fk 0..1 blend of the legs to the FK angles LL/LR [thigh x, thigh z, knee, foot]; up body lift; gc ground clamp of the whole body */
+const MC_F=[['P',3],['H',3],['S',3],['C',3],['N',3],['Hd',3],['FL',5],['FR',5],['kL',1],['kR',1],['hL',3],['eL',3],['wL',3],['hR',3],['eR',3],['bR',3],['rR',1],['sn',3],['st',1],['hc',1],['fk',1],['LL',4],['LR',4],['gc',1],['Y',1],['fr',1]];
+function mcSolve(R,p){const V3=THREE.Vector3,Q=THREE.Quaternion,j=R.j,e=(o,a)=>o.rotation.set(a[0]*MC_R,a[1]*MC_R,a[2]*MC_R,'YXZ');
+  {const lo=Math.max(p.FL[2],p.FR[2])-40,hi=Math.min(p.FL[2],p.FR[2])+40,hy=Math.max(lo,Math.min(hi,p.H[1]));if(hy!==p.H[1]&&p.fk<1){p.S=[p.S[0],p.S[1]+p.H[1]-hy,p.S[2]];p.H=[p.H[0],hy,p.H[2]];}}
+  j.hips.position.set(p.P[0],MCB.hipsY+p.P[1],p.P[2]);e(j.hips,p.H);if(p.Y)j.hips.quaternion.premultiply(new Q().setFromAxisAngle(new V3(0,1,0),p.Y*MC_R));e(j.spine,p.S);e(j.chest,p.C);
+  const hc=p.hc,yw=(p.H[1]+p.S[1]+p.C[1])*hc,pt=(p.H[0]+p.S[0]+p.C[0])*hc,rl=(p.H[2]+p.S[2]+p.C[2])*hc;
+  e(j.neck,[p.N[0]-pt*.45,p.N[1]-yw*.5,p.N[2]-rl*.5]);e(j.head,[p.Hd[0]-pt*.45,p.Hd[1]-yw*.5,p.Hd[2]-rl*.5]);
+  R.m.updateMatrixWorld(true);
+  /* legs: ankle from the foot channel, pivoting on the ball (toe down) or the heel (toe up); the hips drop if a leg can't reach */
+  const ft={};let drop=0;
+  const cy=Math.cos((p.Y||0)*MC_R),sy=Math.sin((p.Y||0)*MC_R);
+  for(const sd of['L','R']){const F0=p['F'+sd],F=[F0[0]*cy+F0[1]*sy,-F0[0]*sy+F0[1]*cy,F0[2]+(p.Y||0),F0[3],F0[4]],yaw=F[2]*MC_R,pit=F[4]*MC_R,q=new Q().setFromEuler(new THREE.Euler(pit,yaw,0,'YXZ')),pz=pit>0?MCB.ball:MCB.heel;
+    const ank=new V3(F[0]+Math.sin(yaw)*pz,F[3],F[1]+Math.cos(yaw)*pz).add(new V3(0,MCB.ank,-pz).applyQuaternion(q));
+    const hp=j['thigh_'+sd].getWorldPosition(new V3()),L=MCB.thigh+MCB.shin-.003,dx=ank.x-hp.x,dz=ank.z-hp.z,h2=dx*dx+dz*dz,dy=hp.y-ank.y;
+    if(p.fk<1&&h2<L*L){const need=dy-Math.sqrt(L*L-h2);if(need>drop)drop=need;}ft[sd]={q,ank};}
+  if(drop>0){j.hips.position.y-=drop;R.m.updateMatrixWorld(true);}
+  const hInv=new THREE.Matrix4().copy(j.hips.matrixWorld).invert(),hQi=j.hips.getWorldQuaternion(new Q()).invert();
+  for(const sd of['L','R']){const th=j['thigh_'+sd],sn=j['shin_'+sd],fo=j['foot_'+sd],F=p['F'+sd],s=sd==='L'?1:-1,k=(F[2]+(p.Y||0)+s*p['k'+sd])*MC_R;
+    const r=mcIK(th.position,ft[sd].ank.clone().applyMatrix4(hInv),MCB.thigh,MCB.shin,new V3(Math.sin(k),0,Math.cos(k)).applyQuaternion(hQi),1);
+    th.quaternion.copy(r.q);sn.rotation.set(r.bend,0,0);th.updateMatrixWorld(true);
+    fo.quaternion.copy(sn.getWorldQuaternion(new Q()).invert().multiply(ft[sd].q));j['toes_'+sd].rotation.set(F[4]>0?-F[4]*MC_R:0,0,0);
+    if(p.fk>0){const A=p['L'+sd],fq=new Q().setFromEuler(new THREE.Euler(A[0]*MC_R,0,s*A[1]*MC_R,'XYZ'));
+      th.quaternion.slerp(fq,p.fk);sn.rotation.x+=(A[2]*MC_R-sn.rotation.x)*p.fk;const f0=fo.quaternion.clone();fo.quaternion.copy(f0.slerp(new Q().setFromEuler(new THREE.Euler(A[3]*MC_R,0,0)),p.fk));
+      j['toes_'+sd].rotation.x*=1-p.fk;}}
+  R.m.updateMatrixWorld(true);
+  mcArms(R,p);
+  /* props never go below the ground: lift the hand that holds them */
+  for(const[sd,obj]of[['R',j.mc_sword],['L',j.mc_shield]]){if(!obj||R.dropped&&R.dropped[obj.name])continue;for(let i=0;i<3;i++){const lo=mcLow(obj);if(lo>.002)break;
+    const up=new V3(0,.004-lo,0).applyQuaternion(j.chest.getWorldQuaternion(new Q()).invert());p['h'+sd]=[p['h'+sd][0]+up.x,p['h'+sd][1]+up.y,p['h'+sd][2]+up.z];mcArms(R,p,sd);}}
+  if(p.gc>0){const lo=mcLow(R.m,true);if(lo<.001){j.hips.position.y+=.001-lo;R.m.updateMatrixWorld(true);}}}
+/* arms: two-bone IK in the chest's frame. The sword arm searches the elbow circle for the elbow that lets a nearly neutral wrist point the
+   blade along bR (the wrist then bends the rest of the way, clamped): cost = wrist turn and bend from neutral, distance from the preferred elbow
+   (opposite the blade, nudged towards the keyed eR),
+   upper-arm twist over 70°, an elbow inside the body or straight up, and the change from last frame's elbow */
+const MC_AX=new THREE.Vector3(1,0,0);
+/* a wrist closer than 0.36 m to its shoulder makes the elbow unstable, and a straight arm snaps: targets are kept 0.36 m out and softly
+   inside 0.585 m (the arm is 0.6 m), so the elbow always keeps a little bend */
+function mcReach(S,h){const T=new THREE.Vector3(...h),d=T.clone().sub(S);let l=d.length();const l0=l;
+  if(l<.36)l=.36;else if(l>.5)l=.5+.085*(1-Math.exp(-(l-.5)/.085));return S.clone().add(d.multiplyScalar(l/Math.max(l0,1e-4)));}
+const mcBody=(p,v)=>new THREE.Vector3(...v).normalize().applyAxisAngle(new THREE.Vector3(0,1,0),(p.Y||0)*MC_R);
+function mcArmR(R,p){const V3=THREE.Vector3,Q=THREE.Quaternion,S=R.j.upperArm_R.position,T=mcReach(S,p.hR),d=mcBody(p,p.bR).applyQuaternion(R.j.chest.getWorldQuaternion(new Q()).invert()),fr=p.fr||0,pref=d.clone().negate().multiplyScalar(1-fr).add(new V3(...p.eR).normalize().multiplyScalar(.35+fr*2));
+  const u=T.clone().sub(S).normalize(),v1=pref.clone().sub(u.clone().multiplyScalar(pref.dot(u)));if(v1.lengthSq()<1e-6)v1.set(-1,0,0);v1.normalize();const v2=new V3().crossVectors(u,v1);
+  const ev=ph=>{const pole=v1.clone().multiplyScalar(Math.cos(ph)).add(v2.clone().multiplyScalar(Math.sin(ph))),r=mcIK(S,T,MCB.ua,MCB.fa,pole,0);
+    const qF=r.q.clone().multiply(new Q().setFromAxisAngle(MC_AX,r.bend)),dF=d.clone().applyQuaternion(qF.invert()),y0=Math.atan2(dF.x,dF.z)/MC_R,hz=Math.hypot(dF.x,dF.z),yu=R.prevYa===undefined?y0:R.prevYa+((y0-R.prevYa+540)%360-180),ya=R.prevYa===undefined?yu:R.prevYa+(yu-R.prevYa)*Math.min(1,Math.max(0,(hz-.25)/.35)),pi=-Math.asin(Math.max(-1,Math.min(1,dF.y)))/MC_R;
+    let tw=Math.abs(2*Math.atan2(r.q.y,r.q.w)/MC_R);if(tw>180)tw=360-tw;
+    let c=(1-fr)*((ya/45)**2+((pi-28)/32)**2+(pi>55?((pi-55)/8)**2:0))+(.6+fr*3)*(ph/(70*MC_R))**2+(tw>70?((tw-70)/15)**2:0)+(pole.x>.35?((pole.x-.35)/.2)**2:0)+(pole.y>.6?((pole.y-.6)/.2)**2:0);
+    if(R.prevPole){const dp=pole.dot(R.prevPole);if(dp<.97)c+=1e3;c+=60*(1-dp);}return{c,r,pole,ya,pi};};
+  let best=null;for(let k=-36;k<36;k++){const e=ev(k*5*MC_R);if(!best||e.c<best.c){best=e;best.ph=k*5*MC_R;}}
+  for(let k=-10;k<=10;k++){const e=ev(best.ph+k*.5*MC_R);if(e.c<best.c){e.ph=best.ph+k*.5*MC_R;best=e;}}
+  R.prevPole=best.pole;R.prevYa=best.ya;return best;}
+function mcArms(R,p,only){const V3=THREE.Vector3,j=R.j;
+  for(const sd of['L','R']){if(only&&only!==sd)continue;const ua=j['upperArm_'+sd],fa=j['foreArm_'+sd],hd=j['hand_'+sd];
+    if(sd==='R'){const b=mcArmR(R,p);ua.quaternion.copy(b.r.q);fa.rotation.set(b.r.bend,0,0);
+      /* the wrist turns at most 16° and bends at most 14° per 60 fps frame: in the fastest cuts the blade lags its key a little */
+      const fr=p.fr||0;let wy=Math.max(-80,Math.min(80,b.ya))*(1-fr),wp=Math.max(-40,Math.min(75,b.pi))*(1-fr);if(R.prevW){wy=R.prevW[0]+Math.max(-16,Math.min(16,wy-R.prevW[0]));wp=R.prevW[1]+Math.max(-14,Math.min(14,wp-R.prevW[1]));}
+      if(!only)R.prevW=[wy,wp];hd.rotation.set(wp*MC_R,wy*MC_R,p.rR*MC_R,'YXZ');}
+    else{const r=mcIK(ua.position,mcReach(ua.position,p.hL),MCB.ua,MCB.fa,new V3(...p.eL),0);ua.quaternion.copy(r.q);fa.rotation.set(r.bend,0,0);
+      hd.rotation.set(p.wL[0]*MC_R,p.wL[1]*MC_R,p.wL[2]*MC_R,'YXZ');if(j.mc_shield)mcShield(R,p);}
+    ua.updateMatrixWorld(true);}}
+/* the shield's face looks along sn (the body's frame: the root turned by Y) made square to the forearm, its top stays up (turned st degrees in its plane); its back sits 7.5 cm off the forearm */
+function mcShield(R,p){const V3=THREE.Vector3,Q=THREE.Quaternion,j=R.j,fa=j.foreArm_L,mt=j.mc_shmount,sh=j.mc_shield;fa.updateMatrixWorld(true);
+  const fq=fa.getWorldQuaternion(new Q()),ax=new V3(0,1,0).applyQuaternion(fq),n=mcBody(p,p.sn);
+  n.sub(ax.clone().multiplyScalar(n.dot(ax)));if(n.lengthSq()<1e-6)n.set(1,0,0).applyQuaternion(fq);n.normalize();
+  const up=new V3(0,1,0).sub(n.clone().multiplyScalar(n.y));if(up.lengthSq()<1e-4)up.copy(ax);up.normalize();if(p.st)up.applyAxisAngle(n,p.st*MC_R);
+  const x=new V3().crossVectors(up,n),wq=new Q().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x,up,n)),mq=mt.getWorldQuaternion(new Q()).invert();
+  sh.quaternion.copy(mq.clone().multiply(wq));sh.position.copy(n.clone().multiplyScalar(.075).applyQuaternion(mq));sh.updateMatrixWorld(true);}
+const MC_V=new THREE.Vector3();
+function mcLow(obj,body){obj.updateMatrixWorld(true);let y=1e9;obj.traverse(q=>{if(!q.isMesh||!q.visible)return;if(body){let p=q;while(p&&p!==obj){if(p.name==='mc_sword'||p.name==='mc_shield')return;p=p.parent;}}const g=q.geometry.parameters;if(!g||g.width===undefined)return;
+  for(let i=0;i<8;i++){MC_V.set((i&1?.5:-.5)*g.width,(i&2?.5:-.5)*g.height,(i&4?.5:-.5)*g.depth).applyMatrix4(q.matrixWorld);if(MC_V.y<y)y=MC_V.y;}});return y;}
+
+/* ======================= keys, splines and baking ======================= */
+function mcFlat(p){const v=[];for(const[k,n]of MC_F){const a=p[k];if(n===1)v.push(a);else for(let i=0;i<n;i++)v.push(a[i]);}return v;}
+function mcUnflat(v){const p={};let i=0;for(const[k,n]of MC_F){if(n===1)p[k]=v[i++];else{p[k]=v.slice(i,i+n);i+=n;}}return p;}
+/* keys: [time, overrides] chained (each key starts from the one before; 'ST' starts again from the stance). Monotone cubic in between, flat at both ends */
+function mcKeys(base,keys){const T=[],Vs=[];let cur=Object.assign({},base);
+  for(const[t,o]of keys){cur=o==='ST'?Object.assign({},base):Object.assign({},cur,o||{});T.push(t);Vs.push(mcFlat(cur));}
+  const n=T.length,dim=Vs[0].length,m=Vs.map(()=>new Array(dim).fill(0));
+  for(let i=1;i<n-1;i++){const h0=T[i]-T[i-1],h1=T[i+1]-T[i];for(let k=0;k<dim;k++){const d0=(Vs[i][k]-Vs[i-1][k])/h0,d1=(Vs[i+1][k]-Vs[i][k])/h1;
+    m[i][k]=d0*d1<=0?0:3*(h0+h1)/((2*h1+h0)/d0+(h1+2*h0)/d1);}}
+  return t=>{if(t<=T[0])return mcUnflat(Vs[0]);if(t>=T[n-1])return mcUnflat(Vs[n-1]);let i=0;while(t>T[i+1])i++;
+    const h=T[i+1]-T[i],s=(t-T[i])/h,s2=s*s,s3=s2*s,a=2*s3-3*s2+1,b=s3-2*s2+s,c=-2*s3+3*s2,d=s3-s2,v=[];
+    for(let k=0;k<dim;k++)v.push(a*Vs[i][k]+b*h*m[i][k]+c*Vs[i+1][k]+d*h*m[i+1][k]);return mcUnflat(v);};}
+const MC_RIGS={};
+function mcRig(w,s){const k=w+'|'+s;if(MC_RIGS[k])return MC_RIGS[k];const m=buildMercenary({weapon:w,shield:s,noClips:true}),j={};m.traverse(q=>{if(q.name&&!j[q.name])j[q.name]=q;});return MC_RIGS[k]={m,j};}
+const MC_TRK=['hips','spine','chest','neck','head','upperArm_L','foreArm_L','hand_L','upperArm_R','foreArm_R','hand_R','thigh_L','shin_L','foot_L','toes_L','thigh_R','shin_R','foot_R','toes_R','mc_shmount'];
+/* bake one clip: pose(t) solved every frame; drops: {obj:'mc_sword'|'mc_shield', t, d (fall time), at:[x,z,yaw]} let a prop go and lay it flat on the ground */
+function mcBake(R,name,dur,loop,pose,note,ex={}){const fps=ex.fps||60,n=Math.max(2,Math.round(dur*fps)),times=[],data={},prev={},Q=THREE.Quaternion,V3=THREE.Vector3;
+  const objs=MC_TRK.filter(k=>R.j[k]),props=['mc_sword','mc_shield'].filter(k=>R.j[k]);for(const k of objs.concat(props))data[k]={q:[],p:[]};
+  const rest={};for(const k of props)rest[k]={p:R.j[k].position.clone(),q:R.j[k].quaternion.clone()};
+  const drops={};for(const d of ex.drops||[])if(R.j[d.obj])drops[d.obj]=Object.assign({},d);
+  R.prevPole=null;R.prevYa=undefined;R.prevW=null;for(let i=0;i<=n;i++){const t=i/n*dur;times.push(t);const p=pose(t);R.dropped={};for(const k of props){if(drops[k]&&t>=drops[k].t)R.dropped[k]=1;if(k==='mc_sword'){R.j[k].position.copy(rest[k].p);R.j[k].quaternion.copy(rest[k].q);}}mcSolve(R,p);
+    for(const k of props){const o=R.j[k],D=drops[k];if(k==='mc_sword'){o.position.copy(rest[k].p);o.quaternion.copy(rest[k].q);}
+      if(D&&t>=D.t){o.parent.updateMatrixWorld(true);
+        if(!D.M0){o.updateMatrixWorld(true);D.M0=o.matrixWorld.clone();D.p0=new V3();D.q0=new Q();D.M0.decompose(D.p0,D.q0,new V3());
+          /* rest on the ground: flat face up (sword: the flat; shield: the painted face), turned to yaw, lifted so its lowest corner sits on 0 */
+          const yaw=D.at[2]*MC_R,zA=new V3(Math.sin(yaw),0,Math.cos(yaw)),up=new V3(0,1,0),X=k==='mc_sword'?up:new V3().crossVectors(zA,up),Y=k==='mc_sword'?new V3().crossVectors(zA,up):zA.clone(),Z=k==='mc_sword'?zA:up;
+          D.q1=new Q().setFromRotationMatrix(new THREE.Matrix4().makeBasis(X,Y,Z));const tmp=o.clone(true);tmp.position.set(0,0,0);tmp.quaternion.copy(D.q1);tmp.updateMatrixWorld(true);
+          D.p1=new V3(D.at[0],-mcLow(tmp)+.002,D.at[1]);}
+        const s=Math.min(1,(t-D.t)/D.d),g=s*s,pos=D.p0.clone().lerp(D.p1,g),qq=D.q0.clone().slerp(D.q1,Math.min(1,s*1.15));pos.y=Math.max(pos.y,D.p1.y);
+        {const tmp=o.clone(true);tmp.position.copy(pos);tmp.quaternion.copy(qq);tmp.updateMatrixWorld(true);const lo=mcLow(tmp);if(lo<.002)pos.y+=.002-lo;}
+        const W=new THREE.Matrix4().compose(pos,qq,new V3(1,1,1)),Lm=new THREE.Matrix4().copy(o.parent.matrixWorld).invert().multiply(W),lp=new V3(),lq=new Q();Lm.decompose(lp,lq,new V3());o.position.copy(lp);o.quaternion.copy(lq);}}
+    for(const k of objs.concat(props)){const o=R.j[k],q=o.quaternion.clone();if(prev[k]&&prev[k].dot(q)<0)q.set(-q.x,-q.y,-q.z,-q.w);prev[k]=q;data[k].q.push(q.x,q.y,q.z,q.w);data[k].p.push(o.position.x,o.position.y,o.position.z);}}
+  const tracks=[];for(const k of objs.concat(props)){tracks.push(new THREE.QuaternionKeyframeTrack(k+'.quaternion',times,data[k].q));if(k==='hips'||props.includes(k))tracks.push(new THREE.VectorKeyframeTrack(k+'.position',times,data[k].p));}
+  for(const k of props){const o=R.j[k];o.position.copy(rest[k].p);o.quaternion.copy(rest[k].q);}
+  R.dropped=null;const c=new THREE.AnimationClip(name,dur,tracks);c.loopMode=loop;c.note=note;if(ex.next)c.next=ex.next;if(ex.speed)c.speed=ex.speed;return c;}
+
+/* ======================= stances ======================= */
+const MC_ST0={P:[0,-.015,0],H:[0,0,0],S:[2,0,0],C:[-1,0,0],N:[0,0,0],Hd:[0,0,0],FL:[.13,.01,7,0,0],FR:[-.13,-.01,-7,0,0],kL:0,kR:0,
+  hL:[.36,-.3,.15],eL:[.4,.1,-1],wL:[0,0,0],hR:[-.35,-.32,.12],eR:[-.35,0,-1],bR:[-.1,-.42,.9],rR:0,sn:[1,0,.1],st:0,hc:1,fk:0,LL:[0,0,0,0],LR:[0,0,0,0],gc:0,Y:0,fr:0};
+const MC_ST=Object.assign({},MC_ST0,{P:[0,-.1,0],H:[3,-14,0],S:[4,-7,0],C:[2,-9,0],FL:[.15,.17,0,0,0],FR:[-.17,-.2,-32,0,0],kL:4,kR:8,
+  hL:[.12,-.04,.42],eL:[1,-.6,.1],sn:[-.12,0,1],hR:[-.3,-.16,.32],eR:[-.4,-1,-.4],bR:[-.15,.55,.82],rR:0});
+
+/* in-place gait: each foot slides back at the ground speed while planted (heel strike, flat, heel-off onto the ball) and swings forward lifted;
+   g: dur, speed (m/s), beta (stance share), lift, dir [x,z] of travel, heel/toe pitch, bob (low at lowAt), sway, yaw (pelvis), arm swing, wide (feet apart), fn(ph,p) extras */
+function mcGait(base,g){const Ls=g.speed*g.beta*g.dur,dir=g.dir||[0,1];
+  return t=>{const ph=t/g.dur,p=JSON.parse(JSON.stringify(base)),c2=Math.cos(2*Math.PI*ph);
+    for(const[sd,off,sg]of[['L',0,1],['R',.5,-1]]){const u=(ph+off)%1,F=p['F'+sd];let sl,lift=0,pit;
+      if(u<g.beta){const w=u/g.beta;sl=(.5-w)*Ls;pit=-g.heel*Math.max(0,1-w/.15)+g.toe*Math.max(0,(w-.72)/.28)**1.5;}
+      else{const w=(u-g.beta)/(1-g.beta),e=(1-Math.cos(Math.PI*w))/2;sl=(-.5+e)*Ls;lift=g.lift*Math.sin(Math.PI*w);pit=g.toe+(-g.heel-g.toe)*e;}
+      F[0]+=dir[0]*sl+sg*(g.wide||0);F[1]+=dir[1]*sl;F[3]=lift;F[4]=pit*dir[1];}
+    p.P[1]+=-(g.bob||0)*Math.cos(4*Math.PI*(ph-(g.lowAt||0)));p.P[0]+=(g.sway||0)*Math.sin(2*Math.PI*ph);
+    p.H[1]+=-(g.yaw||0)*c2;p.C[1]+=(g.yaw||0)*1.5*c2;
+    if(g.arm){p.hR[2]+=g.arm*c2;p.hL[2]-=g.arm*c2*.7;p.hR[1]+=Math.abs(g.arm)*.3*c2;}
+    if(g.fn)g.fn(ph,p);return p;};}
+const MC_CLIPS={};
+function mercenaryClips(w,s){const ck=w+'|'+s;if(MC_CLIPS[ck])return MC_CLIPS[ck];const R=mcRig(w,s),C=[],ST=MC_ST,ST0=MC_ST0;
+  const K=(name,dur,loop,base,keys,note,ex)=>C.push(mcBake(R,name,dur,loop,mcKeys(base,keys),note,ex));
+  const G=(name,base,g,note)=>C.push(mcBake(R,name,g.dur,true,mcGait(base,g),note,{speed:g.speed}));
+  const WAR={next:'Idle (war mode)'};
+  /* ---- relaxed ---- */
+  K('Idle',4,true,ST0,[[0,{}],[1,{C:[-2.5,0,0],P:[.012,-.02,0],hR:[-.35,-.31,.13]}],[2,{C:[-1,1,0],P:[.018,-.016,0],Hd:[0,4,0]}],[3,{C:[-2.5,0,0],P:[.006,-.02,0],Hd:[0,-3,0]}],[4,'ST']],
+    'Breathing and a slow weight shift; sword point down, shield at the side');
+  G('Walk',ST0,{dur:1.05,speed:1.2,beta:.62,lift:.09,heel:14,toe:24,bob:.018,sway:.022,yaw:5,arm:.1},'Heel to toe with the arms swinging, about 1.2 m/s');
+  G('Run',Object.assign({},ST0,{P:[0,-.04,0],H:[9,0,0],S:[4,0,0],C:[2,0,0],hR:[-.33,-.2,.22],eR:[-.4,-.2,-1],bR:[-.3,-.2,.93],hL:[.33,-.18,.26],eL:[.5,0,-1],sn:[1,0,.25]}),
+    {dur:.68,speed:3.3,beta:.36,lift:.2,heel:10,toe:30,bob:.035,lowAt:.18,sway:.012,yaw:8,arm:.17},'Leaning in, high knees and a flight phase, about 3.3 m/s');
+  /* ---- war mode ---- */
+  K('Idle (war mode)',2.6,true,ST,[[0,{}],[1.3,{P:[0,-.115,0],C:[4,-9,0],hL:[.12,-.05,.42],hR:[-.3,-.17,.32],Hd:[2,0,0]}],[2.6,'ST']],'Guard: left foot forward, knees bent, shield up and the sword ready');
+  G('Walk (war mode)',ST,{dur:1.1,speed:.85,beta:.66,lift:.07,heel:10,toe:16,bob:.012,yaw:2},'Short steps behind the shield, about 0.85 m/s');
+  G('Walk back (war mode)',ST,{dur:1.1,speed:.7,beta:.66,lift:.07,heel:8,toe:14,dir:[0,-1],bob:.012},'Backing off behind the shield, about 0.7 m/s');
+  G('Strafe left',ST,{dur:.85,speed:.75,beta:.62,lift:.07,heel:0,toe:0,dir:[1,0],wide:.03,bob:.012},'Side steps to the left behind the guard, about 0.75 m/s');
+  G('Strafe right',ST,{dur:.85,speed:.75,beta:.62,lift:.07,heel:0,toe:0,dir:[-1,0],wide:.03,bob:.012},'Side steps to the right behind the guard, about 0.75 m/s');
+  /* ---- moves ---- */
+  K('Dodge left',.9,false,ST,[[0,{}],[.12,{P:[0,-.2,0],H:[3,-14,-4]}],[.3,{P:[.45,-.12,0],H:[3,-14,8],FL:[.62,.17,0,.12,0],FR:[.1,-.2,-32,.06,0]}],
+    [.42,{P:[.5,-.2,0],H:[3,-14,4],FL:[.68,.17,0,0,0],FR:[.3,-.2,-32,0,0]}],[.65,{P:[.25,-.12,0],FL:[.4,.17,0,.05,0],FR:[.1,-.2,-32,0,0]}],[.9,'ST']],'Quick hop to the left and back into the guard',WAR);
+  K('Dodge right',.9,false,ST,[[0,{}],[.12,{P:[0,-.2,0],H:[3,-14,4]}],[.3,{P:[-.45,-.12,0],H:[3,-14,-8],FR:[-.64,-.2,-32,.12,0],FL:[-.1,.17,0,.06,0]}],
+    [.42,{P:[-.5,-.2,0],H:[3,-14,-4],FR:[-.68,-.2,-32,0,0],FL:[-.32,.17,0,0,0]}],[.65,{P:[-.25,-.12,0],FR:[-.42,-.2,-32,0,0],FL:[-.1,.17,0,.05,0]}],[.9,'ST']],'Quick hop to the right and back into the guard',WAR);
+  K('Dodge back',.95,false,ST,[[0,{}],[.12,{P:[0,-.22,.03],H:[8,-14,0]}],[.32,{P:[0,-.1,-.45],H:[-4,-14,0],FL:[.15,-.12,0,.14,10],FR:[-.17,-.62,-32,.08,0]}],
+    [.45,{P:[0,-.22,-.5],H:[6,-14,0],FL:[.15,-.3,0,0,0],FR:[-.17,-.7,-32,0,0]}],[.7,{P:[0,-.12,-.22],FL:[.15,.0,0,.06,0],FR:[-.17,-.42,-32,0,0]}],[.95,'ST']],'Hops back out of reach and steps in again',WAR);
+  K('Jump',1.3,false,ST0,[[0,{}],[.28,{P:[0,-.26,0],H:[16,0,0],S:[8,0,0],hR:[-.38,-.25,-.12],bR:[-.3,-.6,-.75],hL:[.4,-.25,-.1]}],
+    [.42,{P:[0,.02,.02],H:[4,0,0],S:[0,0,0],FL:[.13,.01,7,0,32],FR:[-.13,-.01,-7,0,32],hR:[-.33,.05,.3],bR:[-.15,.2,1],hL:[.36,.05,.3]}],
+    [.6,{P:[0,.36,0],FL:[.13,.04,7,.36,8],FR:[-.13,.0,-7,.34,8]}],[.76,{P:[0,.4,0],FL:[.13,.05,7,.42,4],FR:[-.13,.01,-7,.4,4]}],[.95,{P:[0,.0,0],FL:[.13,.01,7,0,18],FR:[-.13,-.01,-7,0,18],H:[6,0,0]}],
+    [1.06,{P:[0,-.24,0],H:[14,0,0],S:[6,0,0],FL:[.13,.01,7,0,0],FR:[-.13,-.01,-7,0,0],hR:[-.36,-.2,.2],bR:[-.15,-.3,.95],hL:[.38,-.2,.2]}],[1.3,'ST']],'Dips, springs up with an arm swing, tucks and lands on the balls of the feet, about 0.4 m');
+  /* ---- sword attacks (blade directions in the body's frame; the shield opens out of the blade's path) ---- */
+  const A1w={P:[0,-.12,0],H:[3,-36,0],S:[4,-14,0],C:[2,-16,-3],hR:[-.28,.42,.1],eR:[-1,.2,-.5],bR:[-.35,.5,-.8],hL:[.3,-.06,.32],sn:[.3,0,1]},
+    A1s={P:[0,-.15,.06],H:[6,-4,0],S:[6,6,0],C:[4,10,0],FL:[.15,.27,0,0,0],hR:[-.04,.14,.56],eR:[-.6,-1,-.3],bR:[.75,.05,.66],hL:[.4,-.12,.16],eL:[1,-.4,-.3],sn:[.75,0,.65]},
+    A1f={H:[6,6,0],S:[6,12,0],C:[4,14,3],hR:[.12,.08,.58],eR:[-.3,-1,-.5],bR:[.92,-.1,.3]},
+    A2w={H:[3,-4,0],S:[4,8,0],C:[2,14,0],hR:[.18,.3,.47],eR:[-.3,-1,-.4],bR:[.55,.5,-.65],hL:[.42,-.12,.2],eL:[1,-.3,-.4],sn:[.85,0,.5]},
+    A2s={H:[6,-28,0],S:[6,-14,0],C:[4,-14,0],hR:[-.1,.12,.58],eR:[-.4,-1,0],bR:[-.7,.05,.7]},
+    A2f={H:[5,-36,0],S:[5,-14,0],C:[3,-14,-2],hR:[-.38,.06,.46],eR:[-.5,-1,.2],bR:[-.85,0,.5]},
+    A3r={H:[-2,-20,0],S:[-3,-6,0],C:[-5,-6,0],hR:[-.18,.62,.16],eR:[-.8,.1,.6],bR:[-.05,.45,-.9],hL:[.24,-.04,.38],eL:[1,-.6,.1],sn:[0,0,1]},
+    A3s={H:[10,-16,0],S:[10,-2,0],C:[12,-2,0],hR:[-.08,-.02,.54],eR:[-.5,-1,-.25],bR:[-.05,-.3,.95]},
+    A3f={hR:[-.1,-.22,.48],bR:[-.05,-.55,.85],C:[14,-2,0]};
+  K('Attack 1',1.0,false,ST,[[0,{}],[.26,A1w],[.42,A1s],[.55,A1f],
+    [.78,{P:[0,-.12,.02],H:[3,-10,0],S:[4,-3,0],C:[2,-4,0],FL:[.15,.2,0,0,0],hR:[-.2,0,.44],eR:[-.4,-1,-.4],bR:[.3,.45,.85],hL:[.2,-.05,.38],eL:[1,-.6,.1],sn:[0,0,1]}],[1.0,'ST']],
+    'Forehand slash, right to left, with a step in',WAR);
+  K('Attack 2',1.0,false,ST,[[0,{}],[.12,{hR:[-.12,.1,.5]}],[.26,Object.assign({P:[0,-.11,0]},A2w)],[.42,Object.assign({P:[0,-.15,.05],FL:[.15,.25,0,0,0]},A2s)],[.55,A2f],
+    [.78,{P:[0,-.12,.02],H:[3,-22,0],S:[4,-6,0],C:[2,-6,0],FL:[.15,.2,0,0,0],hR:[-.33,-.05,.3],bR:[-.2,.5,.85],hL:[.15,-.04,.4],eL:[1,-.6,.1],sn:[-.1,0,1]}],[1.0,'ST']],
+    'Backhand slash, left to right',WAR);
+  K('Attack 3',1.05,false,ST,[[0,{}],[.3,Object.assign({P:[0,-.08,0]},A3r)],[.47,Object.assign({P:[0,-.21,.08],FL:[.15,.28,0,0,0]},A3s)],[.6,A3f],
+    [.82,{P:[0,-.13,.03],H:[4,-16,0],S:[5,-5,0],C:[4,-6,0],FL:[.15,.2,0,0,0],hR:[-.25,-.05,.33],eR:[-.4,-1,-.4],bR:[-.15,.5,.85]}],[1.05,'ST']],'Overhead chop, straight down',WAR);
+  K('Attack 4',.95,false,ST,[[0,{}],[.28,{P:[0,-.13,-.05],H:[3,-28,0],S:[4,-8,0],C:[2,-8,0],hR:[-.47,-.1,-.02],eR:[-.5,-.6,-1],bR:[-.3,.1,1]}],
+    [.48,{P:[0,-.18,.14],H:[8,-14,0],S:[6,-4,0],C:[6,-4,0],FL:[.15,.38,0,0,0],FR:[-.17,-.2,-32,0,16],hR:[-.1,.06,.62],eR:[-.6,-1,-.15],bR:[0,-.02,1]}],
+    [.62,{}],[.95,'ST']],'Lunging thrust',WAR);
+  K('Combo',2.25,false,ST,[[0,{}],[.22,A1w],[.37,A1s],[.5,A1f],[.66,Object.assign({},A2w,{FL:[.15,.27,0,0,0]})],
+    [.82,Object.assign({P:[0,-.16,.14],FL:[.15,.36,0,0,0],FR:[-.17,-.12,-32,0,0]},A2s)],[.95,A2f],
+    [1.2,Object.assign({P:[0,-.08,.12]},A3r)],[1.38,Object.assign({P:[0,-.22,.24],FL:[.15,.48,0,0,0],FR:[-.17,0,-32,0,0]},A3s)],[1.5,A3f],
+    [1.8,{P:[0,-.13,.08],H:[4,-16,0],S:[5,-5,0],C:[4,-6,0],FL:[.15,.24,0,0,0],FR:[-.17,-.16,-32,0,0],hR:[-.25,-.05,.33],eR:[-.4,-1,-.4],bR:[-.15,.5,.85]}],[2.25,'ST']],
+    'Three cuts in a row: forehand, backhand, overhead, stepping in',WAR);
+  K('Heavy attack',1.8,false,ST,[[0,{}],[.5,{P:[0,-.2,-.06],H:[0,-38,0],S:[-2,-22,0],C:[-6,-18,-6],hR:[-.36,.56,-.04],eR:[-1,.3,-.3],bR:[-.3,.35,-.88],hL:[.3,-.08,.32],sn:[.3,0,1],Hd:[0,-6,0]}],
+    [.74,{P:[.05,-.04,.2],H:[2,-30,0],FL:[.26,.36,8,.16,0],FR:[-.17,-.2,-32,0,18]}],[.88,{hR:[-.4,.26,.36]}],
+    [1.02,{P:[.08,-.28,.3],H:[16,-4,0],S:[10,6,0],C:[8,10,0],FL:[.36,.56,14,0,0],FR:[-.17,-.24,-32,0,22],hR:[.02,-.1,.6],eR:[-.5,-1,-.1],bR:[.1,-.5,.86],hL:[.42,-.1,.14],eL:[1,-.4,-.3],sn:[.75,0,.65]}],
+    [1.16,{P:[.08,-.27,.3]}],[1.3,{P:[.05,-.22,.22],hR:[-.08,.08,.52],bR:[-.05,.4,.92],H:[10,-10,0]}],[1.5,{P:[0,-.18,.12],H:[6,-16,0],S:[4,-5,0],C:[2,-8,0],FL:[.15,.3,0,0,0],FR:[-.17,-.2,-32,0,0],hR:[-.3,-.08,.4],eR:[-.4,-1,-.4],bR:[-.15,.55,.82],hL:[.12,-.04,.42],eL:[1,-.6,.1],sn:[-.12,0,1],Hd:[0,0,0]}],[1.8,'ST']],
+    'Big wind-up over the shoulder, a leap in and a diagonal cleave down to the ground',WAR);
+  {const SP=Object.assign({},ST,{P:[0,-.16,0],H:[4,-14,0],S:[6,-7,0],C:[4,-4,0],hR:[-.6,.08,.3],eR:[-.3,-1,-.2],bR:[-.85,.05,.5],hL:[.32,-.06,.3],sn:[.6,0,.8]}),F=['P','H','S','C','hR','eR','bR','hL','sn'];
+    const ss=k=>{k=Math.min(1,Math.max(0,k));return k*k*(3-2*k);};
+    C.push(mcBake(R,'Spin attack',1.45,false,t=>{const p=Object.assign({},ST),a=ss(t/.25)*(1-ss((t-1.05)/.4)),u=Math.min(1,Math.max(0,(t-.25)/.8));
+      for(const f of F)p[f]=ST[f].map((v,i)=>v+(SP[f][i]-v)*a);p.Y=-360*ss(u);
+      const lf=Math.sin(Math.PI*u*4);p.FL=ST.FL.slice();p.FR=ST.FR.slice();p.FL[3]=Math.max(0,lf)*.06;p.FR[3]=Math.max(0,-lf)*.06;return p;},'Spins round once on the spot with the blade held out',WAR));}
+  K('Shield bash',1.0,false,ST,[[0,{}],[.28,{P:[0,-.15,-.04],H:[2,-30,0],S:[2,-10,0],C:[0,-8,0],hL:[.2,-.06,.3],eL:[1,-.5,-.2]}],
+    [.44,{P:[0,-.17,.2],H:[12,-14,0],S:[8,-4,0],C:[6,-4,0],FL:[.15,.42,0,0,0],FR:[-.17,-.14,-32,0,14],hL:[.1,.0,.6],eL:[1,-.5,.2],sn:[0,0,1]}],[.58,{}],[1.0,'ST']],'Steps in and drives the shield forward',WAR);
+  K('Kick',1.0,false,ST,[[0,{}],[.25,{P:[0,-.12,.02],H:[-4,-12,0],FR:[-.12,.15,-12,.34,-10],kR:0}],[.42,{P:[0,-.08,-.02],H:[-14,-8,0],S:[-6,0,0],FR:[-.1,.58,-8,.5,-62]}],
+    [.55,{}],[.75,{P:[0,-.12,0],H:[0,-16,0],S:[2,-4,0],FR:[-.15,-.05,-24,.16,0]}],[1.0,'ST']],'Front push kick with the rear leg',WAR);
+  /* ---- defence ---- */
+  const BLK={P:[0,-.14,0],H:[4,-18,0],C:[4,-10,0],hL:[.08,.12,.42],eL:[1,-.4,.1],sn:[-.1,.3,1],hR:[-.36,-.12,.2],Hd:[8,0,0]};
+  K('Block',1.2,false,ST,[[0,{}],[.18,BLK],[.36,{P:[0,-.18,-.08],H:[0,-18,0],C:[0,-10,0],hL:[.08,.1,.36]}],[.6,BLK],[1.2,'ST']],'Shield up over the face, takes the blow and pushes back',WAR);
+  K('Blocking (hold)',2,true,Object.assign({},ST,BLK),[[0,{}],[1,{P:[0,-.15,0],hL:[.08,.115,.41]}],[2,'ST']],'Holds the shield up over the face');
+  /* ---- spells (gestures; the effects are added separately) ---- */
+  const UP={P:[0,-.06,0],H:[0,-12,0],S:[-2,-2,0],C:[-4,0,0],hR:[-.22,.72,.16],eR:[-.8,.1,.6],bR:[0,1,.08],hL:[.34,-.12,.3],eL:[1,-.2,-.3],sn:[.9,0,.45],Hd:[-12,0,0]};
+  const RISE={hR:[-.34,.24,.42],bR:[0,.85,.5],H:[1,-12,0],C:[-1,-4,0]};
+  K('Cast spell 1',2.4,false,ST,[[0,{}],[.22,RISE],[.45,UP],[1.5,{hR:[-.22,.74,.17],Hd:[-14,0,0]}],[1.75,{P:[0,-.14,.06],H:[6,-14,0],S:[4,0,0],C:[4,0,0],FL:[.15,.24,0,0,0],hR:[-.12,.18,.6],eR:[-.6,-1,-.2],bR:[0,.05,1],Hd:[0,0,0]}],
+    [2.0,{}],[2.4,'ST']],'Raises the sword straight up overhead, gathers power, then points it at the target',WAR);
+  K('Cast spell 2',1.3,false,ST,[[0,{}],[.25,{P:[0,-.13,-.03],H:[3,-28,0],C:[2,-10,0],hR:[-.34,.12,.08],bR:[-.05,.45,.9]}],[.45,{P:[0,-.15,.08],H:[5,-8,0],S:[4,0,0],C:[4,2,0],FL:[.15,.24,0,0,0],hR:[-.12,.14,.6],eR:[-.6,-1,-.2],bR:[0,.05,1]}],
+    [.75,{}],[1.3,'ST']],'Quick cast: thrusts the sword point at the target',WAR);
+  K('Cast spell 3',2.4,false,ST,[[0,{}],[.24,{hR:[-.22,-.02,.48],bR:[-.05,.8,.6]}],[.5,{P:[0,-.04,0],H:[0,-6,0],S:[2,0,0],C:[0,0,0],hR:[-.07,.12,.43],eR:[-1,-.6,0],bR:[0,1,.1],hL:[.3,-.16,.24],eL:[1,-.2,-.4],sn:[.9,0,.45],Hd:[14,0,0]}],
+    [1.3,{hR:[-.07,.13,.44],Hd:[16,0,0]}],[1.6,{P:[0,-.02,0],H:[-2,-6,0],C:[-6,0,0],hR:[-.22,.7,.2],eR:[-.8,.1,.6],bR:[-.05,1,.05],Hd:[-14,0,0]}],[1.9,{}],[2.4,'ST']],
+    'Holds the sword upright before his face, head bowed, then thrusts it up to the sky: a blessing on himself',WAR);
+  K('Cast spell 4',2.6,false,ST,[[0,{}],[.22,RISE],[.45,UP],
+    [.8,{P:[0,-.42,.06],H:[22,-14,0],S:[14,0,0],C:[10,0,0],FL:[.15,.24,0,0,0],FR:[-.17,-.22,-32,0,24],hR:[-.1,-.3,.46],eR:[-.6,-1,-.2],bR:[0,-1,.12],hL:[.36,.02,.32],sn:[.9,0,.4],Hd:[6,0,0]}],
+    [1.6,{P:[0,-.42,.06]}],[2.1,{P:[0,-.14,.02],H:[4,-14,0],S:[4,-7,0],C:[2,-9,0],FR:[-.17,-.2,-32,0,0],FL:[.15,.2,0,0,0],hR:[-.3,-.16,.32],eR:[-.4,-1,-.4],bR:[-.15,.55,.82],sn:[-.12,0,1],Hd:[0,0,0]}],[2.6,'ST']],
+    'Raises the sword and drives it point down to the ground in a deep crouch: a spell on the ground around him',WAR);
+  K('Channel spell',2,true,Object.assign({},ST,UP,{P:[0,-.07,0]}),[[0,{}],[1,{P:[0,-.08,0],hR:[-.23,.7,.18],C:[-3,0,0]}],[2,'ST']],'Holds the sword up overhead while a spell is kept going');
+  /* ---- reactions ---- */
+  K('Hit 1',.7,false,ST,[[0,{}],[.12,{P:[0,-.12,-.08],H:[-6,-14,0],S:[-6,-7,0],C:[-10,-9,0],hR:[-.38,-.05,.22],hL:[.18,.02,.34],Hd:[-10,0,0]}],[.3,{P:[0,-.13,-.06],H:[-3,-14,0],C:[-5,-9,0]}],[.7,'ST']],'Blow to the chest, rocks back',WAR);
+  K('Hit 2',.75,false,ST,[[0,{}],[.13,{P:[-.06,-.13,0],H:[2,-28,-6],S:[2,-12,-6],C:[2,-12,-8],hL:[.26,-.1,.32],Hd:[0,-12,-8]}],[.32,{P:[-.04,-.12,0],H:[2,-22,-3]}],[.75,'ST']],'Blow from the left, twists away',WAR);
+  K('Heavy hit',1.6,false,ST,[[0,{}],[.14,{P:[0,-.14,-.12],H:[-12,-14,0],S:[-8,-7,0],C:[-12,-9,0],hR:[-.42,0,.16],hL:[.34,.0,.26],Hd:[-14,0,0]}],
+    [.36,{P:[0,-.16,-.42],H:[-6,-14,0],FR:[-.17,-.64,-32,0,0],FL:[.15,-.06,0,.1,0]}],[.58,{P:[0,-.2,-.58],H:[4,-14,0],S:[4,-7,0],C:[4,-9,0],FL:[.15,-.4,0,0,0],Hd:[0,0,0]}],
+    [.9,{P:[0,-.15,-.5]}],[1.2,{P:[0,-.12,-.22],FL:[.15,-.04,0,.07,0],FR:[-.17,-.44,-32,0,0]}],[1.6,'ST']],'Knocked back two steps, then steps in again',WAR);
+  K('Taunt',2.4,false,ST,[[0,{}],[.3,{H:[2,-18,0],C:[0,-8,0],hR:[-.03,.08,.49],eR:[-.6,-1,-.1],bR:[-.05,1,.15],hL:[.16,-.02,.42],sn:[-.1,0,1]}],[.45,{hR:[.03,.06,.56]}],[.6,{hR:[-.03,.1,.49]}],[.75,{hR:[.03,.06,.56]}],
+    [.95,{hR:[-.03,.1,.49]}],[1.12,{hR:[-.3,.08,.46],H:[0,-14,0]}],[1.35,{P:[0,-.06,0],H:[-2,-12,0],C:[-8,-4,0],hR:[-.58,.06,.12],eR:[-.3,-1,-.5],bR:[-.5,.35,.8],hL:[.58,.02,.12],eL:[.3,-1,-.5],sn:[1,0,.25],Hd:[-12,0,0]}],[1.85,{}],[2.4,'ST']],
+    'Bangs the sword hilt on the shield twice, then spreads his arms',WAR);
+  K('Victory',2.6,false,ST,[[0,{}],[.5,{P:[0,-.03,0],H:[0,-10,0],S:[-2,0,0],C:[-6,4,0],hR:[-.16,.76,.16],eR:[-.8,.1,.6],bR:[.05,1,-.05],hL:[.5,-.16,.2],eL:[.5,-1,-.5],sn:[1,0,.3],Hd:[-16,0,0],FL:[.15,.12,0,0,0]}],
+    [1.9,{hR:[-.17,.76,.15],Hd:[-18,4,0]}],[2.6,'ST']],'Raises the sword high and looks up: the fight is won',WAR);
+  /* ---- death: staggers back, the knees go, falls on his back; sword and shield drop to the ground ---- */
+  const DL={fk:1,hc:0,gc:1,P:[0,-.93,-.55],H:[-90,-8,0],S:[0,0,0],C:[-3,0,0],N:[14,0,0],Hd:[10,10,0],LL:[-4,7,4,22],LR:[-6,9,8,18],hR:[-.84,.1,-.03],eR:[0,-1,0],bR:[-.4,.1,-.9],hL:[.84,.12,-.03],eL:[0,-1,0],fr:1};
+  K('Death',2.6,false,ST,[[0,{}],[.28,{P:[0,-.14,-.1],H:[-10,-14,0],S:[-8,-7,0],C:[-12,-9,0],hR:[-.42,-.05,.16],hL:[.3,-.1,.3],Hd:[-14,0,0]}],
+    [.75,{P:[0,-.42,-.18],H:[0,-12,0],S:[4,-2,0],C:[6,0,0],hR:[-.42,-.28,.16],bR:[-.65,-.55,.35],hL:[.42,-.28,.2],sn:[1,0,.3],Hd:[8,0,0],hc:.5,fr:0,eR:[-.4,0,-1]}],[.95,{fr:1}],
+    [1.15,{fk:.75,hc:0,gc:1,P:[0,-.74,-.34],H:[-40,-10,0],S:[-6,0,0],C:[-8,0,0],LL:[-70,8,95,10],LR:[-62,10,88,8],hR:[-.5,-.1,.16],hL:[.5,-.1,.16],eL:[.5,-1,0],Hd:[10,0,0]}],
+    [1.55,Object.assign({},DL,{H:[-82,-8,0],Hd:[14,8,0],LL:[-30,7,40,20],LR:[-24,9,34,16]})],[1.85,DL],[2.6,DL]],'Staggers back, the knees give way and he falls on his back; sword and shield drop to the ground',
+    {fps:60,drops:[{obj:'mc_sword',t:.72,d:.42,at:[-.95,.1,30]},{obj:'mc_shield',t:1.0,d:.45,at:[.78,.05,-14]}]});
+  return MC_CLIPS[ck]=C;}
+
+FOLDERS['characters'].children.push('characters/players');FOLDERS['characters/players']={name:'Player characters',blurb:'Playable heroes with customisable looks and gear',children:[]};
+const MC_CH=t=>Object.entries(t).map(([k,v])=>[k,Array.isArray(v)?v[1]:v]);
+ASSETS.push({id:'mercenary',folder:'characters/players',name:'Mercenary',kind:'character',groundR:2.2,build:(sd,o)=>buildMercenary(o||{}),
+  opts:[{key:'skin',label:'Skin',choices:MC_CH(MC_SKIN),def:'light'},{key:'hair',label:'Hair',choices:MC_CH(MC_HAIR),def:'brown'},{key:'eyes',label:'Eyes',choices:MC_CH(MC_EYE),def:'brown'},
+    {key:'weapon',label:'Weapon',choices:MC_CH(MC_SLOTS.weapon),def:'sword'},{key:'shield',label:'Shield',choices:MC_CH(MC_SLOTS.shield),def:'heater'},
+    {key:'helmet',label:'Helmet',choices:MC_CH(MC_SLOTS.helmet),def:'none'},{key:'armor',label:'Armour',choices:MC_CH(MC_SLOTS.armor),def:'mail'},
+    {key:'gloves',label:'Gloves',choices:MC_CH(MC_SLOTS.gloves),def:'leather'},{key:'boots',label:'Boots',choices:MC_CH(MC_SLOTS.boots),def:'leather'},
+    {key:'pants',label:'Pants',choices:MC_CH(MC_SLOTS.pants),def:'wool'}],
+  desc:'Mercenary: the first player character, a powerful sword-and-shield fighter about 1.97 m tall, built from scratch. Looks: skin (pale, light, tan, dark, black), hair and beard (white, red, brown, black, blonde, gray), eyes (green, blue, brown). Every gear slot can be changed: weapon (arming sword or none), shield (heater or none), helmet (none or nasal helm), armour (mail hauberk, gambeson or linen shirt), gloves, boots and pants. 34 clips: Idle, Walk, Run, war-mode Idle and Walk, Walk back, Strafe left and right, Dodge left, right and back, Jump, Attack 1 (forehand), Attack 2 (backhand), Attack 3 (overhead), Attack 4 (thrust), Combo, Heavy attack, Spin attack, Shield bash, Kick, Block, Blocking (hold), Cast spell 1 to 4, Channel spell, Hit 1, Hit 2, Heavy hit, Taunt, Victory and Death (sword and shield drop).'});

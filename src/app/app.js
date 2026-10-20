@@ -154,7 +154,7 @@ function showAsset(id,vs){const a=ASSETS.find(x=>x.id===id);if(!a){location.hash
   setTimeout(()=>{if(V.asset!==a)return;
     if(V.model){disposeModel(V.model);}
     const scene=new THREE.Scene(),model=buildAsset(a,seedN);scene.add(model);poseStill(model,'Idle',.6);const fr=frameOf(model),env=buildEnv(scene,fr,model.userData.ground??a.groundR,model.userData.groundKind);
-    if(model.userData.variantText){$('#vvar').hidden=false;$('#vvar').innerHTML=`<span>Look ${seedN}</span> ${esc(model.userData.variantText)}`;}
+    if(model.userData.variantText){$('#vvar').hidden=false;$('#vvar').innerHTML=`${a.variants?`<span>Look ${seedN}</span> `:''}${esc(model.userData.variantText)}`;}
     applyWire(false);Object.assign(V,{scene,model,env});applyWire();applyPreset(scene,env,model,V.mode,V.renderer);
     const ch=a.kind==='character',it=a.folder.startsWith('items')||a.folder.startsWith('spells'),scn=a.kind==='scene',r=Math.max(.6,fr.radius)/Math.sin(THREE.MathUtils.degToRad(19))*(ch?1.45:it?1.5:scn?.5:.82);V.ctl.minR=ch?.6:fr.radius*.35;V.ctl.maxR=env.GR*2.2;
     const asp=V.cam.aspect||1,rr=asp<1?r*Math.pow(1/asp,.4):r;if(a.folder.startsWith('spells')){scene.fog.near=Math.max(scene.fog.near,rr*1.5);scene.fog.far=Math.max(scene.fog.far,rr*4);}if(!sameAsset)V.ctl.set(fr.center.clone().setY(it?fr.center.y:scn?0:fr.size.y*(ch?(asp<1?.56:.47):.36)),rr,ch?1.38:scn?.95:1.12,ch?.5:.58);V.ctl.minR=Math.min(V.ctl.minR,it?.3:V.ctl.minR);V.ctl.maxR=Math.max(V.ctl.maxR,rr*1.6);
