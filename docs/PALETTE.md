@@ -21,7 +21,7 @@ Every colour belongs to one tier (saturation and brightness are HSB values):
 - **Medieval village** (the reference, unchanged): hearth amber `PAL.hearth`.
 - **Brutes and wasteland**: torch amber `PAL.amber` and `PAL.fire`. Olive, ochre, mud and stone; rags are faded dyes.
 - **Undead**: grave-light green `PAL.necro` (necrotic fire, runes, default eyes). Other eye options use `soul` (blue), `violet`, `bloodGlow` (red) and `amber` (gold). Surfaces are cold and grey; robes are deep jewel tones.
-- **Hell**: ember fire `PAL.fire` and `PAL.hellfire` (lava, braziers, demon eyes, efreet flames). Surfaces are near-black basalt and ash; the heat comes from light, not paint. Demon skins share `PAL.demonSkin` (an imp, a fiend and an efreet in crimson use the same `#9c3e3a`). Green hellfire uses `fel`.
+- **Hell**: ember fire `PAL.fire` and `PAL.hellfire` (lava, braziers, demon eyes, efreet flames). Surfaces are near-black basalt and ash; the heat comes from light, not paint. Demon skins share `PAL.demonSkin` (an imp, a fiend and an efreet in crimson use the same `#7b4544`). Green hellfire uses `fel`.
 
 ## Shared materials
 Iron, blackened iron, gold, bronze, silver, bone, leather, wood and blood each have one ramp in `PAL`. Use them instead of new near-duplicates.
