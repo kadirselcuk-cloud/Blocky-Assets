@@ -10,7 +10,7 @@ const SKW_SC=1.21;
 
 /* two-handed sword: right grip at the origin, left grip at -WR_HAFT, blade along +y, edges towards ±x. Wrapped handle with a
    band between the fists, heavy pommel, straight guard, ricasso, a tapering blade with a dark fuller and rust patches */
-function skwSword(){const w=new THREE.Group(),ir=vm('iron'),dk=bm('#4a4e54','plain'),wrap=bm('#3c2a1c','leather'),wrD=bm('#2a1e16','leather'),rust=bm('#7a4a2e','plain');
+function skwSword(){const w=new THREE.Group(),ir=vm('iron'),dk=bm('#46494e','plain'),wrap=bm('#3c2823','leather'),wrD=bm('#2b1d1b','leather'),rust=bm('#6c433b','plain');
   bx(w,.042,.42,.042,wrap,0,-.16,0);bx(w,.047,.018,.047,wrD,0,-.15,0);bx(w,.07,.07,.07,dk,0,-.4,0);bx(w,.05,.03,.05,ir,0,-.448,0);
   bx(w,.32,.04,.06,ir,0,.07,0);bx(w,.08,.06,.07,dk,0,.07,0);bx(w,.06,.14,.03,ir,0,.17,0);
   for(const[y0,y1,wd]of[[.24,.62,.09],[.62,.86,.08],[.86,.98,.062],[.98,1.04,.04],[1.04,1.08,.02]])bx(w,wd,y1-y0,.024,ir,0,(y0+y1)/2,0);

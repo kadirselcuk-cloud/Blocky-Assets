@@ -2,37 +2,37 @@
    Same grid rules as the wasteland and undead kits (docs/WASTELAND.md): 4 m cells, tiles with their top at 0.8 m (place at y = -0.8),
    walls 4 m long between grid vertices, centred on the grid line, outside towards +z, corner pieces on the vertices. See docs/HELL.md.
    Lava is one shared emissive material whose texture slides slowly (root.userData.tick); fire, souls and bubbles are baked clips where they move. */
-VXD.hBrim=(P,r)=>wlRockDraw(P,r,'#46292a','#180c0c',4401);
-VXD.hBrimTop=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.2?'#52322c':k<.3?'#221414':'#3c2422',nz(r,.86,1.08));}};
-VXD.hAsh=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.02?'#a5593a':k<.16?'#1c1a1a':k<.3?'#55504c':'#3a3634',nz(r,.86,1.08));}};
-VXD.hAshSide=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,y%5===1?'#1c1818':y%7===4?'#4a4440':'#2e2a28',nz(r,.86,1.08));};
-VXD.hSulph=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.12?'#6a5e26':k<.3?'#d4c27a':k<.36?'#4a4420':'#b49a44',nz(r,.86,1.08));}};
-VXD.hObs=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r(),s=(x+y*2)%9===0;P(x,y,s?'#3e3250':k<.04?'#7a6a94':k<.3?'#1e1824':'#141018',nz(r,.9,1.1));}};
+VXD.hBrim=(P,r)=>wlRockDraw(P,r,'#412c2d','#160e0d',4401);
+VXD.hBrimTop=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.2?'#4d3431':k<.3?'#201615':'#382625',nz(r,.86,1.08));}};
+VXD.hAsh=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.02?'#936351':k<.16?'#1b1a1a':k<.3?'#54504e':'#3a3635',nz(r,.86,1.08));}};
+VXD.hAshSide=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,y%5===1?'#1b1818':y%7===4?'#494442':'#2d2a29',nz(r,.86,1.08));};
+VXD.hSulph=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.12?'#6a5c3a':k<.3?'#d0c28b':k<.36?'#4d422b':'#ae9b60',nz(r,.86,1.08));}};
+VXD.hObs=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r(),s=(x+y*2)%9===0;P(x,y,s?'#3f3348':k<.04?'#7a6c8b':k<.3?'#1f1821':'#151016',nz(r,.9,1.1));}};
 VXD.hBasalt=(P,r)=>{const m=mulberry32(4441),tone=[],brk=[];for(let i=0;i<4;i++){tone.push(.8+m()*.3);brk.push(Math.floor(m()*16));}
   for(let y=0;y<16;y++)for(let x=0;x<16;x++){const c=x>>2,j=x%4===3||y===brk[c];P(x,y,j?'#141214':'#3a3638',j?nz(r,.9,1.05):tone[c]*nz(r,.9,1.06));}};
-VXD.hBasaltTop=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const j=x%8===7||y%8===7;P(x,y,j?'#161416':r()<.2?'#262224':'#322e30',nz(r,.9,1.06));}};
-VXD.hFort=(P,r)=>{const tone=[];for(let i=0;i<8;i++)tone.push(['#3c2e2e','#453434','#352828','#4c3836','#302626'][Math.floor(r()*5)]);
-  for(let y=0;y<16;y++){const row=y>>3,off=(row%2)*4;for(let x=0;x<16;x++){const id=row*2+(((x+off)>>3)&1),m=y%8===7||(x+off)%8===7;P(x,y,m?'#160c0c':tone[id],m?nz(r,.9,1.05):nz(r,.88,1.06)*(r()<.05?.82:1));}}};
-VXD.hFortDark=(P,r)=>{for(let y=0;y<16;y++){const row=y>>3,off=(row%2)*4;for(let x=0;x<16;x++){const m=y%8===7||(x+off)%8===7;P(x,y,m?'#16100e':'#261c1c',nz(r,.88,1.06));}}};
-VXD.hIron=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const rv=x%8===2&&y%8===2,e=x%8===7||y%8===7;P(x,y,rv?'#6a605c':e?'#161212':r()<.06?'#572c1e':'#2c2626',nz(r,.9,1.08));}};
-VXD.hHorn=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,y%4===0?'#1a1412':'#3a2e28',nz(r,.88,1.08));};
-VXD.hBronze=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const d=Math.hypot(x-7.5,y-7.5);P(x,y,Math.round(d)%4===0?'#573c1e':r()<.08?'#3e5a3a':'#986b35',nz(r,.9,1.08));}};
-VXD.hCloth=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(x+y)%5===0?'#3a1612':'#4e1a16',nz(r,.88,1.06));};
-VXD.hWaxB=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#26222a',nz(r,.9,1.06));};
-VXD.hEgg=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.12?'#412217':k<.2?'#e8a050':'#ad683d',nz(r,.88,1.08));}};
-VXD.hSmokeY=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.3?'#a8a050':'#d0c878',nz(r,.9,1.06));};
+VXD.hBasaltTop=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const j=x%8===7||y%8===7;P(x,y,j?'#161415':r()<.2?'#252224':'#312e30',nz(r,.9,1.06));}};
+VXD.hFort=(P,r)=>{const tone=[];for(let i=0;i<8;i++)tone.push(['#3a2f2f','#423635','#332929','#493a39','#2e2726'][Math.floor(r()*5)]);
+  for(let y=0;y<16;y++){const row=y>>3,off=(row%2)*4;for(let x=0;x<16;x++){const id=row*2+(((x+off)>>3)&1),m=y%8===7||(x+off)%8===7;P(x,y,m?'#140d0c':tone[id],m?nz(r,.9,1.05):nz(r,.88,1.06)*(r()<.05?.82:1));}}};
+VXD.hFortDark=(P,r)=>{for(let y=0;y<16;y++){const row=y>>3,off=(row%2)*4;for(let x=0;x<16;x++){const m=y%8===7||(x+off)%8===7;P(x,y,m?'#15100f':'#241d1c',nz(r,.88,1.06));}}};
+VXD.hIron=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const rv=x%8===2&&y%8===2,e=x%8===7||y%8===7;P(x,y,rv?'#69605e':e?'#151212':r()<.06?'#4e322b':'#2b2626',nz(r,.9,1.08));}};
+VXD.hHorn=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,y%4===0?'#1a1413':'#392e2b',nz(r,.88,1.08));};
+VXD.hBronze=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const d=Math.hypot(x-7.5,y-7.5);P(x,y,Math.round(d)%4===0?'#533d2d':r()<.08?'#47573f':'#8d6f4e',nz(r,.9,1.08));}};
+VXD.hCloth=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(x+y)%5===0?'#311c1b':'#412424',nz(r,.88,1.06));};
+VXD.hWaxB=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#272228',nz(r,.9,1.06));};
+VXD.hEgg=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.12?'#3b2621':k<.2?'#d4a974':'#9c7056',nz(r,.88,1.08));}};
+VXD.hSmokeY=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.3?'#a79f63':'#cec78a',nz(r,.9,1.06));};
 VXD.hCave=(P,r)=>{const m=mulberry32(4451),tone=[];for(let i=0;i<16;i++)tone.push(.8+m()*.28);for(let y=0;y<16;y++)for(let x=0;x<16;x++){const cell=((y>>2)*4+((x+((y>>2)%2)*2)>>2))&15,edge=(y%4===3&&m()<.6)||((x+((y>>2)%2)*2)%4===3&&m()<.5);
-  P(x,y,edge?'#1a0e0c':'#402622',edge?nz(r,.9,1.05):tone[cell]*nz(r,.9,1.08));}};
+  P(x,y,edge?'#180e0e':'#3c2826',edge?nz(r,.9,1.05):tone[cell]*nz(r,.9,1.08));}};
 /* glowing textures: the map and its emissive map share one pattern */
 const HL_CRK=(()=>{const m=mulberry32(4421),g=[];for(let y=0;y<16;y++)g.push(new Array(16).fill(0));
   for(let c=0;c<4;c++){let x=c*4+1+Math.floor(m()*2);for(let y=0;y<16;y++){g[y][x&15]=1;if(m()<.35){const nx=x+(m()<.5?-1:1);if(nx>=c*4&&nx<=c*4+3){g[y][nx&15]=1;x=nx;}}}}return g;})(); /* four meandering veins running down, one per 4-pixel band, so they never meet or cross */
-VXD.hCrust=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const c=HL_CRK[y][x];P(x,y,c?'#ff8a2a':r()<.3?'#2e201c':'#221816',c?nz(r,.9,1.05):nz(r,.86,1.08));}};
-VXD.hCrustE=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const c=HL_CRK[y][x];P(x,y,c?'#ff8a2a':'#000000',c?nz(r,.85,1.05):1);}};
+VXD.hCrust=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const c=HL_CRK[y][x];P(x,y,c?'#ed964e':r()<.3?'#2c211f':'#211918',c?nz(r,.9,1.05):nz(r,.86,1.08));}};
+VXD.hCrustE=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const c=HL_CRK[y][x];P(x,y,c?'#ed964e':'#000000',c?nz(r,.85,1.05):1);}};
 VXD.hLava=(P,r)=>{const TAU=Math.PI*2;for(let y=0;y<16;y++)for(let x=0;x<16;x++){const u=x/16*TAU,v=y/16*TAU,n=Math.sin(u*2+1.4*Math.sin(v))+Math.cos(v*3+.8*Math.sin(u*2))*.8+Math.sin(u+v)*.4;
-  P(x,y,n>1.25?'#3c1a10':n>.85?'#7a2410':n>.1?'#d8481a':n>-.7?'#ff8a2a':'#ffcc5c',nz(r,.9,1.06));}};
+  P(x,y,n>1.25?'#33201c':n>.85?'#6f3022':n>.1?'#c65c3b':n>-.7?'#ed964e':'#f6ce78',nz(r,.9,1.06));}};
 function hlFlagDraw(P,r,glow){const m=mulberry32(4431),tone=[];for(let i=0;i<8;i++)tone.push(.82+m()*.26);
   for(let y=0;y<16;y++){const row=y>>3,off=(row%2)*4;for(let x=0;x<16;x++){const id=row*2+(((x+off)>>3)&1),j=y%8===7||(x+off)%8===7;
-    if(glow)P(x,y,j?'#f0502a':'#000000',j?nz(r,.8,1.05):1);else P(x,y,j?'#ff8a2a':'#2a2228',j?1:tone[id]*nz(r,.9,1.06));}}}
+    if(glow)P(x,y,j?'#dc664b':'#000000',j?nz(r,.8,1.05):1);else P(x,y,j?'#ed964e':'#292226',j?1:tone[id]*nz(r,.9,1.06));}}}
 VXD.hFloor=(P,r)=>hlFlagDraw(P,r,false);VXD.hFloorE=(P,r)=>hlFlagDraw(P,r,true);
 
 /* ---------- materials ---------- */
@@ -40,13 +40,13 @@ const hlEm=(kind,emKind,base,scale,o={})=>{const m=new THREE.MeshStandardMateria
 const hlGlow=(c,e,base,scale,o={})=>{const m=new THREE.MeshStandardMaterial(Object.assign({color:new THREE.Color(c).convertSRGBToLinear(),emissive:new THREE.Color(e).convertSRGBToLinear(),emissiveIntensity:base,roughness:.6},o));m.userData={glowScale:scale,base};GLOW.push(m);return m;};
 const LAVATEX=vxTex('hLava'),LAVAMAT=hlEm('hLava','hLava',.5,.25,{roughness:.55}),CRUSTMAT=hlEm('hCrust','hCrustE',.9,.6),HFLOORMAT=hlEm('hFloor','hFloorE',.22,.22,{roughness:.5});
 const OBSMAT=new THREE.MeshStandardMaterial({map:vxTex('hObs'),roughness:.22,metalness:.25});
-const HRUNE=hlGlow(0xffdcb8,0xf0502a,1,1.2),HEMBER=hlGlow(0xff9a5a,0xf0502a,.8,.9),HVEIN=hlGlow(0xff8a2a,0xf0502a,.7,.7),HPETAL=hlGlow(0xf0502a,0xf0502a,.6,.8),HCRYS=hlGlow(0xff9a5a,0xf0502a,.9,1,{roughness:.3,metalness:.1}),HEGG=hlGlow(0xff9a5a,0xf0502a,.5,.8,{map:vxTex('hEgg')});
-const SOULMAT=hlGlow(0xe8f6ff,0x5ab4ec,.9,.8,{transparent:true,opacity:.72});
+const HRUNE=hlGlow(0xffe0bf,0xdc664b,1,1.2),HEMBER=hlGlow(0xeea373,0xdc664b,.8,.9),HVEIN=hlGlow(0xed964e,0xdc664b,.7,.7),HPETAL=hlGlow(0xdc664b,0xdc664b,.6,.8),HCRYS=hlGlow(0xeea373,0xdc664b,.9,1,{roughness:.3,metalness:.1}),HEGG=hlGlow(0xeea373,0xdc664b,.5,.8,{map:vxTex('hEgg')});
+const SOULMAT=hlGlow(0xeaf7ff,0x6fb3dd,.9,.8,{transparent:true,opacity:.72});
 const SULPHMAT=new THREE.MeshStandardMaterial({map:vxTex('hSmokeY'),transparent:true,opacity:.5,depthWrite:false,roughness:1});
 VXM.hLavaLit=LAVAMAT;VXM.hCrustLit=CRUSTMAT;VXM.hFloorLit=HFLOORMAT;VXM.hObsGloss=OBSMAT;
 const hlFireMat=(c,e,op=.88)=>new THREE.MeshStandardMaterial({color:new THREE.Color(c).convertSRGBToLinear(),emissive:new THREE.Color(e).convertSRGBToLinear(),emissiveIntensity:1.0,roughness:.6,transparent:op<1,opacity:op});
-const HL_FIRE={orange:[hlFireMat(0xff8a2a,0xf0502a),hlFireMat(0xffcc5c,0xf0a838,1),0xff8a2a],green:[hlFireMat(0xa4ecbc,0x4cd88a),hlFireMat(0xe4fbe8,0xa4ecbc,1),0xa4ecbc],
-  blue:[hlFireMat(0xa8dcfa,0x5ab4ec),hlFireMat(0xe8f6ff,0xa8dcfa,1),0x5ab4ec],violet:[hlFireMat(0xcca8f4,0x9a5ae0),hlFireMat(0xf2e4ff,0xcca8f4,1),0x9a5ae0]};
+const HL_FIRE={orange:[hlFireMat(0xed964e,0xdc664b),hlFireMat(0xf6ce78,0xe4ae58,1),0xed964e],green:[hlFireMat(0xb0e8c3,0x66d396),hlFireMat(0xe6fbea,0xb0e8c3,1),0xb0e8c3],
+  blue:[hlFireMat(0xb0dffa,0x6fb3dd),hlFireMat(0xeaf7ff,0xb0dffa,1),0x6fb3dd],violet:[hlFireMat(0xd0b0f4,0x9568c6),hlFireMat(0xf3e7ff,0xd0b0f4,1),0x9568c6]};
 const HL_FIRE_OPT={key:'fire',label:'Fire',choices:[['orange','Hellfire'],['green','Fel green'],['blue','Soul blue'],['violet','Violet']],def:'orange'};
 
 /* ---------- helpers ---------- */
@@ -155,7 +155,7 @@ function hlCliff(hi,seedN,fall){const root=new THREE.Group();root.userData.light
   if(fall){const zE=1.2,top=T+H-.4,lf=bx(root,1.2,top-.5,.2,LAVAMAT,0,.5+(top-.5)/2,zE+.1);lf.castShadow=false;bx(root,1.2,.08,.5,LAVAMAT,0,top+.02,zE-.2).castShadow=false;const drops=[];
     for(let i=0;i<6;i++){const g=new THREE.Group();g.name='drop_'+i;put(root,g,(i%3-1)*.36,0,zE+.3);bx(g,.14,.2,.14,HEMBER,0,0,0).castShadow=false;drops.push(g);}
     hlIdle(root,drops,(t,S,dur)=>{drops.forEach((g,i)=>{const u=(t/dur*2+i/6)%1;S[g.name]={p:[(i%3-1)*.36,top-.2-u*u*(top-.7),zE+.3+u*.15],s:u>.95?1e-4:1};});});
-    hlBubbles(root,[[-.5,1.7,1],[.4,1.6,.8]],.5);const pl=new THREE.PointLight(0xf0502a,0,9,2);pl.position.set(0,1.5,2);pl.userData.lamp=true;pl.userData.min=.8;root.add(pl);root.userData.lights.push(pl);}
+    hlBubbles(root,[[-.5,1.7,1],[.4,1.6,.8]],.5);const pl=new THREE.PointLight(0xdc664b,0,9,2);pl.position.set(0,1.5,2);pl.userData.lamp=true;pl.userData.min=.8;root.add(pl);root.userData.lights.push(pl);}
   else{const tr=mulberry32(seedN+5);for(let i=0;i<6;i++){const x=(tr()-.5)*3.6,z=(tr()-.5)*3.6,ii=Math.min(N-1,Math.floor((x+2)/c)),kk=Math.min(N-1,Math.floor((z+2)/c));if(!cells[kk][ii])bx(root,.1+tr()*.1,.06,.12,vm('hBasalt'),x,T+.03,z,0,tr()*3,0);}}
   return hlDone(root,3);}
 HL('t-cliff','terrain','Basalt cliff',()=>hlCliff((x,z)=>z<1.2,4581),'Cliff edge of basalt columns: high ground 4 m above the tile top, the face towards +z made of columns that step at the top; ash below.',{groundR:-1});
@@ -191,7 +191,7 @@ function hlGeyser(s){const root=hlRoot(2.2),L=root.userData.lights,r=mulberry32(
   const emb=[];for(let i=0;i<8;i++){const g=new THREE.Group();g.name='gem_'+i;put(root,g,0,.2,0);bx(g,.1,.1,.1,HEMBER,0,0,0).castShadow=false;paHide(g);emb.push(g);}
   const col=(t,S,H)=>{const n=H<.6?1:8,h=H/n;segs.forEach((g,i)=>{const y=.16+i*h,on=i<n,w=1+.15*Math.sin(t*13+i*2);S[g.name]={p:[Math.sin(t*7+i)*.05*i,y,Math.cos(t*6+i)*.05*i],s:on?[w*(1-i*.04),h,w*(1-i*.04)]:1e-4};});};
   hlIdle(root,segs,(t,S)=>col(t,S,.35+.12*Math.sin(t*9)));
-  const pl=new THREE.PointLight(0xff8a2a,0,9,2);pl.position.set(0,1.2,0);pl.userData.lamp=true;pl.userData.min=.8;root.add(pl);L.push(pl);
+  const pl=new THREE.PointLight(0xed964e,0,9,2);pl.position.set(0,1.2,0);pl.userData.lamp=true;pl.userData.min=.8;root.add(pl);L.push(pl);
   return hlDone(root,2,[{name:'Erupt',dur:4,next:'Idle',parts:[...segs,...emb],fn:(t,S)=>{const H=t<.3?.4:t<.7?.4+(t-.3)/.4*6.6:t<2.6?7+.4*Math.sin(t*11):t<3.6?7*(1-(t-2.6)):.4;col(t,S,Math.max(.35,H));
     emb.forEach((g,i)=>{const a=i/8*6.28,f=paFly(t,{t0:.6+i*.12,p0:[0,2+i*.6,0],v:[Math.cos(a)*1.6,3+i*.3,Math.sin(a)*1.6],rest:.05,q0:new THREE.Quaternion(),q1:paQ(1,2,0)});S[g.name]=f?{p:f.p,q:f.q,s:t>3.7?1e-4:1}:{s:1e-4};});}}]);}
 function hlTree(size){return s=>{const root=hlRoot(size==='large'?4.4:2.8),r=mulberry32((s||1)*4639+(size==='large'?3:0)),m=vm('wCharBark'),H=size==='large'?5+r()*1.4:2.6+r()*.8,w0=size==='large'?.75:.42,tips=[];
@@ -208,15 +208,15 @@ function hlBoneTree(s){const root=hlRoot(2.8),r=mulberry32((s||1)*4643),b=vm('bo
 function hlLilies(s){const root=hlRoot(1.4),r=mulberry32((s||1)*4649),st=vm('wTwig');for(let k=0;k<9;k++){const a=r()*6.28,d=Math.sqrt(r())*.9,x=Math.cos(a)*d,z=Math.sin(a)*d,h=.4+r()*.5;
     bx(root,.04,h,.04,st,x,h/2,z);for(let l=0;l<3;l++){const la=l*2.1+r();bx(root,.04,.22,.1,st,x+Math.cos(la)*.06,.12,z+Math.sin(la)*.06,Math.sin(la)*.5,la,-Math.cos(la)*.5);}
     const f=new THREE.Group();put(root,f,x,h,z,0,r()*3,0);bx(f,.07,.06,.07,vm('gold'),0,.03,0);for(let p=0;p<4;p++){const pa=p/4*6.28;bx(f,.07,.16,.03,HPETAL,Math.cos(pa)*.06,.08,Math.sin(pa)*.06,Math.sin(pa)*-.5,-pa+Math.PI/2,0);}}
-  const pl=new THREE.PointLight(0xf0502a,0,3.5,2);pl.position.set(0,.8,0);pl.userData.lamp=true;pl.userData.min=.3;root.add(pl);root.userData.lights.push(pl);return hlDone(root);}
+  const pl=new THREE.PointLight(0xdc664b,0,3.5,2);pl.position.set(0,.8,0);pl.userData.lamp=true;pl.userData.min=.3;root.add(pl);root.userData.lights.push(pl);return hlDone(root);}
 function hlBurning(s){const root=hlRoot(2),L=root.userData.lights,r=mulberry32((s||1)*4651);for(let i=-4;i<=4;i++)for(let k=-4;k<=4;k++){const x=i*.4,z=k*.4,d=Math.hypot(x,z)+(r()-.5)*.3;if(d>1.5)continue;bx(root,.4,.02,.4,vm(d<1?'wScorch':'hAsh'),x,.01,z).castShadow=false;}
   const flames=[],smokes=[];for(const[x,z,sz]of[[0,0,.6],[.6,.3,.4],[-.5,.4,.45],[.2,-.6,.4],[-.6,-.4,.3]])rdFire(root,x,.02,z,sz,flames);rdUniq(flames);rdSmoke(root,0,.8,0,4,smokes,.5,.6);rdUniq(smokes);
   for(let i=0;i<8;i++){const a=r()*6.28,d=r()*1.2;bx(root,.06,.03,.06,HEMBER,Math.cos(a)*d,.035,Math.sin(a)*d).castShadow=false;}wlBeam(root,[-.9,.06,.8],[.3,.06,1.1],.1,vm('wCharBark'));
-  const pl=new THREE.PointLight(0xff8a2a,0,6,2);pl.position.set(0,.8,0);pl.userData.lamp=true;pl.userData.min=.8;root.add(pl);L.push(pl);rdFireAnim(root,flames,smokes,3);return root;}
+  const pl=new THREE.PointLight(0xed964e,0,6,2);pl.position.set(0,.8,0);pl.userData.lamp=true;pl.userData.min=.8;root.add(pl);L.push(pl);rdFireAnim(root,flames,smokes,3);return root;}
 function hlLavaPool(s){const root=hlRoot(3),L=root.userData.lights,r=mulberry32((s||1)*4657),c=.4,R=1.8,bm=vm('hBrim');
   for(let i=-6;i<6;i++)for(let k=-6;k<6;k++){const x=(i+.5)*c,z=(k+.5)*c,d=Math.hypot(x,z)+(r()-.5)*.25;if(d>R+.6)continue;if(d>R)bx(root,c,.2+r()*.2,c,[bm,bm,r()<.3?CRUSTMAT:vm('hBrimTop'),bm,bm,bm],x,.15,z);else if(d>R-.4)bx(root,c,.18,c,[bm,bm,CRUSTMAT,bm,bm,bm],x,.09,z);}
   for(let k=-5;k<5;k++){let run=null;const flush=()=>{if(run){hlLava(root,(run[1]-run[0]+1)*c,c,((run[0]+run[1])/2+.5)*c,.14,(k+.5)*c,.14);run=null;}};for(let i=-5;i<5;i++){const x=(i+.5)*c,z=(k+.5)*c;if(Math.hypot(x,z)<=R-.4+.12){if(run)run[1]=i;else run=[i,i];}else flush();}flush();}
-  hlBubbles(root,[[-.4,.2,1],[.5,-.3,.8],[.1,.6,.7],[-.2,-.6,.9]],.14);const pl=new THREE.PointLight(0xf0502a,0,7,2);pl.position.set(0,1,0);pl.userData.lamp=true;pl.userData.min=1;root.add(pl);L.push(pl);return hlDone(root,5);}
+  hlBubbles(root,[[-.4,.2,1],[.5,-.3,.8],[.1,.6,.7],[-.2,-.6,.9]],.14);const pl=new THREE.PointLight(0xdc664b,0,7,2);pl.position.set(0,1,0);pl.userData.lamp=true;pl.userData.min=1;root.add(pl);L.push(pl);return hlDone(root,5);}
 HL('basalt','nature','Basalt columns',hlBasaltCols,'Cluster of square basalt columns rising to about 5 m in the middle, two broken column pieces lying beside it.',{variants:true,defaultSeed:1});
 HL('spire','nature','Brimstone spire',hlSpire,'Jagged leaning spire of brimstone, 6 to 9 m, glowing veins running down its faces, boulders and rubble round the foot.',{variants:true,defaultSeed:1});
 HL('shards','nature','Obsidian shards',hlShards,'Glossy black glass shards bursting out of a low brimstone mound, the tallest about 2.5 m.',{variants:true,defaultSeed:1});
@@ -237,7 +237,7 @@ function hlChainPost(s){const root=hlRoot(1.8),r=mulberry32((s||1)*4661),ir=vm('
 function hlSoulCage(s){const root=hlRoot(1.6),r=mulberry32((s||1)*4663),ir=vm('hIron');bx(root,1.3,.3,1.3,vm('hFortDark'),0,.15,0);bx(root,1.1,.08,1.1,ir,0,.34,0);bx(root,1.1,.08,1.1,ir,0,2.1,0);
   for(let i=0;i<5;i++)for(const sd of[-1,1]){bx(root,.05,1.68,.05,ir,-.5+i*.25,1.22,sd*.52);if(i>0&&i<4)bx(root,.05,1.68,.05,ir,sd*.52,1.22,-.5+i*.25);}
   bx(root,.6,.2,.6,ir,0,2.24,0);hlSpike(root,0,2.34,0,.6,.24,ir);for(const[a,b]of[[1,1],[1,-1],[-1,1],[-1,-1]])hlSpike(root,a*.5,2.14,b*.5,.3,.12,ir);
-  const soul=hlSoul(root,0,.38,0,1.4);soul.name='soul';const pl=new THREE.PointLight(0x5ab4ec,0,5,2);pl.position.set(0,1.2,0);pl.userData.lamp=true;pl.userData.min=.6;root.add(pl);root.userData.lights.push(pl);
+  const soul=hlSoul(root,0,.38,0,1.4);soul.name='soul';const pl=new THREE.PointLight(0x6fb3dd,0,5,2);pl.position.set(0,1.2,0);pl.userData.lamp=true;pl.userData.min=.6;root.add(pl);root.userData.lights.push(pl);
   hlIdle(root,[soul],(t,S,dur)=>{const a=t/dur*Math.PI*2;S.soul={r:[Math.sin(a*2)*.06,Math.sin(a)*.5,Math.sin(a*2+1)*.08],s:[1+.04*Math.sin(a*3),1+.06*Math.sin(a*3+1),1+.04*Math.sin(a*3)]};});
   return hlDone(root,4,[{name:'Rattle',dur:1.6,next:'Idle',parts:[soul],fn:(t,S)=>{const k=1-t/1.6;S.soul={p:[Math.sin(t*31)*.08*k,.38,Math.cos(t*27)*.06*k],r:[Math.sin(t*23)*.25*k,t*4,Math.sin(t*19)*.3*k],s:[1.1,1.2+.15*Math.sin(t*40)*k,1.1]};}}]);}
 function hlSpikes(s){const root=hlRoot(2),r=mulberry32((s||1)*4667),ir=vm('hIron');wlMound(root,0,0,.7,r,vm('hBrim'));
@@ -282,7 +282,7 @@ function hlPortal(s,op){const fire=(op&&op.fire)||'orange',root=hlRoot(3.2),L=ro
 function hlCrystal(s){const root=hlRoot(1.4),L=root.userData.lights,ir=vm('hIron'),dk=vm('hFortDark');bx(root,1.1,.3,1.1,dk,0,.15,0);bx(root,.7,.7,.7,vm('hFort'),0,.65,0);bx(root,.9,.12,.9,dk,0,1.06,0);bx(root,.5,.1,.5,ir,0,1.17,0);
   for(let k=0;k<4;k++){const a=k/4*6.28+.78,c=Math.cos(a),sn=Math.sin(a),P=[[c*.2,1.18,sn*.2],[c*.36,1.5,sn*.36],[c*.3,1.95,sn*.3],[c*.18,2.3,sn*.18]];for(let i=0;i<3;i++){wlBeam(root,P[i],P[i+1],.09-i*.015,ir);bx(root,.09,.09,.09,ir,...P[i+1]);}}
   const cr=new THREE.Group();cr.name='crystal';put(root,cr,0,1.22,0);for(const[w,h,y]of[[.22,.2,.1],[.36,.4,.4],[.42,.36,.78],[.3,.26,1.09],[.16,.2,1.32]])bx(cr,w,h,w,HCRYS,0,y,0).castShadow=false;
-  const pl=new THREE.PointLight(0xf0502a,0,6,2);pl.position.set(0,2,0);pl.userData.lamp=true;pl.userData.min=.7;root.add(pl);L.push(pl);
+  const pl=new THREE.PointLight(0xdc664b,0,6,2);pl.position.set(0,2,0);pl.userData.lamp=true;pl.userData.min=.7;root.add(pl);L.push(pl);
   hlIdle(root,[cr],(t,S,dur)=>{const a=t/dur*Math.PI*2;S.crystal={s:1+.03*Math.sin(a*3)};});return hlDone(root,6);}
 function hlCauldron(s){const root=hlRoot(1.8),L=root.userData.lights,r=mulberry32((s||1)*4697),ir=vm('hIron'),R=.8,y0=.5;
   for(let k=0;k<3;k++){const a=k/3*6.28+.5;wlBeam(root,[Math.cos(a)*.95,0,Math.sin(a)*.95],[Math.cos(a)*.6,y0+.2,Math.sin(a)*.6],.14,ir);bx(root,.24,.08,.24,ir,Math.cos(a)*.95,.04,Math.sin(a)*.95);}
@@ -304,7 +304,7 @@ function hlNest(s){const root=hlRoot(2),r=mulberry32((s||1)*4703),c=.4,R=1.1;for
   const eggs=[];for(const[x,z,s2]of[[0,0,1],[.36,.2,.85],[-.3,.3,.9],[.1,-.38,.8],[-.36,-.2,.75]]){const g=new THREE.Group();g.name='egg';put(root,g,x,.06,z,0,r()*3,0);for(const[w,h,y]of[[.24,.12,.06],[.3,.2,.22],[.24,.12,.38],[.14,.06,.47]])bx(g,w*s2,h*s2,w*s2,HEGG,0,y*s2,0);eggs.push(g);}hlUniq(eggs,'egg');
   {const g=new THREE.Group();put(root,g,.7,.06,-.5);for(const[x,z,ry]of[[0,0,0],[.15,.1,1],[-.1,.12,2.2]])bx(g,.16,.08,.12,HEGG,x,.04,z,.3,ry,.2);}
   hlIdle(root,eggs,(t,S,dur)=>{eggs.forEach((g,i)=>{const a=t/dur*Math.PI*2*2+i*1.3;S[g.name]={s:[1+.03*Math.sin(a),1+.05*Math.sin(a),1+.03*Math.sin(a)]};});});
-  const pl=new THREE.PointLight(0xff8a2a,0,4,2);pl.position.set(0,.9,0);pl.userData.lamp=true;pl.userData.min=.4;root.add(pl);root.userData.lights.push(pl);return hlDone(root,4);}
+  const pl=new THREE.PointLight(0xed964e,0,4,2);pl.position.set(0,.9,0);pl.userData.lamp=true;pl.userData.min=.4;root.add(pl);root.userData.lights.push(pl);return hlDone(root,4);}
 function hlTrophies(s){const root=hlRoot(2.2),r=mulberry32((s||1)*4707);wlMound(root,0,0,.9,r,vm('hAsh'));for(let i=0;i<5;i++){const a=i/5*6.28+r(),d=.6+r()*.5;wlHornSkull(root,Math.cos(a)*d,0,Math.sin(a)*d,.9+r()*.3,a+Math.PI);}
   wlHornSkull(root,0,.68,0,1.2,r()*6);for(let i=0;i<6;i++){const a=r()*6.28,d=1.2+r()*.4;wlBone(root,.4+r()*.3,Math.cos(a)*d,0,Math.sin(a)*d,r()*3);}return hlDone(root);}
 function hlBarrier(s){const root=hlRoot(2.6),r=mulberry32((s||1)*4711),ir=vm('hIron');for(const x of[-1.5,0,1.5]){bx(root,.3,.7,.9,vm('hFortDark'),x,.35,-.1);}vlog(root,4,.3,.3,'x',0,.8,-.1);

@@ -2,17 +2,17 @@
    Own quadruped rig (split spine, three-segment legs, opening jaw, two-part tail). Clips are FK poses in degrees,
    sampled by wgClip, which grounds every frame on the lowest point of the model and, for most clips, also pitches
    the body so the front half and the hind half both touch the ground ("level"). Fronts face +z. */
-const WG_COAT={dkgrey:['#4a4846','Dark grey'],black:['#2a2826','Black'],brown:['#5a4232','Brown'],tan:['#8a7456','Dusty tan'],greybrown:['#6a5e50','Grey-brown'],pale:['#9a968e','Pale grey']};
-const WG_EYE={yellow:['#ffd890','Yellow'],red:['#dc3a32','Red'],green:['#a5de4e','Green'],pale:['#e8ecd8','Pale']};
+const WG_COAT={dkgrey:['#474542','Dark grey'],black:['#2a2826','Black'],brown:['#504034','Brown'],tan:['#786955','Dusty tan'],greybrown:['#5f574d','Grey-brown'],pale:['#888580','Pale grey']};
+const WG_EYE={yellow:['#f8d9a2','Yellow'],red:['#c9524d','Red'],green:['#9dbb67','Green'],pale:['#d7d9ca','Pale']};
 const WGEM={};
 function wgEye(hex){return WGEM[hex]||(WGEM[hex]=new THREE.MeshStandardMaterial({color:new THREE.Color(hex).convertSRGBToLinear(),emissive:new THREE.Color(hex).convertSRGBToLinear(),emissiveIntensity:.9,roughness:.5}));}
 
 function buildWarg(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x3a91),pick=a=>a[Math.floor(r()*a.length)],opt=(k,list)=>o[k]&&o[k]!=='random'?o[k]:pick(list);
   const ck=opt('coat',Object.keys(WG_COAT)),pat=opt('pattern',['none','spots','stripes','saddle']),maneK=opt('mane',['ridge','shaggy']),earK=opt('ears',['pointed','round','torn']),scars=opt('scars',['yes','no'])==='yes',
-    eye=WG_EYE[o.eyes||'yellow'][0],gear=o.gear||'none',coat=WG_COAT[ck][0],lite='#'+new THREE.Color(coat).lerp(new THREE.Color('#d8ccb0'),.3).getHexString();
+    eye=WG_EYE[o.eyes||'yellow'][0],gear=o.gear||'none',coat=WG_COAT[ck][0],lite='#'+new THREE.Color(coat).lerp(new THREE.Color('#d6ccb7'),.3).getHexString();
   const cM=cm('hair',coat),dM=cm('hair',darker(coat,.55)),mnM=cm('hair',darker(coat,.42)),ltM=cm('hair',lite),mkM=cm('hair',darker(coat,ck==='black'?1.5:.5)),
-    pad=bm('#241e1a','plain'),claw=bm('#3a322a','plain'),ivory=bm('#e2d8b8','plain'),gum=bm('#8a3a3a','skin'),mouth=bm('#3a1a1a','plain'),nose=bm('#1a1614','plain'),scarM=bm('#b8968a','skin'),
-    leather=bm('#5a3a24','leather'),leaD=bm('#3e2818','leather'),iron=vm('iron'),cloth=bm(pick(['#6e2e26','#3e4a5e','#4e5a34','#5a4a3a']),'cloth');
+    pad=bm('#231f1b','plain'),claw=bm('#38322c','plain'),ivory=bm('#d9d1b9','plain'),gum=bm('#6f3f3d','skin'),mouth=bm('#321f1d','plain'),nose=bm('#191715','plain'),scarM=bm('#9c867e','skin'),
+    leather=bm('#4e3a2b','leather'),leaD=bm('#392a1f','leather'),iron=vm('iron'),cloth=bm(pick(['#573630','#404357','#4d5337','#51463b']),'cloth');
   const shag=maneK==='shaggy',root=new THREE.Group();root.userData.lights=[];root.userData.animal='warg';
   const body=new THREE.Group();body.name='body';body.userData.joint=true;body.position.set(0,1.08,0);root.add(body);
   const chest=aJ(body,'chest',0,0,.3),hips=aJ(body,'hips',0,0,-.25);

@@ -12,17 +12,17 @@ VB.fiend=Object.assign({},VB.ogre,{thigh:.62,shin:.6,ankle:.5,hipOff:.08,spine:.
    to a raised hock; the IK 'ankle' is the hock (0.58 m up), and the foot is the cannon bone and the hoof standing on its toes */
 const FD_HIP=1.52;
 {const b=VB.fiend;b.key='fiend';b.hipH=FD_HIP;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
-const FD_SKIN={crimson:['#9c3e3a','crimson'],blood:['#6a2a26','dark red'],charcoal:['#3a3232','charcoal'],violet:['#553048','violet']};
-const FD_FUR=[['#1e1614','black'],['#1e1614','black'],['#3e2618','dark brown'],['#572c1e','russet']];
-const FD_EYES={yellow:['#fff2d0','#ffd890','yellow'],orange:['#fff2d0','#ff8a2a','orange'],red:['#ffdcb8','#f0502a','red']};
+const FD_SKIN={crimson:['#7b4544','crimson'],blood:['#56302f','dark red'],charcoal:['#393232','charcoal'],violet:['#4b3241','violet']};
+const FD_FUR=[['#1d1616','black'],['#1d1616','black'],['#3a2720','dark brown'],['#4a2f29','russet']];
+const FD_EYES={yellow:['#fff3d5','#f8d9a2','yellow'],orange:['#fff3d5','#ed964e','orange'],red:['#ffe0bf','#dc664b','red']};
 const FD_HORNS={bull:'great bull horns',ram:'curling ram horns',swept:'long swept-back horns'};
 const FD_WPN={sword:'long sword',axe:'double axe',flail:'flail'};
 /* flail: the chain pivots FD_PIV up the handle, the ball's centre FD_LC from the pivot; the ball's centre stays FD_BR above the ground */
 const FD_PIV=.62,FD_LC=.6,FD_BR=.25;
 
 /* weapons: grip at the origin, the business end along +y, edges along ±x (towards the fingers and the back of the hand) */
-function fdWeapon(kind){const w=new THREE.Group(),ir=bm('#34343a','plain'),irL=bm('#6a6a72','plain'),irD=bm('#222226','plain'),edge=bm('#a4a6ac','plain'),grip=bm('#2a1a12','leather'),
-    cordR=bm('#75211d','cloth'),wd=bm('#3e2a1c','leather'),bone=bm('#d4c8aa','plain'),glow=wrGlow('#ff9a5a','#f0502a',1.6,pxTex('plain')),D=Math.PI;
+function fdWeapon(kind){const w=new THREE.Group(),ir=bm('#353438','plain'),irL=bm('#616066','plain'),irD=bm('#232225','plain'),edge=bm('#998f91','plain'),grip=bm('#281a16','leather'),
+    cordR=bm('#5f2c2b','cloth'),wd=bm('#3c2a22','leather'),bone=bm('#d2c8b1','plain'),glow=wrGlow('#eea373','#dc664b',1.6,pxTex('plain')),D=Math.PI;
   /* grip: leather wrap with red cord bands and an iron pommel */
   const gripAt=(y0,y1,r)=>{bx(w,r,y1-y0,r,grip,0,(y0+y1)/2,0);for(let y=y0+.06;y<y1-.03;y+=.11)bx(w,r+.012,.025,r+.012,cordR,0,y,0);};
   if(kind==='sword'){
@@ -62,10 +62,10 @@ function buildFiend(seed,o={}){const B=VB.fiend,r=mulberry32(((seed*2654435761)>
     goatee=r()<.6,darkHorn=r()<.6,rR=pick(['sword','axe','flail']),rL=pick(['sword','axe','flail']);
   const opt=(kk,d)=>o[kk]&&o[kk]!=='random'?o[kk]:d,skinK=opt('skin',rk),horns=opt('horns',rh),wR=opt('weaponR',rR),wL=opt('weaponL',rL);
   const sk=FD_SKIN[skinK],shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),skin=bm(sk[0],'skin'),skinD=bm(shade(sk[0],.84),'skin'),skinM=bm(shade(sk[0],.64),'skin'),skinX=bm(shade(sk[0],.42),'skin');
-  const fur=bm(furC[0],'hair'),furD=bm(shade(furC[0],.7),'hair'),hoof=bm('#2e2624','plain'),hoofL=bm('#5a4c44','plain'),dark=bm('#140c0a','plain'),ivory=bm('#ece2c4','plain'),
-    bone=bm('#d4c8aa','plain'),boneD=bm('#9a8e70','plain'),ir=bm('#34343a','plain'),irL=bm('#6a6a72','plain'),irD=bm('#222226','plain'),lth=bm('#3a2418','leather'),lthD=bm('#24160e','leather'),
-    cloth=bm('#491412','cloth'),clothD=bm('#2c0d0b','cloth'),nail=bm('#1a1210','plain'),ey=FD_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.8,pxTex('plain')),
-    hornA=darkHorn?bm('#2a2422','plain'):bm('#cfc3a2','plain'),hornB=darkHorn?bm('#4a4038','plain'):bm('#e2d8bc','plain'),hornC=darkHorn?bm('#b8ac90','plain'):bm('#ebe3cf','plain'),hornR=darkHorn?bm('#1a1614','plain'):bm('#a49878','plain');
+  const fur=bm(furC[0],'hair'),furD=bm(shade(furC[0],.7),'hair'),hoof=bm('#2d2626','plain'),hoofL=bm('#534743','plain'),dark=bm('#130d0c','plain'),ivory=bm('#d9d2bc','plain'),
+    bone=bm('#d2c8b1','plain'),boneD=bm('#877d6a','plain'),ir=bm('#353438','plain'),irL=bm('#616066','plain'),irD=bm('#232225','plain'),lth=bm('#37251f','leather'),lthD=bm('#221613','leather'),
+    cloth=bm('#3e1c1c','cloth'),clothD=bm('#261111','cloth'),nail=bm('#191312','plain'),ey=FD_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.8,pxTex('plain')),
+    hornA=darkHorn?bm('#2a2423','plain'):bm('#ccc3aa','plain'),hornB=darkHorn?bm('#463e39','plain'):bm('#d9d1bc','plain'),hornC=darkHorn?bm('#9f9784','plain'):bm('#d9d3c5','plain'),hornR=darkHorn?bm('#1a1615','plain'):bm('#8f8671','plain');
   /* b: the oni's torso and head measures, scaled down to the fiend */
   const F=.9,b=(par,w,h,d,m,x=0,y=0,z=0,rx,ry,rz)=>bx(par,w*F,h*F,d*F,m,x*F,y*F,z*F,rx,ry,rz);
   /* joints: same names, offsets and order as buildVillager */

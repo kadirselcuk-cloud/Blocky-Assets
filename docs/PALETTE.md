@@ -1,16 +1,19 @@
 # Palette
 
-One colour system for the whole library, approved by the owner on 2026-10-16. The values live in `src/core/palette.js` (`PAL`), the colour sheet is `docs/palette/palette.html`, and `node tools/check-palette.mjs` checks every brute, undead, hell, effect and item file against the rules below.
+One colour system for the whole library, approved by the owner on 2026-10-16; version 2 (2026-10-20) lowered saturation, added hue shifting and darkened the creatures. The values live in `src/core/palette.js` (`PAL`), the colour sheet is `docs/palette/palette.html`, and `node tools/check-palette.mjs` checks every brute, undead, hell, effect and item file against the rules below.
 
 ## The tiers
 Every colour belongs to one tier (saturation and brightness are HSB values):
 
 | Tier | What | Limits |
 |---|---|---|
-| Matter | stone, wood, soil, skin, fur, bone, plain metal | S ≤ 65%, B 8–92% |
-| Dye and metal | cloth, banners, roof tiles, war paint, gems, gold, bronze | S ≤ 75%, B ≤ 92% |
-| Light | emissive only: flames, lava, spells, eyes, runes, rarity glows | a step of a `PAL` light ramp; core S ≤ 88% |
+| Matter | stone, wood, soil, skin, fur, bone, plain metal | S ≤ 45%, B 7–85% |
+| Dye and metal | cloth, banners, roof tiles, war paint, gems, gold, bronze | S ≤ 55%, B ≤ 85% |
+| Light | emissive only: flames, lava, spells, eyes, runes, rarity glows | a step of a `PAL` light ramp; core S ≤ 75% |
 
+- **Hue shifting, not flat greys.** Shadows lean toward the faction hue (brutes warm brown 32°, undead blue-violet 228°, hell red-violet 345°), highlights lean warm (45°), and near-greys carry a slight tint of their faction hue.
+- **Creatures are shaded darker** than props: skin, fur, cloth and armour on characters sit lower in brightness (teeth, bone and eye whites excepted) so they read against the ground.
+- The medieval village is the reference and keeps its own values; these limits apply to the other worlds.
 - No pure black or white. The darkest colour is `#16120e`. A white glow uses `PAL.glint` (`#f6f0e4`) or the hot step of its ramp. Black and white are allowed only in emissive maps (`#000000` = no glow) and as the white `emissive` that multiplies an `emissiveMap`.
 - A light is always a 5-step ramp: hot (tinted white), light, core, deep, smoke. Eye, gem and fire option tables use the light and core steps of one ramp.
 

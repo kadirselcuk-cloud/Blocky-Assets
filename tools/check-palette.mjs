@@ -23,7 +23,7 @@ for(const f of files){const lines=read(f).split('\n');let n=0,out=[];
     if(INPAL.has(h))continue;
     if((h==='000000'||h==='ffffff')&&/emissiveMap|hCrustE|hlFlagDraw|glow\)P|lerp|'soft',\.01/.test(L+lines[i-1]))continue;
     const[s,b]=sv(h),pre=L.slice(Math.max(0,m.index-48),m.index);const light=GLOW.test(pre);
-    const why=h==='000000'||h==='ffffff'?'pure black/white':light?(s>.88?'light too saturated':null):(s>.75+.03?'too saturated':b<.075?'too dark':b>.94?'too bright':null);
+    const why=h==='000000'||h==='ffffff'?'pure black/white':light?(s>.8?'light too saturated':null):(s>.55+.02?'too saturated':b<.07?'too dark':b>.87?'too bright':null);
     if(why)out.push(`${f}:${i+1}  #${h}  ${why}`);}});
   bad+=out.length;console.log(`${out.length?'✗':'✓'} ${f}  ${n} colours${out.length?', '+out.length+' out of tier':''}`);if(VERB)out.forEach(o=>console.log('    '+o));}
 console.log(bad?`\n${bad} colours out of tier`:'\nAll colours within the palette tiers.');process.exit(bad?1:0);

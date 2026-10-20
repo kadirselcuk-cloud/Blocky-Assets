@@ -2,14 +2,14 @@
    Palisade walls are 4 m long, centred on the grid line, outside towards +z: ten sharpened logs (3.4–4.2 m) on an earth bank,
    two lashing ropes in front, back rails at 1.1 m and 3 m. Corner posts and the gate posts sit on the grid vertices.
    The fighting platform of the wall walk is at 2.6 m, the same height as the walkway piece. */
-VXD.gBark=(P,r)=>{const c=[];for(let x=0;x<16;x++)c.push(nz(r,.78,1.08));for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(y*3+(x>>2)*7)%11===0?'#2e261c':'#5a4c3a',c[x]*nz(r,.9,1.06)*(x%4===0?.84:1));};
-VXD.gBarkH=(P,r)=>{const c=[];for(let y=0;y<16;y++)c.push(nz(r,.78,1.08));for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(x*3+(y>>2)*7)%11===0?'#2e261c':'#5a4c3a',c[y]*nz(r,.9,1.06)*(y%4===0?.84:1));};
-VXD.gTip=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(x+y)%5===0?'#7a5a34':'#a8844e',nz(r,.88,1.06));};
-VXD.hide=(P,r)=>{const m=mulberry32(61);for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#7a5e44',nz(r,.86,1.06));for(let i=0;i<3;i++){const x0=Math.floor(m()*10),y0=Math.floor(m()*10),w=4+Math.floor(m()*3);for(let y=y0;y<y0+w;y++)for(let x=x0;x<x0+w;x++)P(x&15,y&15,i%2?'#644a34':'#86684a',nz(r,.88,1.05));
-  for(let k=0;k<w;k+=2){P((x0+k)&15,y0&15,'#3e2a1a');P(x0&15,(y0+k)&15,'#3e2a1a');}}};
-VXD.hideDark=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(x*5+y*3)%13===0?'#3e3a2a':'#5e5a44',nz(r,.86,1.06));};
-VXD.gPaint=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#7f362d',nz(r,.86,1.08));};
-VXD.goo=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(x*3+y*5)%7===0?'#a8c040':'#6c8930',nz(r,.88,1.1));};
+VXD.gBark=(P,r)=>{const c=[];for(let x=0;x<16;x++)c.push(nz(r,.78,1.08));for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(y*3+(x>>2)*7)%11===0?'#2d261f':'#574d3f',c[x]*nz(r,.9,1.06)*(x%4===0?.84:1));};
+VXD.gBarkH=(P,r)=>{const c=[];for(let y=0;y<16;y++)c.push(nz(r,.78,1.08));for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(x*3+(y>>2)*7)%11===0?'#2d261f':'#574d3f',c[y]*nz(r,.9,1.06)*(y%4===0?.84:1));};
+VXD.gTip=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(x+y)%5===0?'#745c40':'#a2865e',nz(r,.88,1.06));};
+VXD.hide=(P,r)=>{const m=mulberry32(61);for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#75604c',nz(r,.86,1.06));for(let i=0;i<3;i++){const x0=Math.floor(m()*10),y0=Math.floor(m()*10),w=4+Math.floor(m()*3);for(let y=y0;y<y0+w;y++)for(let x=x0;x<x0+w;x++)P(x&15,y&15,i%2?'#5e4c3b':'#816a54',nz(r,.88,1.05));
+  for(let k=0;k<w;k+=2){P((x0+k)&15,y0&15,'#3a2c20');P(x0&15,(y0+k)&15,'#3a2c20');}}};
+VXD.hideDark=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(x*5+y*3)%13===0?'#3d392e':'#5d5a49',nz(r,.86,1.06));};
+VXD.gPaint=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#6e433c',nz(r,.86,1.08));};
+VXD.goo=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(x*3+y*5)%7===0?'#adbc68':'#758549',nz(r,.88,1.1));};
 FOLDERS['wasteland/fort']={name:'Goblin fortress',blurb:'Wooden palisade walls, corners, gate, towers, huts, totems and camp props',children:[]};
 const GB_WALL={key:'deco',label:'Extras',choices:[['trophies','Skulls, hides and shields'],['plain','Plain'],['spikes','Stakes in front']],def:'trophies'};
 /* sharpened log standing on the ground (its foot in the earth bank) */

@@ -12,10 +12,10 @@
    so they move the same in the GLB. Spell effects are not part of the asset (the owner adds them separately). */
 VB.necro=Object.assign({},VB.female,{thigh:.44,shin:.42,g:.95,sex:'female'});
 {const b=VB.necro;b.key='necro';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
-const NC_SKIN={porcelain:['#ece2e2','porcelain'],ashen:['#d0cacc','ashen'],lilac:['#d6cada','grey-lilac']};
-const NC_HAIR={black:['#141118','raven black'],white:['#d6d4dc','silver-white'],red:['#4d1b22','blood red']};
-const NC_EYES={green:['#e4fbe8','#4cd88a','green'],violet:['#f2e4ff','#9a5ae0','violet'],ice:['#e8f6ff','#5ab4ec','icy blue'],red:['#ffe0d8','#dc3a32','red']};
-const NC_GOWN={black:['#1a171e','black'],purple:['#36183e','deep purple'],red:['#4a121b','blood red'],green:['#16281e','grave green']};
+const NC_SKIN={porcelain:['#d9d2d2','porcelain'],ashen:['#cfcbcc','ashen'],lilac:['#d5cbd7','grey-lilac']};
+const NC_HAIR={black:['#131217','raven black'],white:['#d4d3d9','silver-white'],red:['#3f232d','blood red']};
+const NC_EYES={green:['#e6fbea','#66d396','green'],violet:['#f3e7ff','#9568c6','violet'],ice:['#eaf7ff','#6fb3dd','icy blue'],red:['#ffe3dc','#c9524d','red']};
+const NC_GOWN={black:['#19181d','black'],purple:['#2f1e3a','deep purple'],red:['#3d1c29','blood red'],green:['#192622','grave green']};
 const NC_HEAD={horns:'curved black horns',thorns:'a crown of black thorns',skull:'a silver diadem with a small skull'};
 const NC_STAFF={horned:'a horned skull',caged:'a skull caged in bone claws',crescent:'a skull under a black crescent'};
 /* gown: NC_SK panels round the hips (angle round the waist, 0 = front), upper part NC_L1 long, lower part NC_L2 (the hem about 0.1 m
@@ -29,8 +29,8 @@ function ncHorn(par,P,w0,w1,m,mD){for(let i=0;i<P.length-1;i++){const w=w0+(w1-w
 
 /* staff: grip at the origin, foot at -1, the skull about 1 above the grip. Its +x (where the fingers point) is where the skull looks,
    +y runs up the staff (socket +z through SH_BASIS) */
-function ncStaff(kind,eyeM,gemM){const w=new THREE.Group(),wd=bm('#1c161c','leather'),wdD=bm('#130f16','leather'),wrap=bm('#3a1a24','leather'),sv=bm('#a8acb8','plain'),svD=bm('#62646e','plain');
-  const bn=bm('#ddd3bc','plain'),bnD=bm('#a89c84','plain'),dk=bm('#161010','plain');
+function ncStaff(kind,eyeM,gemM){const w=new THREE.Group(),wd=bm('#1a171b','leather'),wdD=bm('#120f15','leather'),wrap=bm('#341e2a','leather'),sv=bm('#94979f','plain'),svD=bm('#5a5b62','plain');
+  const bn=bm('#d9d1c0','plain'),bnD=bm('#93897a','plain'),dk=bm('#15110f','plain');
   /* twisted black shaft in short segments, silver bands, a silver spike at the foot, a wine-red grip */
   for(let i=0;i<9;i++){const y0=-.94+i*.2,y1=Math.min(.78,y0+.21);if(y0>=.78)break;bx(w,.042,y1-y0,.042,i%2?wdD:wd,0,(y0+y1)/2,0,0,i*.35,0);}
   bx(w,.05,.04,.05,sv,0,-.94,0);bx(w,.03,.05,.03,svD,0,-.975,0);for(const y of[-.62,-.3,.24,.55])bx(w,.05,.02,.05,svD,0,y,0);bx(w,.052,.18,.052,wrap,0,0,0);for(const y of[-.09,.09])bx(w,.056,.016,.056,sv,0,y,0);
@@ -57,9 +57,9 @@ function buildNecromancer(seed,o={}){const B=VB.necro,r=mulberry32(((seed*265443
   const skin0=pick(Object.keys(NC_SKIN)),hair0=pick(['black','black','black','white','red']),eye0=pick(['green','green','violet','ice','red']),gown0=pick(Object.keys(NC_GOWN)),head0=pick(Object.keys(NC_HEAD)),staff0=pick(Object.keys(NC_STAFF));
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,skinK=opt('skin',skin0),hairK=opt('hair',hair0),eyeK=opt('eyes',eye0),gownK=opt('gown',gown0),headK=opt('head',head0),staffK=opt('staff',staff0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),SK=NC_SKIN[skinK][0],HC=NC_HAIR[hairK][0],GC=NC_GOWN[gownK][0];
-  const skin=bm(SK,'skin'),skinD=bm(shade(SK,.84),'skin'),vein=bm('#3a2a44','plain'),hair=bm(HC,'hair'),hairS=bm(shade(HC,hairK==='white'?.88:1.35),'hair'),hairD=bm(shade(HC,.7),'hair');
-  const dark=bm('#161016','plain'),smoky=bm('#2a1c2c','plain'),lip=bm('#551e33','plain'),lipD=bm('#351220','plain'),teeth=bm('#ece6da','plain'),gown=bm(GC,'cloth'),gownD=bm(shade(GC,.6),'cloth'),corset=bm('#141016','leather'),corsetL=bm('#2c2430','leather');
-  const glove=bm('#121014','leather'),gloveT=bm(shade(GC,.9),'cloth'),boot=bm('#141114','leather'),bootD=bm('#120f16','leather'),silver=bm('#b4b8c4','plain'),silverD=bm('#6a6c78','plain'),bone=bm('#ddd3bc','plain'),boneD=bm('#a89c84','plain'),horn=bm('#1a161a','plain'),hornD=bm('#2c2630','plain');
+  const skin=bm(SK,'skin'),skinD=bm(shade(SK,.84),'skin'),vein=bm('#352c3e','plain'),hair=bm(HC,'hair'),hairS=bm(shade(HC,hairK==='white'?.88:1.35),'hair'),hairD=bm(shade(HC,.7),'hair');
+  const dark=bm('#141115','plain'),smoky=bm('#271e2b','plain'),lip=bm('#452639','plain'),lipD=bm('#2c1825','plain'),teeth=bm('#d9d5cc','plain'),gown=bm(GC,'cloth'),gownD=bm(shade(GC,.6),'cloth'),corset=bm('#131115','leather'),corsetL=bm('#2a252f','leather');
+  const glove=bm('#121014','leather'),gloveT=bm(shade(GC,.9),'cloth'),boot=bm('#131214','leather'),bootD=bm('#110f15','leather'),silver=bm('#9ea0a9','plain'),silverD=bm('#61626a','plain'),bone=bm('#d9d1c0','plain'),boneD=bm('#93897a','plain'),horn=bm('#19171a','plain'),hornD=bm('#2b272f','plain');
   const ey=NC_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.8,pxTex('plain')),gemM=wrGlow(ey[0],ey[1],1.5,pxTex('plain'));
   const col=m=>{m.userData.hairCol=true;return m;};
   const vb=new THREE.Group();vb.name='vbody';root.add(vb);

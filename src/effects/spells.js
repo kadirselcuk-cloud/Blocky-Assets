@@ -14,18 +14,18 @@
 const SPG=new THREE.BoxGeometry(1,1,1),SP_TAU=Math.PI*2;
 /* palettes: hot core, bright, mid, dark, smoke, light colour */
 const SP_PAL={
-  fire:{n:'Fire',c:['#fff2d0','#ffcc5c','#ff8a2a','#d8481a','#3a2a24'],l:0xff8a2a},
-  hell:{n:'Hellfire',c:['#ffdcb8','#ff9a5a','#f0502a','#a8281a','#1e1210'],l:0xf0502a},
-  fel:{n:'Fel green',c:['#ecfce0','#b4f088','#6cd040','#28761a','#1a2a14'],l:0x6cd040},
-  frost:{n:'Frost',c:['#f2fbff','#ccecfc','#7cc4f0','#2e6eb0','#c8dcec'],l:0x7cc4f0},
-  arcane:{n:'Arcane',c:['#fcf0ff','#e6b8fc','#b86af0','#6228ac','#29163d'],l:0xb86af0},
-  shadow:{n:'Shadow',c:['#ece0f8','#a888d4','#6a44a8','#2e1850','#0f0b16'],l:0xa888d4},
-  blood:{n:'Blood',c:['#ffe0d8','#f49488','#dc3a32','#7a1218','#160809'],l:0xdc3a32},
-  holy:{n:'Holy light',c:['#fffbea','#fff0b8','#f4d06a','#c09a3a','#fffae8'],l:0xf4d06a},
-  storm:{n:'Lightning',c:['#f4f4ff','#d4dcff','#94a8ff','#4652d8','#2a3040'],l:0x94a8ff},
-  poison:{n:'Poison',c:['#f8fcd8','#e0f080','#b4cc38','#5e6e18','#3a4a20'],l:0xb4cc38},
-  soul:{n:'Soul',c:['#e8f6ff','#a8dcfa','#5ab4ec','#1e5e94','#14243a'],l:0x5ab4ec},
-  necro:{n:'Necrotic',c:['#e4fbe8','#a4ecbc','#4cd88a','#1e8a54','#0e1a12'],l:0x4cd88a}};
+  fire:{n:'Fire',c:['#fff3d5','#f6ce78','#ed964e','#c65c3b','#372b27'],l:0xed964e},
+  hell:{n:'Hellfire',c:['#ffe0bf','#eea373','#dc664b','#993c32','#1c1312'],l:0xdc664b},
+  fel:{n:'Fel green',c:['#eefce3','#bded9b','#7dcb5b','#36742b','#1d2918'],l:0x7dcb5b},
+  frost:{n:'Frost',c:['#f3fbff','#d1eefc','#8cc3e4','#416f9e','#ccdce8'],l:0x8cc3e4},
+  arcane:{n:'Arcane',c:['#fcf2ff','#e8bffc','#b078d8','#603992','#271a36'],l:0xb078d8},
+  shadow:{n:'Shadow',c:['#ede2f8','#a58dc6','#684d93','#2d1e43','#0f0c13'],l:0xa58dc6},
+  blood:{n:'Blood',c:['#ffe3dc','#e49d94','#c9524d','#702328','#13090a'],l:0xc9524d},
+  holy:{n:'Holy light',c:['#fffbec','#fff2bf','#eed182','#ba9c52','#fffbea'],l:0xeed182},
+  storm:{n:'Lightning',c:['#f5f5ff','#d8e0ff','#9caaea','#535cb6','#2c303c'],l:0x9caaea},
+  poison:{n:'Poison',c:['#f8fcdc','#e2ee95','#b7ca55','#606c29','#3c4828'],l:0xb7ca55},
+  soul:{n:'Soul',c:['#eaf7ff','#b0dffa','#6fb3dd','#305f85','#192534'],l:0x6fb3dd},
+  necro:{n:'Necrotic',c:['#e6fbea','#b0e8c3','#66d396','#33875d','#101a13'],l:0x66d396}};
 const SP_MC=new Map();
 /* glow: unlit, full colour; soft: unlit see-through; add: additive halo; smoke: lit see-through; solid: lit */
 function spM(hex,kind='glow',op){const k=hex+kind+(op||'');if(SP_MC.has(k))return SP_MC.get(k);const c=new THREE.Color(hex).convertSRGBToLinear();let m;
@@ -184,7 +184,7 @@ function spBolts(K,o){const P=spPal(o.pal),r=mulberry32(o.seed||61),G=[],par=o.p
 
 /* ---------- stands for the preview ---------- */
 /* stone pedestal with an open hand, palm up, fingers towards +z; returns the anchor height above the palm */
-function spHandStand(root){const dk=vm('cobble'),sk=spM('#8c8680','solid',.9),skD=spM('#76706a','solid',.9),y=-.38;
+function spHandStand(root){const dk=vm('cobble'),sk=spM('#8b8782','solid',.9),skD=spM('#75706c','solid',.9),y=-.38;
   bx(root,.56,.16,.5,dk,0,.08,0);bx(root,.36,.14,.32,dk,.02,.22,.02);bx(root,.15,.56,.15,skD,0,.56,-.04);bx(root,.17,.06,.17,dk,0,.31,-.04);
   bx(root,.13,.16,.15,skD,0,1.2+y,-.04);bx(root,.22,.07,.22,sk,0,1.3+y,0);bx(root,.2,.04,.06,sk,0,1.345+y,-.09);
   for(let i=0;i<4;i++){const x=-.075+i*.05,l=i===0||i===3?.07:.085;bx(root,.042,.045,l,sk,x,1.31+y,.11+l/2);bx(root,.042,.06,.045,sk,x,1.34+y,.12+l+.005);}

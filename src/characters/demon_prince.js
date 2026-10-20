@@ -19,8 +19,8 @@ const DP_F=1.9;
 const DP_LG=1.4;
 VB.dprince=Object.assign({},VB.male,{thigh:.62*DP_LG,shin:.6*DP_LG,ankle:.5*DP_LG,hipOff:.08*DP_LG,spine:.13*DP_F,chest:.26*DP_F,neck:.26*DP_F,headY:.08*DP_F,shW:.38*DP_F,ua:.36*DP_F,fa:.32*DP_F,g:1.22*DP_F,hipW:.29,sex:'male'});
 {const b=VB.dprince;b.key='dprince';b.hipH=1.52*DP_LG;b.legS=(.52+.5)*DP_F/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
-const DP_SKIN={charred:['#1e1a1a','charred black'],ash:['#363032','ash grey'],ember:['#2a1a16','smouldering brown']};
-const DP_FIRE={orange:['#ffcc5c','#ff8a2a','#d8481a','#ff8a2a','orange'],crimson:['#ff9a5a','#f0502a','#a8281a','#f0502a','crimson'],green:['#a4ecbc','#4cd88a','#1e8a54','#4cd88a','green']};
+const DP_SKIN={charred:['#1e1a1a','charred black'],ash:['#353032','ash grey'],ember:['#271b19','smouldering brown']};
+const DP_FIRE={orange:['#f6ce78','#ed964e','#c65c3b','#ed964e','orange'],crimson:['#eea373','#dc664b','#993c32','#dc664b','crimson'],green:['#b0e8c3','#66d396','#33875d','#66d396','green']};
 const DP_HORN={great:'great horns sweeping out and forward like a bull\'s',ram:'curling ram horns',swept:'long horns swept back'};
 const DP_WPN={sword:'a burning curved sword',axe:'a fiery axe',flail:'a burning flail'};
 const DP_BEND=110*Math.PI/180,DP_WS=1.6*DP_F*1.15,DP_TAIL=18,DP_TL=.105*DP_F;
@@ -103,10 +103,10 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
   const skin0=pick(['charred','charred','ash','ember']),fire0=pick(['orange','orange','orange','crimson','green']),horn0=pick(['great','great','ram','swept']),wpn0=pick(['sword','sword','axe','flail']);
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,skinK=opt('skin',skin0),fireK=opt('fire',fire0),hornK=opt('horns',horn0),wpnK=opt('weapon',wpn0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),SK=DP_SKIN[skinK][0],FC=DP_FIRE[fireK];
-  const skin=bm(SK,'skin'),skinL=bm(shade(SK,1.45),'skin'),skinD=bm(shade(SK,.65),'skin'),dark=bm('#160f0f','plain'),claw=bm('#161212','plain'),teeth=bm('#cfc0a4','plain');
-  const horn=bm('#141012','plain'),hornD=bm('#2a2224','plain'),iron=bm('#1c1a1e','plain'),ironL=bm('#3a363c','plain'),ironD=bm('#131116','plain'),grip=bm('#1e1212','leather');
-  const hot=efGlow(FC[0],1.3),mid=efGlow(FC[1],1.0),deep=efGlow(FC[2],.8),crackM=wrGlow(shade(FC[3],.8),FC[3],1.0,pxTex('plain')),eyeM=wrGlow(FC[0],FC[1],1.8,pxTex('plain')),glowB=wrGlow('#f6f0e4',FC[1],2.4,pxTex('plain'));
-  const wingB=bm(shade(SK,.9),'skin'),memb=bm(skinK==='ember'?'#2a1612':'#1c1616','plain'),membD=bm(skinK==='ember'?'#1c0e0a':'#161111','plain');
+  const skin=bm(SK,'skin'),skinL=bm(shade(SK,1.45),'skin'),skinD=bm(shade(SK,.65),'skin'),dark=bm('#150f0f','plain'),claw=bm('#151212','plain'),teeth=bm('#ccc1ab','plain');
+  const horn=bm('#141012','plain'),hornD=bm('#292224','plain'),iron=bm('#1c1a1d','plain'),ironL=bm('#3a363b','plain'),ironD=bm('#141115','plain'),grip=bm('#1b1313','leather');
+  const hot=efGlow(FC[0],1.3),mid=efGlow(FC[1],1.0),deep=efGlow(FC[2],.8),crackM=wrGlow(shade(FC[3],.8),FC[3],1.0,pxTex('plain')),eyeM=wrGlow(FC[0],FC[1],1.8,pxTex('plain')),glowB=wrGlow('#f6f1e6',FC[1],2.4,pxTex('plain'));
+  const wingB=bm(shade(SK,.9),'skin'),memb=bm(skinK==='ember'?'#271716':'#1b1616','plain'),membD=bm(skinK==='ember'?'#190f0e':'#151211','plain');
   const FM=[efGlow(shade(FC[1],.14),.25),mid,deep],M={iron,ironL,ironD,grip,hot,mid,deep,crack:crackM};
   /* boxes and horns in devil-lord units, scaled to metres */
   const X=(par,w,h,d,m,x,y,z,rx,ry,rz)=>bx(par,w*F,h*F,d*F,m,x*F,y*F,z*F,rx,ry,rz),H=(par,P,a,b,m,mD)=>ncHorn(par,P.map(p=>p.map(v=>v*F)),a*F,b*F,m,mD);
@@ -162,7 +162,7 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
   /* legs: the fiend's goat legs x DP_LG in rock skin: a heavy haunch with big quads and hamstrings forward to the knee, a thick-muscled
      shin back down to a pointed hock, a long cannon bone down to the fetlock (dewclaws behind) and a big cloven hoof on its toes (two
      wedge-shaped black claws stepping up towards the heel, ember seams); lava cracks. Rest pose: legs bent so the hooves stand */
-  {const Lg=DP_LG,Y=(par,w,h,d,m,x,y,z,rx,ry,rz)=>bx(par,w*Lg,h*Lg,d*Lg,m,x*Lg,y*Lg,z*Lg,rx,ry,rz),TH=.62,fk=.5/.06,D2=Math.PI/180,hoof=bm('#2a2220','plain'),hoofL=bm('#4a3c34','plain'),restT=-42.5,restK=86.7;
+  {const Lg=DP_LG,Y=(par,w,h,d,m,x,y,z,rx,ry,rz)=>bx(par,w*Lg,h*Lg,d*Lg,m,x*Lg,y*Lg,z*Lg,rx,ry,rz),TH=.62,fk=.5/.06,D2=Math.PI/180,hoof=bm('#292222','plain'),hoofL=bm('#463a35','plain'),restT=-42.5,restK=86.7;
   for(const[sd,s]of[['L',1],['R',-1]]){const th=J('thigh_'+sd,hips,s*B.hipW,-(B.hipOff+.014),0),sn=J('shin_'+sd,th,0,-B.thigh,0),ft=J('foot_'+sd,sn,0,-B.shin,0);
     th.rotation.x=restT*D2;sn.rotation.x=restK*D2;ft.rotation.x=-(restT+restK)*D2;
     Y(th,.46,TH+.16,.5,skin,0,-TH/2+.05,0);Y(th,.38,.32,.07,skinL,0,-.42,.27);Y(th,.07,.34,.38,skinD,s*.25,-.38,.02);Y(th,.36,.3,.07,skin,0,-.26,-.27);
@@ -206,7 +206,7 @@ function buildDemonPrince(seed,o={}){const B=VB.dprince,F=DP_F,r=mulberry32(((se
   mk('L',dpWhip(M));const wp=mk('R',dpWeapon(wpnK,M));if(wpnK==='flail')dpChain(wp.children[0],M);
   /* the fire cubes (named dpf_ on the body, dpq_ on the weapon, dpz_ on the whip) */
   const cubes=(L,pre,mats=FM)=>L.forEach((P,k)=>{const par=root.getObjectByName(P.par),g=new THREE.Group();g.name=pre+k;g.userData.gear=true;g.position.set(P.p[0]*F,P.p[1]*F,P.p[2]*F);g.scale.setScalar(P.sz*F*.5);par.add(g);bx(g,1,1,1,P.hot?hot:mats[P.ty]);});
-  cubes(DP_MANE,'dpf_');cubes(DP_WFX[wpnK],'dpq_');cubes(DP_WFX.whip,'dpz_');cubes(DP_SMOKE,'dps_',[bm('#161212','plain'),bm('#141111','plain'),bm('#1b1616','plain')]);cubes(DP_WSMOKE,'dpk_',[deep,FM[0],bm('#161212','plain')]);
+  cubes(DP_MANE,'dpf_');cubes(DP_WFX[wpnK],'dpq_');cubes(DP_WFX.whip,'dpz_');cubes(DP_SMOKE,'dps_',[bm('#151212','plain'),bm('#141111','plain'),bm('#1a1716','plain')]);cubes(DP_WSMOKE,'dpk_',[deep,FM[0],bm('#151212','plain')]);
   if(o.bare)return root;
   if(!o.noClips){root.userData.clips=demonPrinceClips(wpnK,hornK);const mx=new THREE.AnimationMixer(root);mx.clipAction(root.userData.clips[0]).play();mx.update(0);}
   root.userData.ground=7;

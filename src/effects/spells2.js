@@ -7,7 +7,7 @@ function spBoom(K,o){const P=spPal(o.pal),s=o.s||1,par=o.par||K.root,at=o.at,see
   const ring=K.g(par);spGeo().ring(1,.1,.05,0,32).mesh(P.br,ring);spGeo(true).ring(1,.3,.03,0,32).mesh(P.add,ring);
   spBurst(K,{pal:o.pal,par,at,n:Math.round(36+14*Math.min(2,s)),v:5.5,k:s,drag:3.5,life:.9,sz:.26,grow:1.2,seed,mats:[P.hot,P.br,P.br,P.mid,P.mid,P.dk]});
   if(o.smoke!==false)spBurst(K,{pal:o.pal,par,at:spShift(at,.15),n:Math.round(10+6*Math.min(2,s)),v:2.2,k:s,drag:1.2,g:-1.2,up:true,life:2,sz:.38,grow:2,seed:seed+1,mats:[P.sm,spM(P.c[4],'smoke',.5)]});
-  if(o.debris!==false)spBurst(K,{pal:o.pal,par,at,n:12,v:4.5,k:s,drag:1.2,g:9.8,up:true,dir:[0,1,0],spread:1.4,life:1.7,sz:.11,keep:true,floor:o.floor??0,seed:seed+2,mats:[spM('#2a2220','solid'),spM('#3a3230','solid'),P.dk]});
+  if(o.debris!==false)spBurst(K,{pal:o.pal,par,at,n:12,v:4.5,k:s,drag:1.2,g:9.8,up:true,dir:[0,1,0],spread:1.4,life:1.7,sz:.11,keep:true,floor:o.floor??0,seed:seed+2,mats:[spM('#282221','solid'),spM('#383331','solid'),P.dk]});
   K.add((S,t,A,c)=>{const ev=spEvAt(at,c,t),tt=ev?t-ev[0]:9,fl=tt<.35?Math.sin(Math.PI*tt/.35):0,ru=tt/.55;
     S[flash.name]=fl>1e-3?{p:ev[1],s:fl*1.5*s}:spHid;S[ring.name]=ru<1?{p:[ev[1][0],Math.max(o.floor??-99,ev[1][1]-.2*s)+.04,ev[1][2]],s:[.2+3.2*s*ru,1,.2+3.2*s*ru]}:spHid;});}
 /* a trail of cubes streaming back along -z from the origin (in the parent's frame): len, n, mats, sz, wob, fall (drops) */
@@ -61,11 +61,11 @@ FX('fire-rain','fire','Rain of fire',fxFireRain,'Fireballs raining down at a sla
 
 /* Meteor strike: a burning rock falls from the sky and explodes, leaving a glowing crater that smokes */
 function fxMeteor(_s,o){const root=new THREE.Group();root.userData.lights=[];const P=spPal(o.col),K=spKit(root,5),r=mulberry32(23),T0=.8,Tf=1.1,ti=T0+Tf,from=new THREE.Vector3(-9,24,-7);
-  const rock=K.g(root),rk=spGeo(),rg=spGeo();for(let i=0;i<10;i++){const v=spInBall(r,.35),w=.35+.3*r();rk.box(w,w,w,v[0],v[1],v[2],r(),r(),r());}rk.mesh(spM('#2a2220','solid'),rock);
+  const rock=K.g(root),rk=spGeo(),rg=spGeo();for(let i=0;i<10;i++){const v=spInBall(r,.35),w=.35+.3*r();rk.box(w,w,w,v[0],v[1],v[2],r(),r(),r());}rk.mesh(spM('#282221','solid'),rock);
   for(let i=0;i<8;i++){const v=spInBall(r,.45),w=.12+.1*r();rg.box(w,w,w,v[0],v[1],v[2],r(),r(),0);}rg.mesh(P.mid,rock);
   const tr=[];for(let j=0;j<22;j++)tr.push({m:K.p([P.hot,P.br,P.br,P.mid,P.mid,P.dk][Math.min(5,Math.floor(j/4))]),j,o:[(r()-.5)*.6,(r()-.5)*.6,(r()-.5)*.6]});const smk=[];for(let j=0;j<10;j++)smk.push({m:K.p(P.sm),j,o:[(r()-.5)*.8,(r()-.5)*.8,(r()-.5)*.8]});
   /* the crater: a ring of thrown-up rubble and a glowing pit */
-  const cra=K.g(root),cg=spGeo(),cl=spGeo();for(let i=0;i<22;i++){const a=i/22*SP_TAU+r()*.2,d=1.5+r()*.5,w=.3+.3*r();cg.box(w,.2+.25*r(),w,Math.sin(a)*d,.1,Math.cos(a)*d,0,r(),.2*(r()-.5));}cg.disc(1.6,.005,.01,.2);cg.mesh(spM('#2e2624','solid'),cra);
+  const cra=K.g(root),cg=spGeo(),cl=spGeo();for(let i=0;i<22;i++){const a=i/22*SP_TAU+r()*.2,d=1.5+r()*.5,w=.3+.3*r();cg.box(w,.2+.25*r(),w,Math.sin(a)*d,.1,Math.cos(a)*d,0,r(),.2*(r()-.5));}cg.disc(1.6,.005,.01,.2);cg.mesh(spM('#2c2625','solid'),cra);
   cl.disc(.9,.012,.012,.15);for(let i=0;i<7;i++){const a=r()*SP_TAU;cl.flat(Math.sin(a)*.5,Math.cos(a)*.5,Math.sin(a)*1.4,Math.cos(a)*1.4,.08,.02,.014);}cl.mesh(P.mid,cra);
   spRise(K,{pal:o.col,n:14,R:1.2,h:3,life:2.4,sz:.4,wig:.3,mats:[P.sm,spM(P.c[4],'smoke',.45)],seed:24,A:(A,c,t)=>t>ti+.3?A*(c==='Strike'?1-spCl((t-4.2)/.8):1):0});
   spFire(K,{pal:o.col,n:16,R:.6,h:.5,sz:.12,seed:25,A:(A,c,t)=>t>ti+.2?(c==='Strike'?1-spCl((t-3.5)/1.2):1):0});
@@ -114,9 +114,9 @@ function fxLightningStrike(_s,o){const root=new THREE.Group();root.userData.ligh
   const evs={Idle:[[.4,0],[1.9,1]],Strike:[[.3,2]]},cur=(c,t)=>{let e=null;for(const x of(evs[c]||[]))if(t>=x[0])e=x;return e;};
   spBolts(K,{pal:o.col,n:4,w:.1,jag:.1,lv:6,branch:5,from:(r,k)=>[(r()-.5)*5,H,(r()-.5)*5],to:r=>[(r()-.5)*.3,0,(r()-.5)*.3],seed:51,
     vis:(k,t,A,c)=>{const e=cur(c,t);if(!e)return 0;const tt=t-e[0],main=e[1];return spFlick(tt)&&(k===main||(k===3&&tt>=.1&&tt<.17))?1:0;}});
-  spGeo().disc(.7,.004,.008,.12).mesh(spM('#1a1614','solid',.95),root);const gl=K.g(root);spGeo().disc(.45,.012,.01,.1).mesh(P.br,gl);spGeo().disc(.9,.008,.01,.15).mesh(P.add,gl);
+  spGeo().disc(.7,.004,.008,.12).mesh(spM('#191715','solid',.95),root);const gl=K.g(root);spGeo().disc(.45,.012,.01,.1).mesh(P.br,gl);spGeo().disc(.9,.008,.01,.15).mesh(P.add,gl);
   spBurst(K,{pal:o.col,at:{Idle:[[.4,[0,.05,0]],[1.9,[0,.05,0]]],Strike:[[.3,[0,.05,0]]]},n:26,v:4,up:true,g:6,drag:1,life:.8,sz:.06,floor:0,seed:52,mats:[P.hot,P.br,P.br,P.mid]});
-  spRise(K,{pal:o.col,n:6,R:.3,h:1.5,life:1.5,sz:.25,mats:[spM('#3a3a40','smoke',.5)],seed:53,A:(A,c,t)=>{const e=cur(c,t);return e&&t-e[0]<1.4?1:0;}});
+  spRise(K,{pal:o.col,n:6,R:.3,h:1.5,life:1.5,sz:.25,mats:[spM('#3b3a3e','smoke',.5)],seed:53,A:(A,c,t)=>{const e=cur(c,t);return e&&t-e[0]<1.4?1:0;}});
   K.add((S,t,A,c)=>{const e=cur(c,t),tt=e?t-e[0]:9;S[gl.name]=tt<1?{s:Math.max(1e-4,1-tt)}:spHid;});
   K.light(P.l,.3,30,0,4,0);K.lf=(t,A,c)=>{const e=cur(c,t);return e&&spFlick(t-e[0])?8:.05;};spFrame(root,[2.5,H/2,2.5,H/2]);root.userData.ground=4;
   return spFinish(K,{start:false,end:false,extra:[{name:'Strike',dur:2,next:'Idle',fn:(t,S,step)=>step(S,t,1,'Strike')}]});}
@@ -150,12 +150,12 @@ FX('lightning-beam','lightning','Lightning beam',fxLightningBeam,'A continuous b
 
 function fxStormCloud(_s,o){const root=new THREE.Group();root.userData.lights=[];const R={s:2.4,m:4,l:7}[o.size]||4,P=spPal(o.col),K=spKit(root,4),H=10,r=mulberry32(91);
   const cloud=K.g(root,0,H,0),sh=[spGeo(),spGeo(),spGeo()];for(let i=0;i<Math.round(30+R*8);i++){const v=spInBall(r,1),w=(.6+.8*r())*R*.32;sh[Math.floor(r()*3)].box(w*1.3,w*.7,w,v[0]*R,v[1]*R*.22+(v[1]<0?0:R*.06),v[2]*R*.75);}
-  sh[0].mesh(spM('#3a3c44','solid',1),cloud);sh[1].mesh(spM('#4a4c56','solid',1),cloud);sh[2].mesh(spM('#2c2e34','solid',1),cloud);
+  sh[0].mesh(spM('#3c3b43','solid',1),cloud);sh[1].mesh(spM('#4c4b55','solid',1),cloud);sh[2].mesh(spM('#2d2d34','solid',1),cloud);
   const flashes=[];for(let i=0;i<6;i++){const v=spInBall(r,1),g=K.g(cloud,v[0]*R*.6,-R*.05,v[2]*R*.45);spGeo().box(R*.35,R*.12,R*.3).mesh(P.softB,g);flashes.push(g);}
   const sl=t=>Math.floor(t*12+1e-6),ev=t=>{const s=sl(t),h=spHash(s%48+500);return h<.16?Math.floor(h/.16*4):-1;};
   spBolts(K,{pal:o.col,n:4,w:.07,jag:.12,lv:6,branch:3,from:r=>[(r()-.5)*R,H-R*.1,(r()-.5)*R*.6],to:r=>[(r()-.5)*R*.9,0,(r()-.5)*R*.7],seed:92,vis:(k,t)=>ev(t)===k?1:0});
   K.add((S,t,A)=>{S[cloud.name]={p:[0,H+.15*Math.sin(spW(t,4,1)),0],s:Math.max(1e-4,A)};flashes.forEach((g,i)=>{const f=ev(t)>=0||spHash(sl(t)*7+i)<.06;S[g.name]=f&&A>.5?{s:1}:spHid;});});
-  spRise(K,{pal:o.col,n:Math.round(40+R*10),R:R*.8,h:-H+.6,life:.7,sz:.04,sv:9,y:H-.4,wig:0,pow:1.6,mats:[spM('#7cc4f0','soft',.5),spM('#ccecfc','soft',.4)],seed:93});
+  spRise(K,{pal:o.col,n:Math.round(40+R*10),R:R*.8,h:-H+.6,life:.7,sz:.04,sv:9,y:H-.4,wig:0,pow:1.6,mats:[spM('#8cc3e4','soft',.5),spM('#d1eefc','soft',.4)],seed:93});
   K.light(P.l,.4,30,0,H*.6,0);K.lf=(t,A)=>A*(ev(t)>=0?6:.3);spFrame(root,[R,H*.6,R,H*.6]);root.userData.ground=Math.max(3,R*1.1);return spFinish(K,{start:1,end:1});}
 FX('storm-cloud','lightning','Storm cloud',fxStormCloud,'A dark storm cloud 10 m up, flashing from inside, pouring rain and striking the ground with forked lightning. Clips: Idle, Start, End.',{opts:[spCol(['storm','arcane','fel','blood']),{key:'size',label:'Size',choices:[['s','Small'],['m','Medium'],['l','Large']],def:'m'}]});
 
@@ -201,7 +201,7 @@ function fxBloodSpear(_s,o){const{root,A,K,body}=spProjRoot(o),P=spPal(o.col);sp
   K.light(P.l,.8,5,0,0,0,body);return spProjFinish(K,body,A,at=>spBurst(K,{pal:o.col,par:A,at,n:34,v:4,g:6,life:1,sz:.07,floor:o.mount==='bare'?undefined:-1.3,keep:true,seed:142,mats:[P.mid,P.dk,P.br]}));}
 FX('blood-spear','bolts','Blood lance',fxBloodSpear,'A lance of blood spinning as it flies, shedding drops that fall behind it; it splashes on impact. '+SP_PCLIPS,{opts:[spCol(['blood','necro','shadow']),SP_MOUNT]});
 
-function fxFlamingSkull(_s,o){const{root,A,K,body}=spProjRoot(o),P=spPal(o.col),bn=vm('bone'),sk=K.g(body),dk=spM('#140c0c','solid');
+function fxFlamingSkull(_s,o){const{root,A,K,body}=spProjRoot(o),P=spPal(o.col),bn=vm('bone'),sk=K.g(body),dk=spM('#130e0d','solid');
   bx(sk,.24,.2,.26,bn,0,.03,0);bx(sk,.2,.06,.2,bn,0,.15,-.01);bx(sk,.18,.07,.08,bn,0,-.08,.1);bx(sk,.06,.05,.02,dk,-.055,.04,.131);bx(sk,.06,.05,.02,dk,.055,.04,.131);bx(sk,.03,.04,.02,dk,0,-.025,.131);
   bx(sk,.03,.03,.02,P.hot,-.055,.04,.135);bx(sk,.03,.03,.02,P.hot,.055,.04,.135);for(let i=0;i<4;i++)bx(sk,.03,.025,.02,bn,-.045+i*.03,-.115,.14);
   sk.traverse(m=>{if(m.isMesh)m.castShadow=false;});K.add((S,t,A_)=>{S[sk.name]={r:[.15*Math.sin(spW(t,2,2)),.2*Math.sin(spW(t,2,1)),0]};});

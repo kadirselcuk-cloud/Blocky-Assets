@@ -29,7 +29,7 @@ function caTee(s){const root=udRoot(-1),r=mulberry32((s||1)*1207);root.userData.
 function caEnd(s){const root=udRoot(-1),L=root.userData.lights,r=mulberry32((s||1)*1211);root.userData.ground=-1;const open=(x,z)=>Math.abs(x)<1.2&&z>-1.2;caShell(root,open,r);
   caFace(root,-1.6,0,Math.PI/2,r);caFace(root,1.6,0,-Math.PI/2,r);caSolid(root,-1.2,1.2,-2,-1.2);
   for(let row=0;row<6;row++){const y=.5+row*.42;for(let k=0;k<8;k++)cwSkullTile(root,-1.05+k*.3,y,-1.15,r);if(row<5)bx(root,2.4,.06,.06,vm('bone'),0,y+.21,-1.16);}
-  ruBox(root,1.2,.8,.5,vm('cryptDark'),0,.4,-.9,-.6,0);wlSkull(root,0,.8,-.9,1.2,0);udCandle(root,-.4,.8,-.85,.2);udCandle(root,.42,.8,-.95,.14);udCandle(root,.3,0,-.5,.25);const pl=new THREE.PointLight(0xffcc5c,0,5,2);pl.position.set(0,1.3,-.6);pl.userData.lamp=true;pl.userData.min=.5;root.add(pl);L.push(pl);return root;}
+  ruBox(root,1.2,.8,.5,vm('cryptDark'),0,.4,-.9,-.6,0);wlSkull(root,0,.8,-.9,1.2,0);udCandle(root,-.4,.8,-.85,.2);udCandle(root,.42,.8,-.95,.14);udCandle(root,.3,0,-.5,.25);const pl=new THREE.PointLight(0xf6ce78,0,5,2);pl.position.set(0,1.3,-.6);pl.userData.lamp=true;pl.userData.min=.5;root.add(pl);L.push(pl);return root;}
 function caStairs(s){const root=udRoot(-1),r=mulberry32((s||1)*1213);root.userData.ground=-1;const cf=vm('cryptFloor'),dk=vm('cryptDark'),cm=vm('crypt');
   for(let i=1;i<=8;i++){const top=-.4*i,z=2-(i-.5)*.5;const b=box(2.4,top+3.6,.5,[dk,dk,cf,dk,dk,dk],{s:.8,ox:0,oy:0,oz:0});put(root,b,0,(top-3.6)/2,z);const cl=top+3.2;ruBox(root,4,.4,.5,cm,0,cl+.2,z,-2,cl);}
   for(const sd of[-1,1]){ruBox(root,.8,7.2,4,cm,sd*1.6,0,0,0,-3.6);}
@@ -52,13 +52,13 @@ function caChasm(s){const root=udRoot(-1),L=root.userData.lights,r=mulberry32((s
   for(const sd of[-1,1]){ruBox(root,2.4,8,.2,cm,0,-4.2,sd*1.5,-1.2,-8.2);ruBox(root,.2,8,3.2,cm,sd*1.1,-4.2,0,-1.6,-8.2);}
   const bot=bx(root,2.2,.02,3,RUNEMAT,0,-8.1,0);bot.castShadow=false;{const mg=new THREE.Group();put(root,mg,0,-7.9,0);udMist(mg,0,0,1,6,r);}
   for(let i=0;i<8;i++){const z=-1.5+i*.43,ch=r()<.25?.06:0;ruBox(root,.8-ch*2,.4,.42,cm,(r()-.5)*.04,-.2,z,-.4,-.4);}
-  const pl=new THREE.PointLight(0xa4ecbc,0,9,2);pl.position.set(0,-5,0);pl.userData.lamp=true;pl.userData.min=.7;root.add(pl);L.push(pl);return root;}
+  const pl=new THREE.PointLight(0xb0e8c3,0,9,2);pl.position.set(0,-5,0);pl.userData.lamp=true;pl.userData.min=.7;root.add(pl);L.push(pl);return root;}
 /* ---------- things of the depths ---------- */
 function udSoulWell(s){const root=udRoot(2.6),L=root.userData.lights,r=mulberry32((s||1)*1229),c=.4,R=1.4;
   for(let i=-5;i<5;i++)for(let k=-5;k<5;k++){const x=(i+.5)*c,z=(k+.5)*c,d=Math.hypot(x,z);if(d<R+.6&&d>=R)ruBox(root,c,.9,c,vm('cryptDark'),x,.45,z,x,0);else if(d<R+1)bx(root,c,.1,c,vm('cryptFloor'),x,.05,z);else if(d<R){const m=bx(root,c,.04,c,RUNEMAT,x,.6,z);m.castShadow=false;bx(root,c,.58,c,vm('dark'),x,.29,z);}}
   for(let k=0;k<8;k++){const a=k/8*Math.PI*2;bx(root,.36,.12,.36,vm('crypt'),Math.cos(a)*(R+.3),.96,Math.sin(a)*(R+.3),0,-a,0);if(k%2===0)wlSkull(root,Math.cos(a)*(R+.3),1.02,Math.sin(a)*(R+.3),.8,-a+Math.PI/2);}
   const wisps=[];for(let i=0;i<7;i++){const w=new THREE.Group();w.name='wisp_'+i;const a=r()*6.28,d=r()*R*.7;put(root,w,Math.cos(a)*d,.7,Math.sin(a)*d);const m=new THREE.Mesh(new THREE.BoxGeometry(.18,.4,.18),NFIRE);m.castShadow=false;w.add(m);wisps.push(w);}
-  const pl=new THREE.PointLight(0xa4ecbc,0,8,2);pl.position.set(0,1.4,0);pl.userData.lamp=true;pl.userData.min=.9;root.add(pl);L.push(pl);
+  const pl=new THREE.PointLight(0xb0e8c3,0,8,2);pl.position.set(0,1.4,0);pl.userData.lamp=true;pl.userData.min=.9;root.add(pl);L.push(pl);
   propAnim(root,wisps,[{name:'Idle',dur:4,loop:true,fn:(t,S)=>{wisps.forEach((w,i)=>{const u=((t/4)+i/7)%1,a=i*1.7+u*3;S[w.name]={p:[w.position.x+Math.sin(a)*.15,.7+u*2.4,w.position.z+Math.cos(a)*.15],r:[0,u*3,0],s:u<.1?u*10:u>.75?(1-u)*4:1};});}}]);return root;}
 function udBoneThrone(s){const root=udRoot(2.4),r=mulberry32((s||1)*1231),dk=vm('cryptDark');ruBox(root,3,.3,2.6,dk,0,.15,0,-1.5,0);ruBox(root,2.4,.3,2,vm('crypt'),0,.45,-.1,-1.2,.3);
   wlMound(root,0,-.3,.9,r,vm('bone'),(x,z,y)=>z>.3);bx(root,1.2,.5,.9,vm('bone'),0,.85,.1);for(let i=0;i<6;i++)wlBone(root,.9,(r()-.5)*.4,1.1+(i%2)*.05,-.2+i*.12,(r()-.5)*.3);
@@ -68,7 +68,7 @@ function udBoneThrone(s){const root=udRoot(2.4),r=mulberry32((s||1)*1231),dk=vm(
 function udPhylactery(s){const root=udRoot(1.6),L=root.userData.lights,dk=vm('cryptDark');ruBox(root,1.4,.3,1.4,dk,0,.15,0,-.7,0);ruBox(root,.8,1,.8,vm('crypt'),0,.8,0,-.4,.3);ruBox(root,1,.15,1,dk,0,1.37,0,-.5,1.3);
   for(const[a,b]of[[1,1],[1,-1],[-1,1],[-1,-1]]){bx(root,.06,.5,.06,vm('ironB'),a*.36,1.7,b*.36);udCandle(root,a*.5,.3,b*.5,.18);}
   const gem=new THREE.Group();gem.name='phylactery';put(root,gem,0,2,0);bx(gem,.3,.3,.3,RUNEMAT,0,0,0);const q=bx(gem,.22,.22,.22,RUNEMAT,0,0,0);q.rotation.set(.6,.6,0);bx(gem,.36,.06,.36,vm('gold'),0,-.17,0);bx(gem,.36,.06,.36,vm('gold'),0,.17,0);
-  const pl=new THREE.PointLight(0xa4ecbc,0,6,2);pl.position.set(0,2,0);pl.userData.lamp=true;pl.userData.min=.8;root.add(pl);L.push(pl);
+  const pl=new THREE.PointLight(0xb0e8c3,0,6,2);pl.position.set(0,2,0);pl.userData.lamp=true;pl.userData.min=.8;root.add(pl);L.push(pl);
   propAnim(root,[gem],[{name:'Idle',dur:4,loop:true,fn:(t,S)=>{const a=t/4*Math.PI*2;S.phylactery={p:[0,2+Math.sin(a)*.08,0],r:[0,a,0]};}},{name:'Shatter',dur:1.5,hold:true,fn:(t,S)=>{S.phylactery={p:[0,2,0],r:[0,t*20,0],s:t<.6?1+t*.5:Math.max(1e-4,1.3-(t-.6)*4)};}}]);return root;}
 function udSkullPillar(s){const root=udRoot(2),r=mulberry32((s||1)*1237),dk=vm('cryptDark');ruBox(root,2,.4,2,dk,0,.2,0,-1,0);ruBox(root,1.6,4.2,1.6,vm('crypt'),0,2.5,0,-.8,.4);ruBox(root,2,.4,2,dk,0,4.8,0,-1,4.6);
   for(let f=0;f<4;f++){const g=new THREE.Group();put(root,g,0,0,0,0,f*Math.PI/2,0);for(let row=0;row<9;row++){const y=.75+row*.42;for(let k=0;k<5;k++)cwSkullTile(g,-.6+k*.3,y,.84,r);if(row<8)bx(g,1.6,.05,.05,vm('bone'),0,y+.21,.83);}}return root;}

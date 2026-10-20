@@ -8,18 +8,18 @@
    The left stump is keyed directly (stL, upper-arm angles) and the lower jaw is its own piece (g_jaw, jw = opening in radians). */
 VB.ghoul=Object.assign({},VB.male,{sex:'male'});
 {const b=VB.ghoul;b.key='ghoul';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
-const GH_SKIN={grey:['#8c9286','ashen grey'],green:['#7e8a62','grey-green'],blue:['#7a8796','bluish'],bruised:['#887480','bruised'],brown:['#8a7658','leathery brown']};
-const GH_EYES={milky:['#d8dccc',null,'milky eyes'],yellow:['#ffd890','#f0a838','yellow glowing eyes'],red:['#f49488','#dc3a32','red glowing eyes']};
+const GH_SKIN={grey:['#7c8179','ashen grey'],green:['#6f7b5f','grey-green'],blue:['#6f7882','bluish'],bruised:['#776973','bruised'],brown:['#7c6859','leathery brown']};
+const GH_EYES={milky:['#d8dccf',null,'milky eyes'],yellow:['#f8d9a2','#e4ae58','yellow glowing eyes'],red:['#e49d94','#c9524d','red glowing eyes']};
 const GH_CLOTH={rags:'ragged shirt and trousers',shroud:'burial shroud',bare:'torn trousers, bare chest'};
 const GH_WPN={none:'claws',knife:'knife',cleaver:'small cleaver'};
 
 /* knife and small cleaver: grip at the origin, along +y, edge towards +x (same frame as gbWeapon) */
-function ghKnife(){const w=new THREE.Group(),ir=vm('iron'),dk=bm('#4a4e54','plain'),wood=bm('#5a3e26','leather'),rust=bm('#7a4a2e','plain');
+function ghKnife(){const w=new THREE.Group(),ir=vm('iron'),dk=bm('#46494e','plain'),wood=bm('#55382f','leather'),rust=bm('#6c433b','plain');
   bx(w,.034,.11,.03,wood,0,.0,0);bx(w,.04,.018,.036,dk,0,-.06,0);bx(w,.05,.016,.034,dk,0,.063,0);
   bx(w,.036,.1,.01,ir,.004,.12,0);bx(w,.028,.06,.01,ir,.0,.2,0);bx(w,.014,.03,.01,ir,-.004,.244,0);bx(w,.012,.04,.012,rust,.012,.13,0);w.userData.len=.26;return w;}
-function ghCleaver(){const w=new THREE.Group(),ir=vm('iron'),dk=bm('#4a4e54','plain'),wood=bm('#5a3e26','leather'),wdD=bm('#3e2a1a','leather'),rust=bm('#7a4a2e','plain');
+function ghCleaver(){const w=new THREE.Group(),ir=vm('iron'),dk=bm('#46494e','plain'),wood=bm('#55382f','leather'),wdD=bm('#3e2822','leather'),rust=bm('#6c433b','plain');
   bx(w,.034,.13,.03,wood,0,.0,0);for(const y of[-.03,.03])bx(w,.036,.01,.032,wdD,0,y,0);bx(w,.03,.03,.016,dk,0,.075,0);
-  bx(w,.11,.17,.01,ir,.03,.17,0);bx(w,.016,.17,.016,dk,-.018,.17,0);bx(w,.018,.012,.012,bm('#16120e','plain'),-.002,.235,0);
+  bx(w,.11,.17,.01,ir,.03,.17,0);bx(w,.016,.17,.016,dk,-.018,.17,0);bx(w,.018,.012,.012,bm('#161210','plain'),-.002,.235,0);
   bx(w,.03,.05,.014,rust,.06,.12,0);bx(w,.02,.03,.014,rust,.0,.21,0);w.userData.len=.26;return w;}
 
 function buildGhoul(seed,o={}){const B=VB.ghoul,r=mulberry32(((seed*2654435761)>>>0)^0x6b0f),pick=a=>a[Math.floor(r()*a.length)],root=new THREE.Group();root.userData.lights=[];
@@ -29,9 +29,9 @@ function buildGhoul(seed,o={}){const B=VB.ghoul,r=mulberry32(((seed*2654435761)>
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,skinK=opt('skin',skin0),cloth=opt('clothes',cloth0),wpn=opt('weapon',wpn0),eyeK=opt('eyes',eye0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),SK=GH_SKIN[skinK][0];
   const skin=bm(SK,'skin'),skinD=bm(shade(SK,.72),'skin'),skinL=bm(shade(SK,1.12),'skin'),vein=bm(shade(SK,.5),'skin');
-  const wound=bm('#5e2420','plain'),woundD=bm('#341612','plain'),flesh=bm('#86403a','plain'),bone=bm('#d6caa6','plain'),dark=bm('#16120e','plain'),nail=bm('#3a3226','plain'),teeth=bm('#c4b88a','plain'),hair=bm('#2a2622','hair');
+  const wound=bm('#4e2b25','plain'),woundD=bm('#2e1a17','plain'),flesh=bm('#713f3c','plain'),bone=bm('#d3caae','plain'),dark=bm('#161210','plain'),nail=bm('#3a302a','plain'),teeth=bm('#a9a182','plain'),hair=bm('#2a2524','hair');
   const ey=GH_EYES[eyeK],eyeM=ey[1]?wrGlow(ey[0],ey[1],1.4,pxTex('plain')):bm(ey[0],'plain');
-  const shroud=cloth==='shroud',lin=bm('#b3a684','cloth'),linD=bm('#8e8266','cloth'),top=cloth==='rags'?bm(rag0[0],'cloth'):lin,topD=cloth==='rags'?bm(shade(rag0[0],.72),'cloth'):linD;
+  const shroud=cloth==='shroud',lin=bm('#9b927b','cloth'),linD=bm('#7f7263','cloth'),top=cloth==='rags'?bm(rag0[0],'cloth'):lin,topD=cloth==='rags'?bm(shade(rag0[0],.72),'cloth'):linD;
   const pants=shroud?lin:bm(rag1[0],'cloth'),pantsD=shroud?linD:bm(shade(rag1[0],.72),'cloth'),rope=vm('rope'),shirt=cloth!=='bare';
   const P=(name,par,o2={})=>{const g=new THREE.Group();g.name=name;g.userData.piece=true;Object.assign(g.userData,o2);par.add(g);return g;};
   const fwd='fwd';

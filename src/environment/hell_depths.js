@@ -23,19 +23,19 @@ function dpLavafall(s){const root=dpWall(s),L=root.userData.lights;root.userData
   const c=.4;for(let i=-4;i<=4;i++)for(let k=0;k<5;k++){const x=i*c,z=1.2+c/2+k*c,d=Math.hypot(x/1.7,(z-2)/.9);if(d>1.25)continue;if(d>.85)bx(root,c,.3+r()*.15,c,[vm('hCave'),vm('hCave'),CRUSTMAT,vm('hCave'),vm('hCave'),vm('hCave')],x,.18,z);}
   hlLava(root,2.8,1.4,0,.26,2,.26);const drops=[];for(let i=0;i<5;i++){const g=new THREE.Group();g.name='fdrop_'+i;put(root,g,0,0,1.3);bx(g,.12,.18,.12,HEMBER,0,0,0).castShadow=false;drops.push(g);}
   hlIdle(root,drops,(t,S,dur)=>{drops.forEach((g,i)=>{const u=(t/dur*2+i/5)%1;S[g.name]={p:[(i%3-1)*.3,4.8-u*u*4.4,1.3],s:u>.95?1e-4:1};});});hlBubbles(root,[[-.6,2,1],[.5,2.2,.8]],.26);
-  const pl=new THREE.PointLight(0xf0502a,0,9,2);pl.position.set(0,1.6,2);pl.userData.lamp=true;pl.userData.min=.9;root.add(pl);L.push(pl);delete root.userData.tick;return hlDone(root,3);}
+  const pl=new THREE.PointLight(0xdc664b,0,9,2);pl.position.set(0,1.6,2);pl.userData.lamp=true;pl.userData.min=.9;root.add(pl);L.push(pl);delete root.userData.tick;return hlDone(root,3);}
 /* chasm cell: the floor tile split by an 8 m deep rift along x with lava glowing at the bottom; a chain bridge crosses it along z */
 function dpChasm(s){const root=new THREE.Group();root.userData.lights=[];root.userData.ground=-1;const r=mulberry32((s||1)*4931),hc=vm('hCave'),c=.4,D=8;
   const edge=x=>1+.25*Math.sin(x*2.1+1)+.15*Math.cos(x*3.7);
   for(let i=0;i<10;i++){const x=-1.8+i*c;for(const sd of[-1,1]){const e=Math.round(edge(x*sd+sd)/c)*c,len=2-e;bx(root,c,T,len,[hc,hc,vm('hAsh'),hc,hc,hc],x,T/2,sd*(e+len/2));bx(root,c,D,c,hc,x,T-D/2,sd*(e+c/2));}}
   for(let i=0;i<10;i++)bx(root,c,.4,2*2-.01,hc,-1.8+i*c,T-D-.2,0);hlLava(root,4,3.2,0,T-D+.3,0,.3);
-  const pl=new THREE.PointLight(0xf0502a,0,10,2);pl.position.set(0,T-D+2,0);pl.userData.lamp=true;pl.userData.min=1;root.add(pl);root.userData.lights.push(pl);
+  const pl=new THREE.PointLight(0xdc664b,0,10,2);pl.position.set(0,T-D+2,0);pl.userData.lamp=true;pl.userData.min=1;root.add(pl);root.userData.lights.push(pl);
   const ir=vm('hIron'),Z=2;for(const sd of[-1,1])for(const x of[-.7,.7]){bx(root,.2,1.2,.2,ir,x,T+.6,sd*1.7);hlSpike(root,x,T+1.2,sd*1.7,.3,.14,ir);}
   const sag=.5,yb=T+.1,P=(z)=>yb-sag*(1-(z/1.7)**2);for(const x of[-.6,.6])hlChain(root,[x,yb,-1.7],[x,yb,1.7],sag);for(const x of[-.7,.7])hlChain(root,[x,T+1.1,-1.7],[x,T+1.1,1.7],sag*.8);
   for(let k=0;k<12;k++){const z=-1.56+k*.284;bx(root,1.4,.06,.22,vm('planksDark'),0,P(z)+.05,z);}for(let k=0;k<4;k++){const z=-1.2+k*.8;hlChain(root,[.7,T+1.1-sag*.8*(1-(z/1.7)**2),z],[.6,P(z)+.06,z],0);hlChain(root,[-.7,T+1.1-sag*.8*(1-(z/1.7)**2),z],[-.6,P(z)+.06,z],0);}
   return hlDone(root);}
 function dpCrystals(s){const root=hlRoot(1.6),r=mulberry32((s||1)*4941);bx(root,1.2,.3,1,vm('hCave'),0,.15,0,0,r(),0);for(let k=0;k<4;k++){const a=k/4*6.28+r(),d=k?.35+r()*.3:0;hlCrystals(root,Math.cos(a)*d,.25,Math.sin(a)*d,5,r,k?.9:1.6);}
-  const pl=new THREE.PointLight(0xf0502a,0,5,2);pl.position.set(0,1.2,0);pl.userData.lamp=true;pl.userData.min=.6;root.add(pl);root.userData.lights.push(pl);return hlDone(root);}
+  const pl=new THREE.PointLight(0xdc664b,0,5,2);pl.position.set(0,1.2,0);pl.userData.lamp=true;pl.userData.min=.6;root.add(pl);root.userData.lights.push(pl);return hlDone(root);}
 function dpStalag(s){const root=hlReskin(cvStalagmites(s)),r=mulberry32((s||1)*4943);hlCrystals(root,.8,0,-.6,4,r,.8);return hlDone(root);}
 function dpColumn(s){const root=hlReskin(cvColumn(s)),r=mulberry32((s||1)*4947);for(const y of[1.2,3.4,5.2])bx(root,.06,.5,.06,HVEIN,.5+(r()-.5)*.1,y,0);return hlDone(root);}
 HL('dp-wall','depths','Magma cave wall',dpWall,'The cave wall in red rock with glowing veins and red crystals growing out of the face. 4 m long, 6 m high, centred on the grid line, face towards +z.',{variants:true,defaultSeed:1});
@@ -78,7 +78,7 @@ function tmSoulPit(s){const root=hlRoot(3.4),L=root.userData.lights,r=mulberry32
   for(let k=0;k<4;k++){const a=k/4*6.28+.4,x=Math.cos(a)*2.3,z=Math.sin(a)*2.3;bx(root,.24,1.4,.24,vm('hIron'),x,1.1,z);hlSpike(root,x,1.8,z,.3,.14,vm('hIron'));hlChain(root,[x,1.6,z],[Math.cos(a)*1.4,.4,Math.sin(a)*1.4],.2);bx(root,.16,.16,.16,vm('hIron'),Math.cos(a)*1.4,.36,Math.sin(a)*1.4);}
   const souls=[];for(let i=0;i<6;i++){const g=hlSoul(root,0,0,0,.9);g.name='psoul_'+i;paHide(g);souls.push(g);}
   hlIdle(root,souls,(t,S,dur)=>{souls.forEach((g,i)=>{const u=(t/dur+i/6)%1,a=i*1.05+u*3;S[g.name]={p:[Math.cos(a)*(.9-u*.4),-.4+u*4.4,Math.sin(a)*(.9-u*.4)],r:[0,a,Math.sin(u*9)*.2],s:u<.12?u/.12:u>.7?Math.max(1e-4,(1-u)/.3):1};});});
-  const pl=new THREE.PointLight(0x5ab4ec,0,8,2);pl.position.set(0,1,0);pl.userData.lamp=true;pl.userData.min=1;root.add(pl);L.push(pl);return hlDone(root,6);}
+  const pl=new THREE.PointLight(0x6fb3dd,0,8,2);pl.position.set(0,1,0);pl.userData.lamp=true;pl.userData.min=1;root.add(pl);L.push(pl);return hlDone(root,6);}
 function tmFountain(s){const root=hlRoot(2.8),L=root.userData.lights,r=mulberry32((s||1)*4971),dk=vm('hFortDark'),fd=vm('hFort'),c=.4;
   for(let i=-6;i<6;i++)for(let k=-6;k<6;k++){const x=(i+.5)*c,z=(k+.5)*c,d=Math.max(Math.abs(x),Math.abs(z))*.7+Math.hypot(x,z)*.3;if(d>2.3)continue;if(d>1.9)bx(root,c,.7,c,fd,x,.35,z);else bx(root,c,.2,c,dk,x,.1,z);}
   hlLava(root,3.2,3.2,0,.55,0,.35);bx(root,.9,2.4,.9,fd,0,1.2,0);bx(root,1.2,.3,1.2,dk,0,2.5,0);bx(root,.6,.6,.6,fd,0,2.95,0);hlFlame(root,null,0,3.25,0,.3,'orange',0);
@@ -86,7 +86,7 @@ function tmFountain(s){const root=hlRoot(2.8),L=root.userData.lights,r=mulberry3
     const P=u=>[ca*(.7+u*1),1.82+u*.5-u*u*1.8,sa*(.7+u*1)];for(let i=0;i<6;i++){const p0=P(i/6),p1=P((i+1)/6);wlBeam(root,p0,p1,.16,LAVAMAT).castShadow=false;}
     for(let i=0;i<2;i++){const g=new THREE.Group();g.name='fdrop';put(root,g,0,0,0);bx(g,.14,.14,.14,HEMBER,0,0,0).castShadow=false;g.userData.P=P;g.userData.ph=i*.5+k*.17;arcs.push(g);}}hlUniq(arcs,'fdrop');
   hlIdle(root,arcs,(t,S,dur)=>{for(const g of arcs){const u=(t/dur*2+g.userData.ph)%1;S[g.name]={p:g.userData.P(u)};}});hlBubbles(root,[[1.2,.3,.8],[-.8,1,1],[.3,-1.2,.9]],.55);
-  const pl=new THREE.PointLight(0xf0502a,0,9,2);pl.position.set(0,2,1);pl.userData.lamp=true;pl.userData.min=1;root.add(pl);L.push(pl);return hlDone(root,3);}
+  const pl=new THREE.PointLight(0xdc664b,0,9,2);pl.position.set(0,2,1);pl.userData.lamp=true;pl.userData.min=1;root.add(pl);L.push(pl);return hlDone(root,3);}
 function tmFaces(s){const root=hlRoot(1.8),r=mulberry32((s||1)*4977),fd=vm('hFort'),dk=vm('hFortDark');bx(root,1.8,.4,1.8,dk,0,.2,0);bx(root,1.3,5.2,1.3,fd,0,3,0);bx(root,1.8,.4,1.8,dk,0,5.8,0);
   for(let f=0;f<4;f++){const g=new THREE.Group();put(root,g,0,0,0,0,f*Math.PI/2,0);for(let i=0;i<3;i++){const y=1.3+i*1.5,x=(i%2?.2:-.2)+(r()-.5)*.1,fc=new THREE.Group();put(g,fc,x,y,.65);
     bx(fc,.5,.62,.14,vm('statue'),0,0,.05);for(const sd of[-1,1]){bx(fc,.1,.08,.04,vm('dark'),sd*.11,.1,.12);bx(fc,.12,.04,.04,vm('statue'),sd*.11,.2,.13,0,0,sd*.4);}bx(fc,.14,.2,.04,vm('dark'),0,-.14,.12);

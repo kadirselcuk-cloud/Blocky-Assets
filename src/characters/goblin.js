@@ -4,18 +4,18 @@
    Clips are authored in metres (the warrior's are in leg-length units) and converted by gbU before solving. */
 VB.goblin={thigh:.25,shin:.23,ankle:.05,hipOff:.04,spine:.08,chest:.15,neck:.2,headY:.04,shW:.23,ua:.235,fa:.22,g:1.05,hipW:.088,head:1.25,chestSx:1,hipsR:1,waist:1,hand:1.2,arm:1.2,td:1.4,hipK:1.05,waistK:1,sex:'male'};
 {const b=VB.goblin;b.key='goblin';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
-const GB_SKIN={yellow:['#a08a34','dark yellow'],green:['#62903a','green'],dkgreen:['#3c6228','dark green'],red:['#78352a','dark red'],grey:['#545652','dark grey']};
-const GB_RAG=[['#6e5e44','mud-brown'],['#5a5446','grey-brown'],['#7a6a4a','sackcloth'],['#4a3e32','dark brown'],['#5e5a3a','dirty olive'],['#6a4a3a','rust-brown'],
-  ['#8a3a2e','faded red'],['#4a5a7a','dull blue'],['#a08a3a','mustard'],['#4e6a34','moss-green'],['#5e4a6a','faded purple'],['#3e6a66','grimy teal'],['#9a6a3a','ochre'],['#b0a68a','dirty white'],['#2e2a28','soot-black'],['#9b5636','rust-orange'],['#7a3a52','wine']];
+const GB_SKIN={yellow:['#887b4b','dark yellow'],green:['#627d45','green'],dkgreen:['#435830','dark green'],red:['#5e3b34','dark red'],grey:['#524f4c','dark grey']};
+const GB_RAG=[['#625645','mud-brown'],['#534e45','grey-brown'],['#6c604b','sackcloth'],['#453c33','dark brown'],['#57533d','dirty olive'],['#5c473b','rust-brown'],
+  ['#6a423b','faded red'],['#4b4f6d','dull blue'],['#897b4b','mustard'],['#4f5e39','moss-green'],['#57465b','faded purple'],['#416056','grimy teal'],['#7f6246','ochre'],['#99927f','dirty white'],['#2d2b29','soot-black'],['#7b5544','rust-orange'],['#663c49','wine']];
 const GB_WPN={sword:'crude shortsword',axe:'one-handed axe',club:'spiked club'};
 
 /* weapons: grip at the origin, along +y, striking edge towards +x */
-function gbWeapon(kind){const w=new THREE.Group(),ir=vm('iron'),dk=bm('#5a5e64','plain'),rust=bm('#7a4a2e','plain'),wood=bm('#6a4a2e','leather'),wdD=bm('#4e3826','leather'),wrap=bm('#3c2a1c','leather');
+function gbWeapon(kind){const w=new THREE.Group(),ir=vm('iron'),dk=bm('#55565c','plain'),rust=bm('#654937','plain'),wood=bm('#5c4633','leather'),wdD=bm('#46372a','leather'),wrap=bm('#382b21','leather');
   if(kind==='sword'){bx(w,.046,.15,.046,wrap,0,.015,0);bx(w,.056,.03,.056,dk,0,-.072,0);bx(w,.15,.035,.05,dk,.005,.09,0,0,0,.06);
     bx(w,.075,.17,.022,ir,0,.19,0);bx(w,.07,.16,.022,ir,.004,.355,0);bx(w,.06,.12,.022,ir,-.002,.49,0);bx(w,.035,.06,.022,ir,-.012,.58,0);
     bx(w,.03,.05,.026,rust,.018,.16,0);bx(w,.025,.07,.026,rust,-.015,.4,0);bx(w,.02,.03,.026,rust,.012,.5,0);w.userData.len=.61;}
   else if(kind==='axe'){bx(w,.045,.6,.045,wood,0,.23,0);bx(w,.05,.13,.05,wrap,0,-.005,0);
-    bx(w,.06,.12,.034,dk,.04,.44,0);bx(w,.06,.17,.024,ir,.095,.44,0);bx(w,.02,.2,.026,bm('#b4bac0','plain'),.132,.44,0);bx(w,.045,.06,.04,dk,-.035,.44,0);
+    bx(w,.06,.12,.034,dk,.04,.44,0);bx(w,.06,.17,.024,ir,.095,.44,0);bx(w,.02,.2,.026,bm('#9ea2a6','plain'),.132,.44,0);bx(w,.045,.06,.04,dk,-.035,.44,0);
     for(const y of[.37,.51])bx(w,.055,.025,.055,vm('rope'),0,y,0);bx(w,.025,.04,.028,rust,.08,.4,0);w.userData.len=.53;}
   else{bx(w,.046,.17,.046,wrap,0,.015,0);bx(w,.062,.16,.062,wood,0,.17,0);bx(w,.09,.16,.09,wood,.005,.31,0);bx(w,.115,.15,.105,wdD,0,.45,.005,0,.2,0);bx(w,.08,.05,.08,wood,0,.545,0);
     bx(w,.04,.05,.04,wdD,-.06,.3,.01);for(const[x,y,z]of[[.065,.44,0],[-.065,.47,.02],[0,.4,.06],[.02,.5,-.06]])bx(w,Math.abs(x)?.05:.018,.018,Math.abs(z)?.05:.018,ir,x,y,z);w.userData.len=.57;}
@@ -23,12 +23,12 @@ function gbWeapon(kind){const w=new THREE.Group(),ir=vm('iron'),dk=bm('#5a5e64',
 
 function buildGoblin(seed,o={}){const B=o.B||VB.goblin,r=mulberry32(((seed*2654435761)>>>0)^0x9b17),pick=a=>a[Math.floor(r()*a.length)],g=B.g,root=new THREE.Group();root.userData.lights=[];
   /* roll everything, then let the options override */
-  const SK=o.skins||GB_SKIN,hb=o.hob,rk=pick(Object.keys(SK)),rt=pick(['shirt','shirt','none']),rl=pick(['shorts','pants']),hairS0=pick(['bald','bald','tufts','strands']),hairC=pick(['#1e1a18','#3a2a1e','#6a6660']);
+  const SK=o.skins||GB_SKIN,hb=o.hob,rk=pick(Object.keys(SK)),rt=pick(['shirt','shirt','none']),rl=pick(['shorts','pants']),hairS0=pick(['bald','bald','tufts','strands']),hairC=pick(['#1d1b19','#372b22','#615e59']);
   let hairS=hairS0;const shirtC=pick(GB_RAG);let legC;do{legC=pick(GB_RAG);}while(legC===shirtC);let patchC;do{patchC=pick(GB_RAG);}while(patchC===shirtC||patchC===legC);
   const skinK=o.skin&&o.skin!=='random'?o.skin:rk,top=o.top&&o.top!=='random'?o.top:(hb?hb.top:rt),legs=o.legs&&o.legs!=='random'?o.legs:rl,wpn=o.weapon||'sword',jerk=top==='jerkin',shirt=top==='shirt'||jerk;
   if(hb&&hb.hair)hairS=hb.hair;
   const sk=SK[skinK],shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),skin=bm(sk[0],'skin'),skinD=bm(shade(sk[0],.74),'skin'),skinM=bm(shade(sk[0],.55),'skin'),skinX=bm(shade(sk[0],.4),'skin'),browM=bm(shade(sk[0],.3),'skin'),
-    shirtM=jerk?bm(hb.jerkC[0],'leather'):bm(shirtC[0]),legM=bm(legC[0]),patchM=bm(patchC[0]),dark=bm('#1c1410','plain'),eyeM=bm('#ddc44d','plain'),ivory=bm('#e2d8b8','plain'),claw=bm('#3a3028','plain'),hairM=bm(hairC,'hair'),rope=vm('rope');
+    shirtM=jerk?bm(hb.jerkC[0],'leather'):bm(shirtC[0]),legM=bm(legC[0]),patchM=bm(patchC[0]),dark=bm('#1a1411','plain'),eyeM=bm('#b9aa66','plain'),ivory=bm('#d9d1b9','plain'),claw=bm('#38302a','plain'),hairM=bm(hairC,'hair'),rope=vm('rope');
   const torso=shirt?shirtM:skin;
   /* joints: same names, offsets and order as buildVillager */
   const hips=J('hips',root,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
@@ -49,8 +49,8 @@ function buildGoblin(seed,o={}){const B=o.B||VB.goblin,r=mulberry32(((seed*26544
   else{bx(chest,.1,.012,.008,skinX,.06,.07,TD*.46+.002,0,0,-.15);bx(chest,.1,.012,.008,skinX,-.06,.07,TD*.46+.002,0,0,.15);bx(spine,.02,.02,.008,skinX,0,.05,TD/2+.046);}
   if(!o.shaman&&!hb){bx(hips,HW+.03,.035,TD*.94+.03,rope,0,.035,0);bx(hips,.05,.05,.035,rope,.07,.03,TD*.47+.03);bx(hips,.02,.08,.02,rope,.08,-.02,TD*.47+.035,0,0,.2);}
   else{/* shaman and hobgoblin: thick leather belt with a crude iron buckle, and a necklace of teeth with a big fang */
-    const belt=bm('#3a2618','leather'),ir=vm('iron'),bz=(TD*.94+.05)/2;bx(hips,HW+.05,.07,TD*.94+.05,belt,0,.03,0);bx(hips,.08,.08,.014,ir,0,.03,bz+.005);bx(hips,.04,.04,.016,belt,0,.03,bz+.007);bx(hips,.05,.07,.012,belt,-.06,-.03,bz+.002);if(o.shaman){
-    const cord=bm('#2a1e16','leather'),fz=TD*.46,uz=TD*.31-.02,cy=.205;bx(chest,.21,.012,.012,cord,0,cy-.016,fz+.006);for(const s of[-1,1]){bx(chest,.012,.012,fz-uz,cord,s*.1,cy+.006,(fz+uz)/2);bx(chest,.012,.045,.012,cord,s*.1,cy+.022,uz+.006);}
+    const belt=bm('#36281d','leather'),ir=vm('iron'),bz=(TD*.94+.05)/2;bx(hips,HW+.05,.07,TD*.94+.05,belt,0,.03,0);bx(hips,.08,.08,.014,ir,0,.03,bz+.005);bx(hips,.04,.04,.016,belt,0,.03,bz+.007);bx(hips,.05,.07,.012,belt,-.06,-.03,bz+.002);if(o.shaman){
+    const cord=bm('#271f19','leather'),fz=TD*.46,uz=TD*.31-.02,cy=.205;bx(chest,.21,.012,.012,cord,0,cy-.016,fz+.006);for(const s of[-1,1]){bx(chest,.012,.012,fz-uz,cord,s*.1,cy+.006,(fz+uz)/2);bx(chest,.012,.045,.012,cord,s*.1,cy+.022,uz+.006);}
     bx(chest,.212,.012,.012,cord,0,.244,uz+.006);bx(chest,.212,.012,.012,cord,0,.244,-.072);for(const s of[-1,1])bx(chest,.012,.012,uz+.078,cord,s*.1,.244,(uz-.072)/2);
     for(const x of[-.08,-.045,.045,.08])bx(chest,.016,.034,.012,ivory,x,cy-.04,fz+.008);bx(chest,.03,.06,.016,ivory,0,cy-.05,fz+.01);bx(chest,.014,.02,.014,dark,-.063,cy-.016,fz+.01);bx(chest,.014,.02,.014,dark,.063,cy-.016,fz+.01);}}
   bx(neck,.15,.08,.14,skin,0,.02,.01);
@@ -63,13 +63,13 @@ function buildGoblin(seed,o={}){const B=o.B||VB.goblin,r=mulberry32(((seed*26544
   bx(hg,.17,.018,.012,dark,0,.048,.142);for(const s of[-1,1])bx(hg,.022,.045,.022,ivory,s*.055,.07,.142);
   for(const s of[-1,1]){const e=new THREE.Group();put(hg,e,s*S/2,.16,-.03,0,s*.6,s*.32);
     bx(e,.06,.1,.03,skin,s*.03,0,0);bx(e,.05,.07,.025,skin,s*.08,.005,0);bx(e,.045,.045,.02,skin,s*.122,.01,0);bx(e,.035,.022,.018,skin,s*.16,.014,0);bx(e,.07,.05,.01,skinX,s*.055,0,.016);bx(e,.035,.025,.01,skinX,s*.11,.008,.012);
-    if(o.shaman&&(o.shaman.ear==='both'||o.shaman.ear===(s>0?'L':'R'))){const au=bm('#c8a050','plain'),x=s*.035;bx(e,.012,.012,.05,au,x,-.048,0);for(const z of[-.019,.019])bx(e,.012,.05,.012,au,x,-.068,z);bx(e,.012,.012,.05,au,x,-.088,0);}}
+    if(o.shaman&&(o.shaman.ear==='both'||o.shaman.ear===(s>0?'L':'R'))){const au=bm('#a78e5c','plain'),x=s*.035;bx(e,.012,.012,.05,au,x,-.048,0);for(const z of[-.019,.019])bx(e,.012,.05,.012,au,x,-.068,z);bx(e,.012,.012,.05,au,x,-.088,0);}}
   if(hb&&hb.helm==='cap'&&hairS!=='strands')hairS='bald';
   if(hairS==='tufts')for(const[x,z,h]of[[0,0,.05],[-.05,-.05,.04],[.05,-.03,.035],[0,-.09,.04]])bx(hg,.04,h,.04,hairM,x,.28+h/2-.005,z);
   if(hairS==='strands'){bx(hg,S*.7,.1,.03,hairM,0,.2,-.148);for(const s of[-1,1])bx(hg,.03,.08,.06,hairM,s*(S/2+.008),.2,-.09);}
   if(hairS==='crest')for(let i=0;i<5;i++){const h=.05+.025*Math.sin(Math.PI*i/4);bx(hg,.035,h,.05,hairM,0,.28+h/2-.005,.08-i*.052);}
   if(hb&&hb.helm==='cap'){/* hobgoblin iron cap: riveted dome with a darker rim, a low boss on top */
-    const ir=vm('iron'),irD=bm('#4a4e54','plain'),HZ=-.01,HD=S*.95+.026;bx(hg,S+.026,.075,HD,ir,0,.25,HZ);bx(hg,S*.84,.035,HD*.84,ir,0,.304,HZ);bx(hg,S*.4,.025,HD*.4,irD,0,.333,HZ);
+    const ir=vm('iron'),irD=bm('#48494f','plain'),HZ=-.01,HD=S*.95+.026;bx(hg,S+.026,.075,HD,ir,0,.25,HZ);bx(hg,S*.84,.035,HD*.84,ir,0,.304,HZ);bx(hg,S*.4,.025,HD*.4,irD,0,.333,HZ);
     bx(hg,S+.034,.026,HD+.008,irD,0,.207,HZ);for(const x of[-.09,0,.09]){bx(hg,.014,.014,.008,irD,x,.26,HZ+HD/2+.003);bx(hg,.014,.014,.008,irD,x,.26,HZ-HD/2-.003);}}
   const sockHead=J('socket_head',head,0,(S+.03)*B.head,0);sockHead.userData.socket=true;
   /* arms: long and thick, clawed hands */
@@ -79,7 +79,7 @@ function buildGoblin(seed,o={}){const B=o.B||VB.goblin,r=mulberry32(((seed*26544
     bx(fa,aw*1.1,B.fa*.7,aw*1.1,skin,0,-B.fa*.35,0);bx(fa,aw*.82,B.fa*.32,aw*.82,skin,0,-B.fa*.82,0);
     if(hb){/* hobgoblin: leather bracers bound with cord; an iron pauldron on the left shoulder */
       bx(fa,aw*1.18,B.fa*.42,aw*1.18,bm(hb.bracerC,'leather'),0,-B.fa*.38,0);for(const y of[-.22,-.54])bx(fa,aw*1.22,.016,aw*1.22,rope,0,B.fa*y,0);
-      if(sd==='L'&&hb.pauldron){const ir=vm('iron'),irD=bm('#4a4e54','plain');bx(ua,aw*1.36,.04,aw*1.32,ir,s*.01,.04,0);bx(ua,aw*1.4,.05,aw*1.36,ir,s*.016,.0,0,0,0,-s*.1);bx(ua,aw*1.42,.014,aw*1.38,irD,s*.02,-.027,0,0,0,-s*.1);
+      if(sd==='L'&&hb.pauldron){const ir=vm('iron'),irD=bm('#48494f','plain');bx(ua,aw*1.36,.04,aw*1.32,ir,s*.01,.04,0);bx(ua,aw*1.4,.05,aw*1.36,ir,s*.016,.0,0,0,0,-s*.1);bx(ua,aw*1.42,.014,aw*1.38,irD,s*.02,-.027,0,0,0,-s*.1);
         for(const z of[-1,1])bx(ua,.014,.014,.008,irD,s*.016,.0,z*(aw*.68+.004));}}
     const hw=aw*.85;bx(hd,hw*1.08,.09*hk,hw*1.1,skin,0,-.04*hk,0);
     const fg=J('fingers_'+sd,hd,0,-.085*hk,0),ft=J('fingerTips_'+sd,fg,0,-.035*hk,0),th=J('thumb_'+sd,hd,-s*.02*hk,-.04*hk,hw/2);

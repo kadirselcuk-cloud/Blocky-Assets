@@ -5,12 +5,12 @@
 VB.hobgoblin=Object.assign({},VB.goblin,{g:1.15,td:1.25,arm:1.3,shW:.25,hipW:.095,hand:1.25,head:1.1});
 {const b=VB.hobgoblin;b.key='hobgoblin';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 const HB_SC=1.5;
-const HB_SKIN={orange:['#ac663c','rust orange'],brick:['#88402f','brick red'],ochre:['#9a6a34','ochre-brown'],olive:['#76735c','olive grey'],slate:['#4e5652','slate grey']};
-const HB_LEATHER=[['#5a3a22','dark leather'],['#7a5232','tan leather'],['#4a3a2e','brown leather'],['#3a3430','black leather'],['#6a2e24','red-dyed leather']];
+const HB_SKIN={orange:['#89624b','rust orange'],brick:['#6b453b','brick red'],ochre:['#7e6345','ochre-brown'],olive:['#6a6858','olive grey'],slate:['#4a504c','slate grey']};
+const HB_LEATHER=[['#4d3a2b','dark leather'],['#674e39','tan leather'],['#443930','brown leather'],['#393431','black leather'],['#54352e','red-dyed leather']];
 const HB_WPN={cleaver:'heavy cleaver',axe:'bearded war axe',mace:'iron-bound mace'};
 
 /* weapons: grip at the origin, along +y, striking edge towards +x (same frame and about the same length as gbWeapon) */
-function hbWeapon(kind){const w=new THREE.Group(),ir=vm('iron'),dk=bm('#5a5e64','plain'),hi=bm('#b4bac0','plain'),rust=bm('#7a4a2e','plain'),wood=bm('#6a4a2e','leather'),wrap=bm('#3c2a1c','leather');
+function hbWeapon(kind){const w=new THREE.Group(),ir=vm('iron'),dk=bm('#55565c','plain'),hi=bm('#9ea2a6','plain'),rust=bm('#654937','plain'),wood=bm('#5c4633','leather'),wrap=bm('#382b21','leather');
   if(kind==='cleaver'){/* falchion: straight spine on -x, the edge side widening towards the tip, a bright edge, rust patches */
     bx(w,.048,.15,.048,wrap,0,.015,0);bx(w,.06,.032,.06,dk,0,-.074,0);bx(w,.14,.036,.054,dk,0,.09,0);
     for(const[y,h,wd]of[[.19,.17,.075],[.35,.16,.09],[.49,.13,.105]])bx(w,wd,h,.024,ir,-.035+wd/2,y,0);bx(w,.075,.05,.024,ir,.002,.578,0);
@@ -26,7 +26,7 @@ function hbWeapon(kind){const w=new THREE.Group(),ir=vm('iron'),dk=bm('#5a5e64',
   return w;}
 
 function buildHobgoblin(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x6b0b),pick=a=>a[Math.floor(r()*a.length)];
-  const helm=o.helm&&o.helm!=='random'?o.helm:pick(['cap','cap','none']),hair=pick(['bald','crest','crest','strands']),jerkC=pick(HB_LEATHER),bracerC=pick(['#3e2a1c','#2e2622','#4a3424']),top=pick(['jerkin','jerkin','shirt','none']),wpn=o.weapon||'cleaver';
+  const helm=o.helm&&o.helm!=='random'?o.helm:pick(['cap','cap','none']),hair=pick(['bald','crest','crest','strands']),jerkC=pick(HB_LEATHER),bracerC=pick(['#392b21','#2c2623','#433428']),top=pick(['jerkin','jerkin','shirt','none']),wpn=o.weapon||'cleaver';
   const body=buildGoblin(seed,{skin:o.skin,top:o.top,legs:o.legs,B:VB.hobgoblin,skins:HB_SKIN,weapon:wpn,wpnFn:hbWeapon,noClips:true,hob:{top,helm,hair,jerkC,bracerC,pauldron:true}});
   if(o.bare)return body;
   const root=new THREE.Group();root.userData.lights=[];body.scale.setScalar(HB_SC);root.add(body);

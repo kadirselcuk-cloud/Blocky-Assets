@@ -7,8 +7,8 @@
 VB.skeleton=Object.assign({},VB.male,{sex:'male'});
 {const b=VB.skeleton;b.key='skeleton';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 /* bone tints: "New look" rolls the first three; dark and reddish (fire skeleton) only when picked in the options */
-const SK_BONE={bleached:['#e2dac2','bleached'],aged:['#cdbf98','aged'],grimy:['#ab9d7a','grimy'],dark:['#57504a','dark'],red:['#a85a3e','reddish']};
-const SK_EYES={blue:['#a8dcfa','#5ab4ec','pale blue glow'],green:['#a4ecbc','#4cd88a','green glow'],dark:null};
+const SK_BONE={bleached:['#d9d3c1','bleached'],aged:['#b0a78c','aged'],grimy:['#948a73','grimy'],dark:['#524a48','dark'],red:['#87584a','reddish']};
+const SK_EYES={blue:['#b0dffa','#6fb3dd','pale blue glow'],green:['#b0e8c3','#66d396','green glow'],dark:null};
 const SK_ARMOR={leather:'leather',chain:'chain mail',plate:'plate'};
 /* armour areas, and how many of them each coverage choice wears (Random rolls every area on its own) */
 const SK_AREAS=['helm','chest','boots','gloves','shoulders','bracers','belt','thighs'],SK_COVER={few:[2,3],most:[5,6],full:[8,8]};
@@ -16,11 +16,11 @@ const SK_BX=bx;
 const SK_WPN={club:'small club',axe:'crude axe',sword:'crude sword'};
 
 /* small wooden club: grip at the origin, along +y (same frame as gbWeapon) */
-function skClub(){const w=new THREE.Group(),wood=bm('#6a4a2e','leather'),wdD=bm('#4e3826','leather'),wrap=bm('#3c2a1c','leather');
+function skClub(){const w=new THREE.Group(),wood=bm('#634137','leather'),wdD=bm('#4b342d','leather'),wrap=bm('#3c2823','leather');
   bx(w,.04,.14,.04,wrap,0,.01,0);bx(w,.046,.06,.046,wdD,0,-.07,0);bx(w,.05,.2,.05,wood,0,.17,0);bx(w,.072,.15,.072,wood,0,.34,0);bx(w,.056,.04,.056,wood,0,.435,0);
   bx(w,.026,.04,.026,wdD,.042,.3,0);bx(w,.024,.03,.024,wdD,-.04,.37,.01);bx(w,.022,.03,.022,wdD,.01,.32,-.04);w.userData.len=.46;return w;}
 /* round-ish buckler, face towards +z: plank columns, iron rim on the outer cells, boss in the middle, grip bar behind */
-function skBuckler(){const g=new THREE.Group(),wood=bm('#7a5634','leather'),wdD=bm('#5a3e26','leather'),ir=vm('iron'),irD=bm('#4a4e54','plain'),R=.16,c=.04;
+function skBuckler(){const g=new THREE.Group(),wood=bm('#704b3e','leather'),wdD=bm('#55382f','leather'),ir=vm('iron'),irD=bm('#46494e','plain'),R=.16,c=.04;
   for(let x=-R+c/2;x<R;x+=c){const hz=Math.round(Math.sqrt(Math.max(0,R*R-x*x))/.02)*.02;bx(g,c,2*hz,.022,Math.round((x+R)/c)%2?wood:wdD,x,0,0);
     for(const s of[-1,1])bx(g,c,.02,.03,ir,x,s*(hz+.01),0);if(Math.abs(x)>R-c)bx(g,.02,2*hz,.03,ir,x+Math.sign(x)*(c/2+.01),0,0);}
   bx(g,.07,.07,.03,ir,0,0,.026);bx(g,.04,.04,.016,irD,0,0,.048);bx(g,.02,.1,.022,wdD,0,0,-.022);return g;}
@@ -34,11 +34,11 @@ function buildSkeleton(seed,o={}){const B=o.B||VB.skeleton,r=mulberry32(((seed*2
   /* Random: every area rolled on its own (at least one piece when an armour type is chosen); otherwise the first n areas of a shuffled order */
   const has={};if(cov==='random'){for(const k of order)has[k]=arm!=='none'&&has0[k];if(arm!=='none'&&!order.some(k=>has[k]))has[extra]=true;}
   else{const[a,b]=SK_COVER[cov],n=a+Math.floor(nCov*(b-a+1));for(const k of order)has[k]=arm!=='none'&&rank.indexOf(k)<n;}
-  const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),bone=bm(boneC[0],'plain'),boneD=bm(shade(boneC[0],.78),'plain'),dark=bm('#16120e','plain');
-  const ey=(o.eyeTab||SK_EYES)[eyeK],eyeM=ey?wrGlow(ey[0],ey[1],1.6,pxTex('plain')):bm('#2a2420','plain');
+  const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),bone=bm(boneC[0],'plain'),boneD=bm(shade(boneC[0],.78),'plain'),dark=bm('#161210','plain');
+  const ey=(o.eyeTab||SK_EYES)[eyeK],eyeM=ey?wrGlow(ey[0],ey[1],1.6,pxTex('plain')):bm('#2a2322','plain');
   /* armour materials: one type for every worn piece */
-  const AM=arm==='leather'?{a:bm('#5a3a24','leather'),b:bm('#3e2818','leather'),c:bm('#6e4a2e','leather')}:arm==='chain'?{a:vm('mail'),b:bm('#4a4e54','plain'),c:vm('mail')}:
-    {a:bm('#8a9096','plain'),b:bm('#5e646a','plain'),c:bm('#7a4a2e','plain')};
+  const AM=arm==='leather'?{a:bm('#54352e','leather'),b:bm('#3d2621','leather'),c:bm('#654138','leather')}:arm==='chain'?{a:vm('mail'),b:bm('#46494e','plain'),c:vm('mail')}:
+    {a:bm('#7b7f84','plain'),b:bm('#575b60','plain'),c:bm('#6c433b','plain')};
   /* joints: same names, offsets and order as buildVillager; every joint gets a bone piece. A heavier body type (B.boneK) widens
      every box of a piece across the bone (x and z, sizes and offsets), so the bones and the armour on them grow thicker together */
   const BK=B.boneK||{},kOf=g=>{while(g&&g.userData.k===undefined)g=g.parent;return g?g.userData.k:1;};
@@ -112,7 +112,7 @@ function buildSkeleton(seed,o={}){const B=o.B||VB.skeleton,r=mulberry32(((seed*2
   /* chest armour: leather cuirass (lowest ribs show), mail shirt with a ragged hem, or breast and back plates on side straps */
   if(has.chest){if(arm==='leather'){bx(rc,.29,.22,.215,AM.a,0,.07,-.005);for(const s of[-1,1])bx(rc,.045,.02,.22,AM.b,s*.08,.19,-.005);bx(rc,.3,.03,.225,AM.b,0,-.03,-.005);bx(rc,.05,.05,.01,AM.c,-.06,.1,.104);}
     else if(arm==='chain'){bx(rc,.3,.3,.22,AM.a,0,.03,-.005);for(let i=0;i<7;i++){const L=.03+.04*r();bx(rc,.035,L,.225,AM.a,-.13+i*.043,-.12-L/2+.003,-.005);}}
-    else{bx(rc,.29,.22,.03,AM.a,0,.07,.11);bx(rc,.29,.22,.03,AM.a,0,.07,-.125);bx(rc,.04,.16,.012,AM.b,0,.07,.13);for(const s of[-1,1]){bx(rc,.02,.04,.26,bm('#3e2818','leather'),s*.135,.13,-.007);bx(rc,.02,.04,.26,bm('#3e2818','leather'),s*.135,.0,-.007);bx(rc,.04,.02,.24,AM.b,s*.08,.19,-.007);}
+    else{bx(rc,.29,.22,.03,AM.a,0,.07,.11);bx(rc,.29,.22,.03,AM.a,0,.07,-.125);bx(rc,.04,.16,.012,AM.b,0,.07,.13);for(const s of[-1,1]){bx(rc,.02,.04,.26,bm('#3d2621','leather'),s*.135,.13,-.007);bx(rc,.02,.04,.26,bm('#3d2621','leather'),s*.135,.0,-.007);bx(rc,.04,.02,.24,AM.b,s*.08,.19,-.007);}
       bx(rc,.06,.05,.012,AM.c,.07,.03,.128);}}
   /* weapon in the right hand (blade along the thumb side, edge towards the fingers), buckler in the left facing out */
   /* o.gear: another skeleton kind brings its own gear (the lich), so no weapon or buckler here */

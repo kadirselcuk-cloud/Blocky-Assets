@@ -6,17 +6,17 @@
    pushes up onto hands and knees, plants a foot and stands up into the war stance. */
 VB.troll=Object.assign({},VB.goblin,{thigh:.88,shin:.84,ankle:.15,hipOff:.1,spine:.4,chest:.4,neck:.5,headY:.1,shW:.62,ua:.98,fa:.92,g:3.2,hipW:.2,head:1,hand:2.5,arm:1,td:1});
 {const b=VB.troll;b.key='troll';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
-const TR_SKIN={moss:['#6c7c4a','moss green'],grey:['#7a7c74','stone grey'],blue:['#5e7280','blue-grey'],olive:['#848456','pale olive'],bark:['#6e5a44','bark brown'],teal:['#52705e','swamp teal']};
-const TR_HIDE=[['#6a5038','brown hide'],['#8a7050','tan hide'],['#4a4036','dark hide'],['#6e6252','grey hide']];
-const TR_HAIR=[['#1c1a16','black'],['#2e3424','dark green'],['#6a6660','grey'],['#5a3420','rust']];
+const TR_SKIN={moss:['#656e4b','moss green'],grey:['#6e6f6a','stone grey'],blue:['#56686c','blue-grey'],olive:['#777656','pale olive'],bark:['#615444','bark brown'],teal:['#506554','swamp teal']};
+const TR_HIDE=[['#5d4b3a','brown hide'],['#776650','tan hide'],['#453e37','dark hide'],['#625a4f','grey hide']];
+const TR_HAIR=[['#1b1a17','black'],['#303327','dark green'],['#615e59','grey'],['#4c362a','rust']];
 
 function buildTroll(seed,o={}){const B=VB.troll,r=mulberry32(((seed*2654435761)>>>0)^0x7a11),pick=a=>a[Math.floor(r()*a.length)],root=new THREE.Group();root.userData.lights=[];
   /* roll everything, then let the options override */
   const rk=pick(Object.keys(TR_SKIN)),rh=pick(['stringy','stringy','mane','bald']),hideC=pick(TR_HIDE),hairC=pick(TR_HAIR),moss=r()<.6,warts=r()<.75,scar=r()<.5,necklace=r()<.5,ring=r()<.4;
   const skinK=o.skin&&o.skin!=='random'?o.skin:rk,hair=o.hair&&o.hair!=='random'?o.hair:rh;
   const sk=TR_SKIN[skinK],shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),skin=bm(sk[0],'skin'),skinD=bm(shade(sk[0],.84),'skin'),skinM=bm(shade(sk[0],.64),'skin'),skinX=bm(shade(sk[0],.42),'skin'),
-    hide=bm(hideC[0],'leather'),hideD=bm(shade(hideC[0],.7),'leather'),hairM=bm(hairC[0],'hair'),dark=bm('#140e0a','plain'),eyeM=bm('#d5b04b','plain'),ivory=bm('#d8ccaa','plain'),
-    claw=bm('#2e2620','plain'),mossM=bm('#4e6228','plain'),mossL=bm('#6a7a34','plain'),gum=bm('#5a2a26','plain'),cord=bm('#2a1e16','leather'),rope=vm('rope'),ir=vm('iron');
+    hide=bm(hideC[0],'leather'),hideD=bm(shade(hideC[0],.7),'leather'),hairM=bm(hairC[0],'hair'),dark=bm('#130f0c','plain'),eyeM=bm('#b09b61','plain'),ivory=bm('#d6ccb2','plain'),
+    claw=bm('#2c2722','plain'),mossM=bm('#4e5831','plain'),mossL=bm('#646c3c','plain'),gum=bm('#4b2e29','plain'),cord=bm('#271f19','leather'),rope=vm('rope'),ir=vm('iron');
   /* joints: same names, offsets and order as buildVillager */
   const hips=J('hips',root,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
   const lw=.13*B.g,fk=B.ankle/.06,hk=B.hand,g=B.g;

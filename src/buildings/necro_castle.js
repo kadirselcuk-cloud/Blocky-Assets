@@ -1,13 +1,13 @@
 /* ======================= UNDEAD KIT: the necromancer's castle (ud-castle-) =======================
    Gothic walls 4 m long, 1.6 m thick, centred on the grid line, outside towards +z; wall walk at 7.2 m behind a parapet with pointed merlons
    (0.8 m merlon, 1.2 m gap, period 2 m). Towers sit on the grid vertices; the keep covers 2 × 2 cells centred on a vertex. */
-VXD.gothStone=(P,r)=>{const tone=[];for(let i=0;i<8;i++)tone.push(['#4c4b55','#55535e','#46454e','#5a5764','#4a4752'][Math.floor(r()*5)]);
-  for(let y=0;y<16;y++){const row=y>>3,off=(row%2)*4;for(let x=0;x<16;x++){const id=row*2+(((x+off)>>3)&1),m=y%8===7||(x+off)%8===7;P(x,y,m?'#26252c':tone[id],m?nz(r,.9,1.05):nz(r,.88,1.06)*(r()<.05?.82:1));}}};
-VXD.gothDark=(P,r)=>{for(let y=0;y<16;y++){const row=y>>3,off=(row%2)*4;for(let x=0;x<16;x++){const m=y%8===7||(x+off)%8===7;P(x,y,m?'#1a1a20':'#34333b',nz(r,.88,1.06));}}};
-VXD.slateN=rows('#33343e',4,5,.62,.72,2);
-VXD.necroGlass=(P,r)=>{const S=[];const m=mulberry32(5150);for(let i=0;i<9;i++)S.push([m()*16,m()*16,['#5a2a7a','#2a7a4a','#391e54','#6a3a8a','#1f593c','#7a2a3a'][Math.floor(m()*6)]]);
+VXD.gothStone=(P,r)=>{const tone=[];for(let i=0;i<8;i++)tone.push(['#4c4b53','#55545c','#46454c','#595761','#494850'][Math.floor(r()*5)]);
+  for(let y=0;y<16;y++){const row=y>>3,off=(row%2)*4;for(let x=0;x<16;x++){const id=row*2+(((x+off)>>3)&1),m=y%8===7||(x+off)%8===7;P(x,y,m?'#26262b':tone[id],m?nz(r,.9,1.05):nz(r,.88,1.06)*(r()<.05?.82:1));}}};
+VXD.gothDark=(P,r)=>{for(let y=0;y<16;y++){const row=y>>3,off=(row%2)*4;for(let x=0;x<16;x++){const m=y%8===7||(x+off)%8===7;P(x,y,m?'#1a1a1f':'#34343a',nz(r,.88,1.06));}}};
+VXD.slateN=rows('#33343c',4,5,.62,.72,2);
+VXD.necroGlass=(P,r)=>{const S=[];const m=mulberry32(5150);for(let i=0;i<9;i++)S.push([m()*16,m()*16,['#513866','#40755c','#332646','#63447b','#2f5549','#68394a'][Math.floor(m()*6)]]);
   for(let y=0;y<16;y++)for(let x=0;x<16;x++){const ds=S.map(s=>{const dx=Math.min(Math.abs(x+.5-s[0]),16-Math.abs(x+.5-s[0])),dy=Math.min(Math.abs(y+.5-s[1]),16-Math.abs(y+.5-s[1]));return[Math.hypot(dx,dy),s[2]];}).sort((a,b)=>a[0]-b[0]);
-    P(x,y,ds[1][0]-ds[0][0]<1?'#141218':ds[0][1],nz(r,.9,1.08));}};
+    P(x,y,ds[1][0]-ds[0][0]<1?'#141217':ds[0][1],nz(r,.9,1.08));}};
 const NGLASS=new THREE.MeshStandardMaterial({map:vxTex('necroGlass'),emissiveMap:vxTex('necroGlass'),emissive:new THREE.Color(0xffffff),emissiveIntensity:.5,roughness:.3,metalness:.1});NGLASS.userData={glowScale:2.2,base:.5};GLOW.push(NGLASS);
 FOLDERS['undead/castle']={name:'Necromancer\'s castle',blurb:'Gothic walls, stained-glass windows, gatehouse with portcullis, spired towers, the keep, obelisk, gargoyle, banner, throne',children:[]};
 const NC_T=1.6,NC_ROWS=18;
@@ -58,7 +58,7 @@ function ncKeep(s,op){const root=udRoot(7),L=root.userData.lights,r=mulberry32((
   bx(root,1.2,2.6,.06,vm('dark'),0,by+1.45,W/2+.03);
   let y=H+1;for(let i=0;i<8;i++){const w=5.6-i*.68;ruBox(root,w,1,w,vm('slateN'),0,y+.5,0,-w/2,y);y+=1;}bx(root,.3,1.2,.3,vm('ironB'),0,y+.6,0);
   const oy=y+1.6;for(let k=0;k<4;k++){const a=k*Math.PI/2+Math.PI/4;wlBeam(root,[Math.cos(a)*.1,y+1.1,Math.sin(a)*.1],[Math.cos(a)*.42,oy,Math.sin(a)*.42],.08,vm('ironB'));wlBeam(root,[Math.cos(a)*.42,oy,Math.sin(a)*.42],[Math.cos(a)*.2,oy+.6,Math.sin(a)*.2],.07,vm('ironB'));}
-  bx(root,.56,.56,.56,RUNEMAT,0,oy+.25,0);bx(root,.36,.76,.36,RUNEMAT,0,oy+.25,0);const pl=new THREE.PointLight(0xa4ecbc,0,14,2);pl.position.set(0,oy+.3,0);pl.userData.lamp=true;pl.userData.min=1;root.add(pl);L.push(pl);
+  bx(root,.56,.56,.56,RUNEMAT,0,oy+.25,0);bx(root,.36,.76,.36,RUNEMAT,0,oy+.25,0);const pl=new THREE.PointLight(0xb0e8c3,0,14,2);pl.position.set(0,oy+.3,0);pl.userData.lamp=true;pl.userData.min=1;root.add(pl);L.push(pl);
   for(let i=0;i<6;i++)wlTuft(root,(r()-.5)*8,0,4.4+r()*.4,r,false);return root;}
 function ncObelisk(s){const root=udRoot(2),dk=vm('gothDark');bx(root,1.6,.3,1.6,dk,0,.15,0);bx(root,1.2,.4,1.2,vm('gothStone'),0,.5,0);let y=.7;for(let i=0;i<6;i++){const w=.8-i*.07;bx(root,w,.8,w,dk,0,y+.4,0);
   for(let f=0;f<4;f++){if((i+f)%2)continue;const a=f*Math.PI/2;const q=bx(root,.12,.36,.03,RUNEMAT,Math.sin(a)*(w/2+.005),y+.4,Math.cos(a)*(w/2+.005),0,a,0);q.castShadow=false;}y+=.8;}

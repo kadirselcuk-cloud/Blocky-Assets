@@ -6,13 +6,13 @@
    for swings (a weapon_R.position track); ap places the elbow so the forearm crosses the staff. After every solve the staff is
    pushed out of the body like the ogre's club, a planted staff is put on the ground and a carried one is never let below it. */
 const OM_LB=1.5,OM_STAFF={gnarled:'gnarled crystal staff',skull:'horned skull staff',stone:'bound stone staff'};
-const OM_SASH=[['#3e4a6a','deep blue'],['#4e3a5e','dark purple'],['#6a2e2a','dark red'],['#3e5236','moss green'],['#2e2a2a','soot black'],['#8a6a2a','ochre']];
-const OM_GEM=[['#4a7a9a','blue stone'],['#5a8a5a','green stone'],['#8a3a3a','red stone'],['#6a5a8a','violet stone']];
+const OM_SASH=[['#40425f','deep blue'],['#4b3850','dark purple'],['#58332e','dark red'],['#404b37','moss green'],['#2d2a2a','soot black'],['#776136','ochre']];
+const OM_GEM=[['#4a6d7c','blue stone'],['#5a7858','green stone'],['#6f3f3d','red stone'],['#615371','violet stone']];
 const OMM={};function omGlow(hex){return OMM[hex]||(OMM[hex]=new THREE.MeshStandardMaterial({color:new THREE.Color(hex).convertSRGBToLinear(),emissive:new THREE.Color(hex).convertSRGBToLinear(),emissiveIntensity:1.1,roughness:.4}));}
 
 /* staffs: grip at the origin, foot at -OM_LB, top about 1.6 above the grip; skull face and hooks towards +z */
-function omStaff(kind){const w=new THREE.Group(),wd=bm('#5a4028','leather'),wdD=bm('#3e2c1c','leather'),wrap=bm('#3c2a1c','leather'),bone=bm('#d8ccaa','plain'),boneD=bm('#a89c7a','plain'),
-    rope=vm('rope'),ir=vm('iron'),moss=bm('#4a5a2a','plain'),dark=bm('#1c1410','plain');
+function omStaff(kind){const w=new THREE.Group(),wd=bm('#4f3e2d','leather'),wdD=bm('#3a2d21','leather'),wrap=bm('#382b21','leather'),bone=bm('#d6ccb2','plain'),boneD=bm('#928a73','plain'),
+    rope=vm('rope'),ir=vm('iron'),moss=bm('#4a5230','plain'),dark=bm('#1a1411','plain');
   if(kind==='gnarled'){
     /* crooked knotted shaft; at the top four roots curl up round a glowing crystal */
     for(const[y0,y1,x,z,rx,rz]of[[-1.5,-1.02,.01,0,0,.03],[-1.05,-.5,-.014,.01,.025,-.03],[-.53,.02,.01,-.01,-.025,.025],[0,.55,-.014,.01,.025,-.04],[.52,1.05,.014,-.01,-.02,.03],[1.02,1.32,-.004,0,.02,-.02]])
@@ -21,7 +21,7 @@ function omStaff(kind){const w=new THREE.Group(),wd=bm('#5a4028','leather'),wdD=
     bx(w,.13,.14,.035,moss,.005,-.95,.065);bx(w,.035,.12,.1,moss,-.068,.42,0);bx(w,.14,.2,.14,wrap,0,0,0);
     bx(w,.18,.12,.18,wdD,0,1.32,0);
     for(const[x,z]of[[1,0],[-1,0],[0,1],[0,-1]]){bx(w,.06,.24,.06,wd,x*.11,1.46,z*.11,-z*.35,0,x*.35);bx(w,.055,.18,.055,wd,x*.13,1.66,z*.13,z*.3,0,-x*.3);bx(w,.05,.05,.05,wdD,x*.08,1.76,z*.08);}
-    bx(w,.16,.3,.16,omGlow('#7cc4f0'),0,1.6,0,0,Math.PI/4,0);bx(w,.1,.1,.1,omGlow('#ccecfc'),0,1.78,0,0,Math.PI/4,0);}
+    bx(w,.16,.3,.16,omGlow('#8cc3e4'),0,1.6,0,0,Math.PI/4,0);bx(w,.1,.1,.1,omGlow('#d1eefc'),0,1.78,0,0,Math.PI/4,0);}
   else if(kind==='skull'){
     /* straight pole with an iron foot and a leather grip; a horned beast skull on top, horns sweeping out and up; bones on cords */
     bx(w,.11,2.86,.11,wd,0,-.07,0);bx(w,.13,.1,.13,ir,0,-1.45,0);bx(w,.13,.36,.13,wrap,0,0,0);bx(w,.125,.04,.125,ir,0,-.2,0);bx(w,.125,.04,.125,ir,0,.2,0);
@@ -32,7 +32,7 @@ function omStaff(kind){const w=new THREE.Group(),wd=bm('#5a4028','leather'),wdD=
     for(const[x,z,L]of[[.08,.08,.32],[-.08,.06,.26],[0,-.09,.36]]){bx(w,.012,L,.012,rope,x,1.26-L/2,z);bx(w,.04,.13,.04,bone,x,1.26-L-.06,z);bx(w,.08,.03,.04,bone,x,1.26-L-.12,z);}}
   else{
     /* thick shaft with iron bands and a leather grip; a wooden knob with bone spikes holds a big stone, bound with iron straps */
-    const stone=bm('#6e6a62','plain'),stD=bm('#54504a','plain');
+    const stone=bm('#64615b','plain'),stD=bm('#4f4c47','plain');
     bx(w,.16,2.82,.16,wd,0,-.09,0);bx(w,.18,.1,.18,ir,0,-1.45,0);bx(w,.175,.06,.175,ir,0,-.75,0);bx(w,.175,.38,.175,wrap,0,0,0);bx(w,.175,.06,.175,ir,0,.7,0);
     bx(w,.07,.09,.07,wdD,.09,.4,0);bx(w,.3,.22,.3,wdD,0,1.36,0);bx(w,.32,.06,.32,rope,0,1.3,0);
     for(const[x,z,rx,rz]of[[.17,0,0,-.9],[-.17,0,0,.9],[0,.17,.9,0],[0,-.17,-.9,0]])bx(w,.05,.14,.05,bone,x,1.42,z,rx,0,rz);

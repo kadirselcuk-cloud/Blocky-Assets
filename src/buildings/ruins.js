@@ -3,13 +3,13 @@
    Row 0 is a thicker plinth course; the body reaches the wall walk at 4.4 m; parapet and merlons on the outer edge reach 5.6 m.
    Every wall has the same merlon rhythm (1.2 m merlon, 0.8 m gap), so runs of walls continue the pattern.
    Pillars and tower stubs sit on the grid vertices and hide the wall ends that meet there. */
-VXD.ruin=(P,r)=>{const tone=[];for(let i=0;i<8;i++)tone.push(['#7a7468','#857e70','#6e695f','#8c8576','#67635a','#7e7666'][Math.floor(r()*6)]);
-  for(let y=0;y<16;y++){const row=y>>2,off=(row%2)*4;for(let x=0;x<16;x++){const id=row*2+(((x+off)>>3)&1),m=y%4===3||(x+off)%8===7;P(x,y,m?'#45423c':tone[id],m?nz(r,.9,1.05):nz(r,.86,1.06)*(r()<.05?.82:1));}}};
-VXD.ruinDark=(P,r)=>{const tone=[];for(let i=0;i<8;i++)tone.push(['#56524b','#5e5a52','#4c4944','#635e55'][Math.floor(r()*4)]);
-  for(let y=0;y<16;y++){const row=y>>2,off=(row%2)*4;for(let x=0;x<16;x++){const id=row*2+(((x+off)>>3)&1),m=y%4===3||(x+off)%8===7;P(x,y,m?'#2e2c29':tone[id],m?nz(r,.9,1.05):nz(r,.86,1.06));}}};
+VXD.ruin=(P,r)=>{const tone=[];for(let i=0;i<8;i++)tone.push(['#79756b','#847e73','#6e6962','#8b857a','#66635c','#7c766a'][Math.floor(r()*6)]);
+  for(let y=0;y<16;y++){const row=y>>2,off=(row%2)*4;for(let x=0;x<16;x++){const id=row*2+(((x+off)>>3)&1),m=y%4===3||(x+off)%8===7;P(x,y,m?'#44423e':tone[id],m?nz(r,.9,1.05):nz(r,.86,1.06)*(r()<.05?.82:1));}}};
+VXD.ruinDark=(P,r)=>{const tone=[];for(let i=0;i<8;i++)tone.push(['#55524d','#5e5a54','#4c4945','#635e58'][Math.floor(r()*4)]);
+  for(let y=0;y<16;y++){const row=y>>2,off=(row%2)*4;for(let x=0;x<16;x++){const id=row*2+(((x+off)>>3)&1),m=y%4===3||(x+off)%8===7;P(x,y,m?'#2d2c2a':tone[id],m?nz(r,.9,1.05):nz(r,.86,1.06));}}};
 VXD.ruinFloor=(P,r)=>{const tone=[];for(let i=0;i<8;i++)tone.push(nz(r,.84,1.08));for(let y=0;y<16;y++){const row=y>>3,off=(row%2)*4;for(let x=0;x<16;x++){const id=row*2+(((x+off)>>3)&1),j=y%8===7||(x+off)%8===7;
-  P(x,y,j?(r()<.35?'#5a6a34':'#4a4840'):'#8a857a',j?nz(r,.9,1.05):tone[id]*nz(r,.92,1.05));}}};
-VXD.statue=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.12?'#5e5a52':'#76726a',nz(r,.9,1.06));};
+  P(x,y,j?(r()<.35?'#5f683e':'#494842'):'#89857d',j?nz(r,.9,1.05):tone[id]*nz(r,.92,1.05));}}};
+VXD.statue=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.12?'#5e5a54':'#75726c',nz(r,.9,1.06));};
 FOLDERS['wasteland/ruins']={name:'Ruined castle',blurb:'Modular castle walls, pillars, towers, gateway, keep and ruin props; worn, cracked or mossy',children:[]};
 const RU_C=.4,RU_T=1.2,RU_FULL=11;
 const RU_WEAR={key:'wear',label:'Condition',choices:[['clean','Weathered'],['cracked','Cracked'],['mossy','Mossy'],['both','Cracked and mossy']],def:'clean'};

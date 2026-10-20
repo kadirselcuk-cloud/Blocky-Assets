@@ -9,13 +9,13 @@
    Death collapses the whole body (troll-style keyed falls, dropped onto its lowest point); Rise gets back up into the war stance. */
 VB.wight=Object.assign({},VB.male,{sex:'male',g:1.45});
 {const b=VB.wight;b.key='wight';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
-const WT_SKIN={grey:['#9a9e98','pale grey'],blue:['#8692a0','corpse blue'],ash:['#a8a294','ashen'],dark:['#6e6a62','withered dark']};
-const WT_EYES={ice:['#e8f6ff','#5ab4ec','icy blue glowing eyes'],green:['#e4fbe8','#4cd88a','pale green glowing eyes'],red:['#ffe0d8','#dc3a32','red glowing eyes']};
-const WT_HAIRC={white:['#d8d6cc','white'],grey:['#8e8c86','grey'],black:['#24221f','black'],brown:['#4a3828','dark brown'],blond:['#a8946a','faded blond']};
+const WT_SKIN={grey:['#888a92','pale grey'],blue:['#79818a','corpse blue'],ash:['#938e85','ashen'],dark:['#65605c','withered dark']};
+const WT_EYES={ice:['#eaf7ff','#6fb3dd','icy blue glowing eyes'],green:['#e6fbea','#66d396','pale green glowing eyes'],red:['#ffe3dc','#c9524d','red glowing eyes']};
+const WT_HAIRC={white:['#d7d6ce','white'],grey:['#7a7c83','grey'],black:['#242120','black'],brown:['#48342e','dark brown'],blond:['#928268','faded blond']};
 /* hair length: back curtain and front locks (metres) */
 const WT_HAIRL={shoulder:[.3,.2,'shoulder-length'],long:[.5,.34,'long'],verylong:[.74,.46,'very long']};
 const WT_CLOTH={rags:'tattered burial tunic',mail:'rusted mail shirt over a tunic',bare:'bare chest, a torn loincloth and leg wraps'};
-const WT_TUNIC=[['#3e4440','faded green'],['#433a46','faded purple'],['#4a4036','brown'],['#383c46','dark blue'],['#504c44','grey']];
+const WT_TUNIC=[['#3d413f','faded green'],['#3f3a42','faded purple'],['#473c38','brown'],['#373a41','dark blue'],['#4c4743','grey']];
 
 function buildWight(seed,o={}){const B=VB.wight,r=mulberry32(((seed*2654435761)>>>0)^0x3e11),pick=a=>a[Math.floor(r()*a.length)],root=new THREE.Group();root.userData.lights=[];
   /* roll everything, then let the options override */
@@ -23,9 +23,9 @@ function buildWight(seed,o={}){const B=VB.wight,r=mulberry32(((seed*2654435761)>
     hs0=pick(['full','full','thin']),cl0=pick(['rags','rags','mail','bare']),tun=pick(WT_TUNIC),circ=r()<.35,torn=r()<.5;
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,skinK=opt('skin',skin0),eyeK=opt('eyes',eye0),hcK=opt('hairColour',hc0),hlK=opt('hairLength',hl0),hsK=opt('hairStyle',hs0),cloth=opt('clothes',cl0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),SK=WT_SKIN[skinK][0];
-  const skin=bm(SK,'skin'),skinD=bm(shade(SK,.74),'skin'),skinX=bm(shade(SK,.52),'skin'),dark=bm('#16110f','plain'),claw=bm('#1c1814','plain'),teeth=bm('#bcb08a','plain');
+  const skin=bm(SK,'skin'),skinD=bm(shade(SK,.74),'skin'),skinX=bm(shade(SK,.52),'skin'),dark=bm('#161010','plain'),claw=bm('#1c1816','plain'),teeth=bm('#a29a81','plain');
   const ey=WT_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.6,pxTex('plain')),hairM=bm(WT_HAIRC[hcK][0],'hair'),hairD=bm(shade(WT_HAIRC[hcK][0],.78),'hair');
-  const tunM=bm(tun[0],'cloth'),tunD=bm(shade(tun[0],.72),'cloth'),wrapM=bm('#6e6450','cloth'),wrapD=bm('#544c3c','cloth'),rope=vm('rope'),mail=bm('#6a5e50','plain'),mailD=bm('#4e4236','plain'),rust=bm('#7a4a2e','plain'),bronze=bm('#8a6a34','plain');
+  const tunM=bm(tun[0],'cloth'),tunD=bm(shade(tun[0],.72),'cloth'),wrapM=bm('#665a50','cloth'),wrapD=bm('#50463e','cloth'),rope=vm('rope'),mail=bm('#62554f','plain'),mailD=bm('#4a3d39','plain'),rust=bm('#6c433b','plain'),bronze=bm('#7b5d44','plain');
   const shirt=cloth!=='bare',isMail=cloth==='mail';
   /* colliders for the hair: the main boxes of head, torso and arms */
   const col=m=>{m.userData.hairCol=true;return m;};

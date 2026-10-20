@@ -7,16 +7,16 @@
 VB.ogre=Object.assign({},VB.goblin,{thigh:.66,shin:.6,ankle:.14,hipOff:.12,spine:.34,chest:.32,neck:.52,headY:.12,shW:.8,ua:.74,fa:.68,g:3.4,hipW:.3,head:1,hand:2.3,arm:1,td:1});
 {const b=VB.ogre;b.key='ogre';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 const OG_HAFT=.36;
-const OG_SKIN={green:['#7a8658','grey-green'],mud:['#86684a','mud-brown'],pale:['#a49c88','pale grey'],ochre:['#a8834e','ochre'],blue:['#66767e','dusky blue'],pink:['#a87868','dusky pink']};
-const OG_HIDE=[['#7a5a3a','brown hide'],['#9a7a52','tan hide'],['#54463a','dark hide'],['#7e6858','grey-brown hide'],['#6a5030','mottled hide']];
-const OG_FUR=[['#6a5a48','brown fur'],['#3e3630','black fur'],['#8a8478','grey fur'],['#a08a6a','fawn fur']];
+const OG_SKIN={green:['#707757','grey-green'],mud:['#735f4b','mud-brown'],pale:['#8f8a7c','pale grey'],ochre:['#8e7653','ochre'],blue:['#5d6b6d','dusky blue'],pink:['#8d6e63','dusky pink']};
+const OG_HIDE=[['#69543e','brown hide'],['#836e53','tan hide'],['#4d433a','dark hide'],['#6e5f54','grey-brown hide'],['#5d4b35','mottled hide']];
+const OG_FUR=[['#5e5347','brown fur'],['#3c3631','black fur'],['#7b766e','grey fur'],['#8a7b65','fawn fur']];
 const OG_WPN={club:'knotted club',trunk:'uprooted tree trunk'};
 /* weapon axis (+y) along the thumb side of the right hand, +x towards the knuckles */
 const OG_BASIS=()=>new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,1),new THREE.Vector3(-1,0,0)));
 
 /* weapons: right grip at the origin, left grip at -OG_HAFT, the heavy end towards +y. Meshes sit directly in the group (the death clips read them) */
-function ogWeapon(kind){const w=new THREE.Group(),wd=bm('#6a4a2e','leather'),wdD=bm('#4e3826','leather'),wrap=bm('#3c2a1c','leather'),ir=vm('iron'),
-    bark=bm('#5a4632','leather'),barkD=bm('#433426','leather'),cut=bm('#b8925e','plain'),moss=bm('#4e5e2a','plain'),dirt=bm('#4a3a28','plain');
+function ogWeapon(kind){const w=new THREE.Group(),wd=bm('#5c4633','leather'),wdD=bm('#46372a','leather'),wrap=bm('#382b21','leather'),ir=vm('iron'),
+    bark=bm('#514335','leather'),barkD=bm('#3f342a','leather'),cut=bm('#9b8260','plain'),moss=bm('#4d5530','plain'),dirt=bm('#44382c','plain');
   /* scale everything beyond y0 about the axis point (0,y0,0): the head grows or shrinks, the grip stays as it is */
   const grow=(y0,k)=>{for(const m of w.children)if(m.position.y>y0){m.position.set(m.position.x*k,y0+(m.position.y-y0)*k,m.position.z*k);m.scale.multiplyScalar(k);}};
   if(kind==='club'){
@@ -51,7 +51,7 @@ function ogSkirt(hips,hide,hideD,sash,r){const PW=1.24,PD=.86,t=.05,y0=.1,L1=.45
     const lo=J('skirtLow_'+q,up,0,-L1,0);lo.userData.joint=false;panel(lo,q,L2,true);sk[q]={up,lo};}
   bx(hips,PW+2*t+.06,.15,PD+2*t+.06,sash,0,y0+.04,0);
   bx(sk.L.up,.04,.1,.16,sash,t/2+.02,-.03,.12);bx(sk.L.up,.03,.42,.1,sash,t/2+.02,-.28,.08,0,0,-.04);bx(sk.L.up,.03,.36,.09,sash,t/2+.02,-.25,.19,0,0,.05);
-  bx(sk.R.up,.12,.22,.26,hideD,-t/2-.06,-.16,.12);bx(sk.R.up,.13,.05,.27,bm('#2a1e16','leather'),-t/2-.06,-.06,.12);
+  bx(sk.R.up,.12,.22,.26,hideD,-t/2-.06,-.16,.12);bx(sk.R.up,.13,.05,.27,bm('#271f19','leather'),-t/2-.06,-.06,.12);
   sk.post=(tL,tR)=>{const a=tL.rotation.x,b=tR.rotation.x,lo=Math.min(a,b),hi=Math.max(a,b),av=(a+b)/2;
     const set=(q,v)=>{sk[q].up.rotation.x=v;const m=Math.abs(v),gv=Math.min(1,Math.max(0,(m-30*D2)/(40*D2)))*.95;sk[q].lo.rotation.x=-v*gv;};
     set('F',lo<0?lo*.8:lo*.4);set('B',hi>0?hi*.8:hi*.5);set('L',(a*.7+av*.3)*.5);set('R',(b*.7+av*.3)*.5);
@@ -60,12 +60,12 @@ function ogSkirt(hips,hide,hideD,sash,r){const PW=1.24,PD=.86,t=.05,y0=.1,L1=.45
 
 function buildOgre(seed,o={}){const B=VB.ogre,r=mulberry32(((seed*2654435761)>>>0)^0x0a7e),pick=a=>a[Math.floor(r()*a.length)],root=new THREE.Group();root.userData.lights=[];
   /* roll everything, then let the options override */
-  const rk=pick(Object.keys(OG_SKIN)),rh=pick(['bald','topknot','topknot','shaggy']),rm=pick(['fur','fur','none']),hideC=pick(OG_HIDE),furC=pick(OG_FUR),hairC=pick(['#1e1a18','#3a2a1e','#5a3a22','#6a6660']),
+  const rk=pick(Object.keys(OG_SKIN)),rh=pick(['bald','topknot','topknot','shaggy']),rm=pick(['fur','fur','none']),hideC=pick(OG_HIDE),furC=pick(OG_FUR),hairC=pick(['#1d1b19','#372b22','#4d3a2b','#615e59']),
     shackle=r()<.5,warts=r()<.7,scar=r()<.5;
   const skinK=o.skin&&o.skin!=='random'?o.skin:rk,hair=o.hair&&o.hair!=='random'?o.hair:rh,mantle=o.mantle&&o.mantle!=='random'?o.mantle:rm,wpn=o.weapon||'club';
   const sk=OG_SKIN[skinK],shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),skin=bm(sk[0],'skin'),skinD=bm(shade(sk[0],.84),'skin'),skinM=bm(shade(sk[0],.62),'skin'),skinX=bm(shade(sk[0],.42),'skin'),
-    hide=bm(hideC[0],'leather'),hideD=bm(shade(hideC[0],.7),'leather'),fur=bm(furC[0],'hair'),furD=bm(shade(furC[0],.75),'hair'),belt=bm('#3a2618','leather'),wrapM=bm('#4a3424','leather'),
-    dark=bm('#1c1410','plain'),eyeM=bm('#d8c060','plain'),ivory=bm('#e2d8b8','plain'),nail=bm('#4a3a2e','plain'),bone=bm('#d8ccaa','plain'),cord=bm('#2a1e16','leather'),hairM=bm(hairC,'hair'),rope=vm('rope'),ir=vm('iron');
+    hide=bm(hideC[0],'leather'),hideD=bm(shade(hideC[0],.7),'leather'),fur=bm(furC[0],'hair'),furD=bm(shade(furC[0],.75),'hair'),belt=bm('#36281d','leather'),wrapM=bm('#433428','leather'),
+    dark=bm('#1a1411','plain'),eyeM=bm('#b7a768','plain'),ivory=bm('#d9d1b9','plain'),nail=bm('#443930','plain'),bone=bm('#d6ccb2','plain'),cord=bm('#271f19','leather'),hairM=bm(hairC,'hair'),rope=vm('rope'),ir=vm('iron');
   /* joints: same names, offsets and order as buildVillager */
   const hips=J('hips',root,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
   const aw=.42,lw=.13*B.g,fk=B.ankle/.06,hk=B.hand,g=B.g;
@@ -90,7 +90,7 @@ function buildOgre(seed,o={}){const B=VB.ogre,r=mulberry32(((seed*2654435761)>>>
     bx(chest,1.3,.26,1.0,fur,0,.4,-.02);bx(chest,1.1,.08,.84,furD,0,.56,-.04);hem(chest,1.3,1.0,.27,fur,6,.04,.12);}
   /* bone necklace: a cord across the front of the chest (or the mantle), big teeth and a bone hanging from it */
   {const fz=mantle==='fur'?.5:.44,cy=mantle==='fur'?.3:.44;bx(chest,.72,.03,.03,cord,0,cy,fz+.01);
-    if(rb){/* talisman: dark and ivory beads, and a stone set in a gold diamond */const gold=bm('#c8a050','plain'),bead=bm('#2a2420','plain'),gem=bm(rb.gem[0],'plain');
+    if(rb){/* talisman: dark and ivory beads, and a stone set in a gold diamond */const gold=bm('#a78e5c','plain'),bead=bm('#292421','plain'),gem=bm(rb.gem[0],'plain');
       for(const[i,x]of[-.3,-.21,-.12,.12,.21,.3].entries())bx(chest,.06,.06,.05,i%2?ivory:bead,x,cy-.03,fz+.02);
       bx(chest,.03,.08,.03,cord,0,cy-.05,fz+.02);bx(chest,.16,.16,.04,gold,0,cy-.17,fz+.025,0,0,Math.PI/4);bx(chest,.1,.1,.05,gem,0,cy-.17,fz+.03,0,0,Math.PI/4);}
     else{for(const x of[-.27,-.16,.16,.27])bx(chest,.05,.12,.04,ivory,x,cy-.07,fz+.02);bx(chest,.07,.18,.05,bone,0,cy-.1,fz+.025);bx(chest,.12,.04,.05,bone,0,cy-.2,fz+.025);}}
@@ -103,7 +103,7 @@ function buildOgre(seed,o={}){const B=VB.ogre,r=mulberry32(((seed*2654435761)>>>
   for(const s of[-1,1]){bx(hg,.09,.06,.02,eyeM,s*.14,.39,.285);bx(hg,.035,.05,.022,dark,s*.13,.39,.287);
     bx(hg,.07,.13,.07,ivory,s*.22,.265,.33);bx(hg,.05,.05,.05,ivory,s*.215,.35,.33);bx(hg,.03,.012,.012,dark,s*.06,.235,.4);
     const e=new THREE.Group();put(hg,e,s*.31,.37,-.02,0,s*.25,0);bx(e,.1,.18,.12,skin,s*.05,0,0);bx(e,.06,.12,.02,skinX,s*.06,-.01,.06);bx(e,.07,.06,.1,skin,s*.1,.06,-.02);
-    if(rb){const gold=bm('#c8a050','plain');bx(e,.025,.08,.025,gold,s*.06,-.13,.02);bx(e,.07,.025,.025,gold,s*.06,-.18,.02);}}
+    if(rb){const gold=bm('#a78e5c','plain');bx(e,.025,.08,.025,gold,s*.06,-.13,.02);bx(e,.07,.025,.025,gold,s*.06,-.18,.02);}}
   for(const x of[-.1,0,.1])bx(hg,.05,.04,.04,ivory,x,.225,.33);
   bx(hg,.2,.14,.12,skin,0,.3,.33);bx(hg,.26,.07,.1,skinD,0,.25,.35);
   if(warts){bx(hg,.04,.04,.03,skinD,.2,.3,.29);bx(hg,.035,.035,.03,skinD,-.24,.55,.2);bx(hg,.03,.03,.03,skinD,.12,.06,.37);}

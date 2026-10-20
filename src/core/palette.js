@@ -1,45 +1,45 @@
 /* ======================= PALETTE: the one colour system for the whole library =======================
    See docs/PALETTE.md (rules) and docs/palette/palette.html (the colour sheet). Every hex in src/ belongs to one tier:
-   - matter (stone, wood, soil, skin, fur, bone, metal that doesn't shine): HSB saturation <= 65%, brightness 8-92%
-   - dye / metal (cloth, paint, roof tiles, gold, bronze): saturation <= 75%, brightness <= 92%
-   - light (emissive only: flames, lava, spells, eyes, runes, rarity): 5-step ramps below, core saturation <= 88%,
+   - matter (stone, wood, soil, skin, fur, bone, metal that doesn't shine): HSB saturation <= 45%, brightness 7-85%; creatures are shaded darker
+   - dye / metal (cloth, paint, roof tiles, gold, bronze): saturation <= 55%, brightness <= 85%
+   - light (emissive only: flames, lava, spells, eyes, runes, rarity): 5-step ramps below, core saturation <= 75%,
      highlights tinted (never #ffffff), nothing pure black (darkest #16120e)
    Each faction has one signature light: village hearth, brute amber, undead grave-light, hell ember fire.
    Ramps run hot (tinted white) -> light -> core -> deep -> smoke. `node tools/check-palette.mjs` flags colours out of tier. */
 const PAL={
   /* shared materials */
-  neutral:['#16120e','#2a2420','#443c36','#6e665e','#9c968c','#e8dfca'],
-  wood:['#4a3424','#6e5034','#8a6238','#a8804e','#c9a46c'],
-  leather:['#2a1e16','#3c2a1c','#4e3826','#6a4a2e','#8a6a44'],
-  iron:['#2e3034','#4a4e54','#6e737a','#8a8e94','#b4bac0'],
-  blackIron:['#1a191c','#2c2a2e','#44424a','#6a6870','#a4a6ac'],
-  gold:['#6e5420','#9a7838','#c8a050','#e0b840','#e8d084'],
-  bronze:['#5a3420','#8a5430','#b47c3a','#d0a060'],
-  silver:['#4e545c','#7a8088','#a8aeb6','#d6dce4'],
-  bone:['#6e6450','#968a72','#b8ab8a','#d6caa6','#e8dec0'],
-  blood:['#2a0e0c','#4e1a16','#7a2420','#a0342c'],
+  neutral:['#15120f','#292521','#433c38','#6d6660','#9b978f','#d9d2c3'],
+  wood:['#46362a','#69523e','#826548','#a0825d','#c1a67c'],
+  leather:['#271f19','#392b21','#4a3a2c','#644c38','#846c50'],
+  iron:['#2f2f34','#4c4e54','#70727a','#8b8e93','#b4babe'],
+  blackIron:['#1b191b','#2d2a2d','#444248','#6b686e','#aba59f'],
+  gold:['#6a5530','#937a4a','#c0a266','#d8bb61','#d9c790'],
+  bronze:['#533829','#80593f','#aa8050','#c7a373'],
+  silver:['#51535b','#7d7f87','#a9aeb4','#ced4d9'],
+  bone:['#6c6455','#948b78','#b5ab92','#d3caae','#d9d1bc'],
+  blood:['#241310','#43231e','#6a3430','#8d4640'],
   /* faction skins */
-  goblinSkin:{olive:'#6a8440',moss:'#46602c',sallow:'#9c8838',red:'#7a3e2e',grey:'#545652'},
-  corpse:{ashen:'#8c9286',greenish:'#7e8a62',bluish:'#7a8796',bruised:'#887480',leathery:'#8a7658',pallor:'#b4b0b6'},
-  demonSkin:{crimson:'#9c3e3a',dark:'#6a2a26',ember:'#aa643c',charcoal:'#3a3232',obsidian:'#2a2326',violet:'#553048',bronze:'#8e6438'},
+  goblinSkin:{olive:'#657446',moss:'#485632',sallow:'#867949',red:'#624036',grey:'#524f4c'},
+  corpse:{ashen:'#7c8179',greenish:'#6f7b5f',bluish:'#6f7882',bruised:'#776973',leathery:'#7c6859',pallor:'#999ba4'},
+  demonSkin:{crimson:'#7b4544',dark:'#56302f',ember:'#88614b',charcoal:'#393232',obsidian:'#292326',violet:'#4b3241',bronze:'#785c42'},
   /* lights (hot, light, core, deep, smoke) */
   hearth:['#fff0d8','#ffd08a','#ffa24a','#c8641e','#4a2a14'],
-  amber:['#fff2d0','#ffd890','#f0a838','#8a5a14','#3a2410'],
-  fire:['#fff2d0','#ffcc5c','#ff8a2a','#d8481a','#7a2410'],
-  hellfire:['#ffdcb8','#ff9a5a','#f0502a','#a8281a','#4a100a'],
-  holy:['#fffbea','#fff0b8','#f4d06a','#c09a3a','#5a4420'],
-  frost:['#f2fbff','#ccecfc','#7cc4f0','#2e6eb0','#16263a'],
-  storm:['#f4f4ff','#d4dcff','#94a8ff','#4652d8','#1c1e3a'],
-  arcane:['#fcf0ff','#e6b8fc','#b86af0','#6228ac','#22122e'],
-  shadow:['#ece0f8','#a888d4','#6a44a8','#2e1850','#120e18'],
-  necro:['#e4fbe8','#a4ecbc','#4cd88a','#1e8a54','#0e2a1a'],
-  soul:['#e8f6ff','#a8dcfa','#5ab4ec','#1e5e94','#101c2a'],
-  violet:['#f2e4ff','#cca8f4','#9a5ae0','#4a2280','#160c24'],
-  poison:['#f8fcd8','#e0f080','#b4cc38','#5e6e18','#22280e'],
-  fel:['#ecfce0','#b4f088','#6cd040','#28761a','#121e0c'],
-  bloodGlow:['#ffe0d8','#f49488','#dc3a32','#7a1218','#22080a'],
-  charm:['#ffe6f6','#f4a8dc','#e05ab8','#7a1a5e','#240a1c'],
-  glint:'#f6f0e4',                         /* neutral light highlight (white glows) */
-  mist:{frost:'#c8dcec',holy:'#fffae8'},   /* light spell mists */
-  rarity:{common:'#c8c4bc',uncommon:'#62c04c',rare:'#4a90f0',epic:'#aa60ec',legendary:'#f49a30'}
+  amber:['#fff3d5','#f8d9a2','#e4ae58','#825e29','#362517'],
+  fire:['#fff3d5','#f6ce78','#ed964e','#c65c3b','#6f3022'],
+  hellfire:['#ffe0bf','#eea373','#dc664b','#993c32','#421914'],
+  holy:['#fffbec','#fff2bf','#eed182','#ba9c52','#56462a'],
+  frost:['#f3fbff','#d1eefc','#8cc3e4','#416f9e','#1a2635'],
+  storm:['#f5f5ff','#d8e0ff','#9caaea','#535cb6','#1e2033'],
+  arcane:['#fcf2ff','#e8bffc','#b078d8','#603992','#201529'],
+  shadow:['#ede2f8','#a58dc6','#684d93','#2d1e43','#110e16'],
+  necro:['#e6fbea','#b0e8c3','#66d396','#33875d','#13291c'],
+  soul:['#eaf7ff','#b0dffa','#6fb3dd','#305f85','#131c26'],
+  violet:['#f3e7ff','#d0b0f4','#9568c6','#492d6d','#150f1f'],
+  poison:['#f8fcdc','#e2ee95','#b7ca55','#606c29','#232713'],
+  fel:['#eefce3','#bded9b','#7dcb5b','#36742b','#141e0f'],
+  bloodGlow:['#ffe3dc','#e49d94','#c9524d','#702328','#1e0b0d'],
+  charm:['#ffe9f7','#f4b0de','#d06cb2','#702a5c','#200e1a'],
+  glint:'#f6f1e6',                         /* neutral light highlight (white glows) */
+  mist:{frost:'#ccdce8',holy:'#fffbea'},   /* light spell mists */
+  rarity:{common:'#c7c4be',uncommon:'#72bb61',rare:'#6092d7',epic:'#a36fd2',legendary:'#e6a252'}
 };

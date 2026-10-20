@@ -4,31 +4,31 @@
    - Walls (ruins, palisade, cave) are 4 m long from grid vertex to grid vertex, centred on the grid line, front (outside) towards +z.
    - Corner pieces (pillars, towers, corner posts, rock corners) sit on a grid vertex and hide the wall ends that meet there.
    See docs/WASTELAND.md. */
-VXD.wDust=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.07?'#9a9282':k<.16?'#5e5040':'#7c6c54',nz(r,.86,1.08));}};
-VXD.wDustSide=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,y%5===1?'#5e4e3c':y%7===4?'#8a7a60':'#6e5e48',nz(r,.86,1.08));};
+VXD.wDust=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.07?'#989286':k<.16?'#5b5044':'#796d5a',nz(r,.86,1.08));}};
+VXD.wDustSide=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,y%5===1?'#5b4e41':y%7===4?'#877a67':'#6b5e4e',nz(r,.86,1.08));};
 VXD.wCracked=(P,r)=>{const m=mulberry32(77),g=[];for(let y=0;y<16;y++)g.push(new Array(16).fill(0));
   for(let c=0;c<6;c++){let x=Math.floor(m()*16),y=Math.floor(m()*16),h=m()<.5;for(let s=0;s<11;s++){g[y&15][x&15]=1;if(m()<.3)h=!h;if(h)x+=m()<.85?1:-1;else y+=m()<.85?1:-1;}}
-  for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,g[y][x]?'#4e3e2c':'#a48c66',g[y][x]?nz(r,.9,1.05):nz(r,.88,1.06));};
-VXD.wAsh=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.14?'#3e3a36':k<.24?'#8e8a84':'#6c6862',nz(r,.88,1.08));}};
-VXD.wScorch=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.03?'#724028':k<.2?'#1e1c1a':k<.35?'#4e4842':'#34302c',nz(r,.88,1.08));}};
-VXD.wDeadGrass=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.2?'#6a5a2e':k<.32?'#a8945a':k<.4?'#7c6c54':'#8c7a44',nz(r,.86,1.08));}};
-VXD.wDeadGrassSide=(P,r)=>{const e=[];for(let x=0;x<16;x++)e.push(2+Math.floor(r()*3));for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,y<e[x]?'#8c7a44':y%5===1?'#5e4e3c':'#6e5e48',nz(r,.85,1.08));};
-VXD.wTrack=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.08?'#b8ab92':k<.14?'#7a6a52':'#a48e6c',nz(r,.9,1.05));}};
-VXD.wRut=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.15?'#6a5842':'#86705a',nz(r,.9,1.05));}};
+  for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,g[y][x]?'#4b3f31':'#9f8d70',g[y][x]?nz(r,.9,1.05):nz(r,.88,1.06));};
+VXD.wAsh=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.14?'#3d3a37':k<.24?'#8d8a86':'#6b6864',nz(r,.88,1.08));}};
+VXD.wScorch=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.03?'#654738':k<.2?'#1e1c1a':k<.35?'#4d4944':'#34302d',nz(r,.88,1.08));}};
+VXD.wDeadGrass=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.2?'#685b3a':k<.32?'#a49469':k<.4?'#796d5a':'#897a52',nz(r,.86,1.08));}};
+VXD.wDeadGrassSide=(P,r)=>{const e=[];for(let x=0;x<16;x++)e.push(2+Math.floor(r()*3));for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,y<e[x]?'#897a52':y%5===1?'#5b4e41':'#6b5e4e',nz(r,.85,1.08));};
+VXD.wTrack=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.08?'#b6ab98':k<.14?'#776a58':'#9f8f75',nz(r,.9,1.05));}};
+VXD.wRut=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.15?'#665948':'#827161',nz(r,.9,1.05));}};
 /* rock: blotchy grey-brown with a few dark cracks (tiles seamlessly) */
 function wlRockDraw(P,r,base,crack,seedN){const m=mulberry32(seedN),T=new Float32Array(256),g=new Uint8Array(256);
   for(let b=0;b<7;b++){const cx=m()*16,cy=m()*16,rad=2.5+m()*4,v=(m()-.5)*.34;for(let y=0;y<16;y++)for(let x=0;x<16;x++){const dx=Math.min(Math.abs(x-cx),16-Math.abs(x-cx)),dy=Math.min(Math.abs(y-cy),16-Math.abs(y-cy)),d=Math.hypot(dx,dy);if(d<rad)T[y*16+x]+=v*(1-d/rad);}}
   for(let c=0;c<3;c++){let x=Math.floor(m()*16),y=Math.floor(m()*16);const sx=m()<.5?1:-1;for(let s=0;s<9;s++){g[(y&15)*16+(x&15)]=1;if(m()<.6)x+=sx;y+=m()<.7?1:0;}}
   for(let y=0;y<16;y++)for(let x=0;x<16;x++){const i=y*16+x;P(x,y,g[i]?crack:base,g[i]?nz(r,.9,1.05):(1+T[i])*nz(r,.9,1.07));}}
-VXD.wRock=(P,r)=>wlRockDraw(P,r,'#645e56','#2e2a26',31);
-VXD.wRockTop=(P,r)=>{const m=mulberry32(35);for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.3?'#645e56':k<.4?'#4e4943':'#76685a',nz(r,.86,1.08));}};
-VXD.wDeadBark=(P,r)=>{const c=[];for(let x=0;x<16;x++)c.push(nz(r,.8,1.08));for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(y+((x>>2)*5))%6===0?'#3a3430':'#6a625a',c[x]*nz(r,.92,1.05));};
-VXD.wCharBark=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.04?'#5f3321':k<.3?'#141210':k<.45?'#4a3e34':'#2a2420',nz(r,.88,1.08));}};
-VXD.wTwig=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#3e2e22',nz(r,.82,1.1));};
-VXD.bone=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.1?'#b8ae90':'#d8cfb4',nz(r,.92,1.04));};
-VXD.rustIron=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.3?'#7a4e30':k<.45?'#3a2a20':'#5a3e2c',nz(r,.88,1.08));}};
-VXD.bog=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.15?'#2a3020':'#3a4228',nz(r,.9,1.06));};
-VXD.deadReed=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#8a7a50',(y%5===0?.8:1)*nz(r,.9,1.06));};
+VXD.wRock=(P,r)=>wlRockDraw(P,r,'#635e58','#2d2a27',31);
+VXD.wRockTop=(P,r)=>{const m=mulberry32(35);for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.3?'#635e58':k<.4?'#4d4945':'#73685e',nz(r,.86,1.08));}};
+VXD.wDeadBark=(P,r)=>{const c=[];for(let x=0;x<16;x++)c.push(nz(r,.8,1.08));for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(y+((x>>2)*5))%6===0?'#393431':'#69635c',c[x]*nz(r,.92,1.05));};
+VXD.wCharBark=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.04?'#533a2e':k<.3?'#141210':k<.45?'#483f37':'#292421',nz(r,.88,1.08));}};
+VXD.wTwig=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#3b2f26',nz(r,.82,1.1));};
+VXD.bone=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.1?'#b6ae97':'#d6cfbb',nz(r,.92,1.04));};
+VXD.rustIron=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.3?'#70533e':k<.45?'#372c24':'#544033',nz(r,.88,1.08));}};
+VXD.bog=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.15?'#2c2f23':'#3d412d',nz(r,.9,1.06));};
+VXD.deadReed=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#877a5b',(y%5===0?.8:1)*nz(r,.9,1.06));};
 
 /* ---------- shared helpers ---------- */
 function wlRoot(g){const r=new THREE.Group();r.userData.lights=[];r.userData.ground=g;r.userData.groundKind='waste';return r;}
@@ -53,11 +53,11 @@ function wlRubble(par,x,z,n,r,spread,mats,big=.5){for(let i=0;i<n;i++){const a=r
 function wlMound(par,x,z,R,r,mat,skip){const c=.4,n=Math.ceil(R/c),J=new Map(),jit=(i,k)=>{const key=i+','+k;if(!J.has(key))J.set(key,r()*.3);return J.get(key);};
   for(let l=0;l<4;l++){const rr=R*(1-l*.3);if(rr<.3)break;for(let i=-n;i<=n;i++)for(let k=-n;k<=n;k++){const px=x+i*c,pz=z+k*c;
   if(Math.hypot(i*c,k*c)>rr-jit(i,k))continue;if(skip&&skip(px,pz,l*c))continue;bx(par,c+r()*.04,c,c+r()*.04,mat,px+(r()-.5)*.04,l*c+c/2,pz+(r()-.5)*.04,0,(r()-.5)*.2,0);}}}
-const dryTallMat=()=>cutTex('dryTall',(P,r)=>{for(let b=0;b<7;b++){const x0=1+b*2+Math.floor(r()*2),h=6+Math.floor(r()*9),lean=r()<.5?-1:1;for(let y=0;y<h;y++){const x=x0+Math.round(lean*y*y/70);if(x>=0&&x<16)P(x,15-y,['#a08a4e','#8a7440','#b8a266','#6e5e34'][Math.floor(r()*4)],nz(r,.85,1.1));}}});
-const dryShortMat=()=>cutTex('dryShort',(P,r)=>{for(let b=0;b<6;b++){const x0=2+b*2,h=2+Math.floor(r()*5);for(let y=0;y<h;y++)P(x0,15-y,r()<.5?'#8a7440':'#a08a4e',nz(r,.85,1.1));}});
+const dryTallMat=()=>cutTex('dryTall',(P,r)=>{for(let b=0;b<7;b++){const x0=1+b*2+Math.floor(r()*2),h=6+Math.floor(r()*9),lean=r()<.5?-1:1;for(let y=0;y<h;y++){const x=x0+Math.round(lean*y*y/70);if(x>=0&&x<16)P(x,15-y,['#9c8b5d','#86754e','#b3a275','#6c5f3f'][Math.floor(r()*4)],nz(r,.85,1.1));}}});
+const dryShortMat=()=>cutTex('dryShort',(P,r)=>{for(let b=0;b<6;b++){const x0=2+b*2,h=2+Math.floor(r()*5);for(let y=0;y<h;y++)P(x0,15-y,r()<.5?'#86754e':'#9c8b5d',nz(r,.85,1.1));}});
 function wlTuft(par,x,y,z,r,tall){vSprite(par,tall?dryTallMat():dryShortMat(),x,y,z,tall?.5:.35,tall?.45+r()*.45:.3,r()*3);}
 /* murky water for bogs and cave pools */
-const BOGMAT=new THREE.MeshStandardMaterial({color:new THREE.Color(0x2e3a24).convertSRGBToLinear(),roughness:.12,metalness:.1,transparent:true,opacity:.92});
+const BOGMAT=new THREE.MeshStandardMaterial({color:new THREE.Color(0x323828).convertSRGBToLinear(),roughness:.12,metalness:.1,transparent:true,opacity:.92});
 /* cart wheel standing in the x–y plane, centre at the origin of the returned group */
 function wlWheel(par,R=.5){const g=new THREE.Group();par.add(g);const w=vm('planksDark');for(let i=0;i<8;i++){const a=i/8*Math.PI*2,s=new THREE.Group();put(g,s,0,0,0,0,0,a);bx(s,.1,R*2*Math.tan(Math.PI/8)+.02,.1,w,R-.05,0,0);bx(s,R-.1,.06,.06,w,(R-.1)/2,0,0);}bx(g,.18,.18,.14,vm('iron'),0,0,0);return g;}
 /* round plank shield, face towards +z, centred at the origin */

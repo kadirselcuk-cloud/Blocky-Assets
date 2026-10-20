@@ -17,10 +17,10 @@ function obRescale(root,f){const ms=[];root.traverse(q=>{if(q===root)return;q.po
   for(const q of ms){const p=q.geometry.parameters;if(!p||p.width===undefined)continue;q.geometry.dispose();q.geometry=box(p.width*f,p.height*f,p.depth*f,q.material,{s:.8,ox:0,oy:0,oz:0}).geometry;}}
 
 function buildOgreBoss(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x2b05),pick=a=>a[Math.floor(r()*a.length)];
-  const kind=o.staff&&o.staff!=='random'?o.staff:pick(Object.keys(OM_STAFF)),hornC=pick([['#d8ccaa','ivory'],['#c8b48a','yellowed'],['#9a8e7a','grey']]),hairC=pick(['#1e1a18','#3a2a1e','#6a6660','#a8a49a']);
+  const kind=o.staff&&o.staff!=='random'?o.staff:pick(Object.keys(OM_STAFF)),hornC=pick([['#d6ccb2','ivory'],['#ab9d81','yellowed'],['#877e71','grey']]),hairC=pick(['#1d1b19','#372b22','#615e59','#93918a']);
   const heads=({head,neck,skin,skinD,skinM,skinX,eyeM,dark,ivory,ir,warts})=>{
-    const wood=bm('#7a5634','leather'),woodD=bm('#54402a','leather'),horn=bm(hornC[0],'plain'),hornD=bm('#'+new THREE.Color(hornC[0]).multiplyScalar(.55).getHexString(),'plain'),
-      gold=bm('#c8a050','plain'),goldD=bm('#9a7838','plain'),ruby=wrGlow('#f49488','#dc3a32',1.2,pxTex('plain')),hairM=bm(hairC,'hair');
+    const wood=bm('#68503a','leather'),woodD=bm('#4c3e2e','leather'),horn=bm(hornC[0],'plain'),hornD=bm('#'+new THREE.Color(hornC[0]).multiplyScalar(.55).getHexString(),'plain'),
+      gold=bm('#a78e5c','plain'),goldD=bm('#816d47','plain'),ruby=wrGlow('#e49d94','#c9524d',1.2,pxTex('plain')),hairM=bm(hairC,'hair');
     /* the main neck under the warrior head, a little right of the middle; the mage head grows out of the left shoulder on a
        thinner neck of its own, leaning out (a second, smaller head grown later) */
     bx(neck,1.1,.24,.58,skin,.08,-.04,.08);bx(neck,.6,.34,.56,skin,OB_HX,.06,.1);
@@ -56,9 +56,9 @@ function buildOgreBoss(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x2
       for(const s of[-1,1])M(.04,.04,.03,goldD,s*.17,.555,.29,0,0,Math.PI/4);}};
   const root=buildOgre(seed,{skin:o.skin,mantle:o.mantle,weapon:'club',heads,noClips:true,bare:o.bare});
   /* warrior side: an iron pauldron on the right shoulder; mage side: a gold arm ring and a bead bracelet on the left */
-  const ir=vm('iron'),gold=bm('#c8a050','plain'),uaR=root.getObjectByName('upperArm_R'),uaL=root.getObjectByName('upperArm_L'),faL=root.getObjectByName('foreArm_L');
-  bx(uaR,.62,.08,.6,ir,-.02,.25,0);bx(uaR,.08,.3,.6,ir,-.3,.12,0,0,0,-.2);for(const z of[-.2,0,.2])bx(uaR,.03,.04,.04,bm('#5a5a5a','plain'),-.345,.18,z);
-  bx(uaL,.47,.06,.47,gold,0,-.42,0);for(const z of[-.12,.12])bx(faL,.43,.06,.43,z<0?bm('#2a2420','plain'):bm('#e2d8b8','plain'),0,-.32+z*.2,0);
+  const ir=vm('iron'),gold=bm('#a78e5c','plain'),uaR=root.getObjectByName('upperArm_R'),uaL=root.getObjectByName('upperArm_L'),faL=root.getObjectByName('foreArm_L');
+  bx(uaR,.62,.08,.6,ir,-.02,.25,0);bx(uaR,.08,.3,.6,ir,-.3,.12,0,0,0,-.2);for(const z of[-.2,0,.2])bx(uaR,.03,.04,.04,bm('#565350','plain'),-.345,.18,z);
+  bx(uaL,.47,.06,.47,gold,0,-.42,0);for(const z of[-.12,.12])bx(faL,.43,.06,.43,z<0?bm('#292421','plain'):bm('#d9d1b9','plain'),0,-.32+z*.2,0);
   /* staff in the left hand */
   const wl=new THREE.Group();wl.name='weapon_L';root.getObjectByName('socket_L').add(wl);const st=omStaff(kind);st.quaternion.copy(OB_BASIS_L());wl.add(st);
   obRescale(root,OB_F);

@@ -8,11 +8,11 @@
    the hidden legs just hang. The tail, the head flames, the jaw, the body group (Death and Appear shrink and spin it) and the
    dropped scimitar are baked into tracks every frame. */
 VB.efreet=Object.assign({},VB.oni,{key:'efreet'});
-const EF_SKIN={red:['#9c3e3a','crimson red'],ember:['#aa643c','ember orange'],bronze:['#8e6438','bronze'],charcoal:['#3a3232','charcoal']};
+const EF_SKIN={red:['#7b4544','crimson red'],ember:['#88614b','ember orange'],bronze:['#785c42','bronze'],charcoal:['#393232','charcoal']};
 /* fire: mid, hot, deep */
-const EF_FIRE={orange:['#ff8a2a','#ffcc5c','#d8481a','orange'],red:['#f0502a','#ff9a5a','#a8281a','crimson'],blue:['#5ab4ec','#e8f6ff','#1e5e94','blue'],green:['#6cd040','#b4f088','#28761a','green']};
+const EF_FIRE={orange:['#ed964e','#f6ce78','#c65c3b','orange'],red:['#dc664b','#eea373','#993c32','crimson'],blue:['#6fb3dd','#eaf7ff','#305f85','blue'],green:['#7dcb5b','#bded9b','#36742b','green']};
 /* vest (and turban), sash */
-const EF_CLOTH=[['#4a1830','#c8a050','wine vest, gold sash'],['#24245a','#a82a2a','indigo vest, crimson sash'],['#1c1a1a','#a82a2a','black vest, crimson sash'],['#1e4a36','#c8a050','emerald vest, gold sash']];
+const EF_CLOTH=[['#411f2e','#a88e59','wine vest, gold sash'],['#2c2545','#833b3b','indigo vest, crimson sash'],['#1b1a1a','#833b3b','black vest, crimson sash'],['#25462f','#a88e59','emerald vest, gold sash']];
 const EF_HEAD={topknot:'black topknot',turban:'jewelled turban',horns:'horns'},EF_WPN={scimitar:'flame scimitar',none:'no weapon'};
 const EF_TAIL=8,EFM={};
 function efGlow(hex,k=1){const key=hex+k;return EFM[key]||(EFM[key]=new THREE.MeshStandardMaterial({color:new THREE.Color(hex).convertSRGBToLinear(),emissive:new THREE.Color(hex).convertSRGBToLinear(),emissiveIntensity:k,roughness:.6}));}
@@ -25,7 +25,7 @@ function efGlow(hex,k=1){const key=hex+k;return EFM[key]||(EFM[key]=new THREE.Me
    period, phase, size, rise and drift */
 const EF_PT=[];{const r=mulberry32(77);for(let k=0;k<36;k++){const ty=k%3;EF_PT.push({u:.06+.94*r(),sd:r()-.5,fz:(r()<.5?-1:1)*(.03+.04*r()),ty,P:[.55,.75,.95][ty]*(.85+.3*r()),ph:r(),sz:[.1,.07,.045][ty]*(.85+.3*r()),rise:[.16,.3,.46][ty]*(.8+.4*r()),dx:(r()-.5)*.24,dz:(r()-.5)*.24});}}
 const efPtAt=P=>{const wd=.1+.07*Math.sin(Math.min(1,P.u*1.15)*Math.PI*.55);return new THREE.Vector3(-.22*P.u*P.u+P.sd*wd*.8,.2+1.3*P.u,P.fz);};
-function efScimitar(F,pre='efp_'){const w=new THREE.Group(),gold=bm('#c8a050','plain'),goldD=bm('#9a7838','plain'),grip=bm('#3a2016','leather'),
+function efScimitar(F,pre='efp_'){const w=new THREE.Group(),gold=bm('#a78e5c','plain'),goldD=bm('#826c48','plain'),grip=bm('#36221d','leather'),
     bl=efGlow(F[0],.9),ed=efGlow(F[1],1.3),fu=efGlow(F[2],.8);
   bx(w,.07,.3,.07,grip,0,-.02,0);for(const y of[-.12,-.02,.08])bx(w,.08,.02,.08,goldD,0,y,0);
   bx(w,.09,.07,.09,gold,0,-.19,0);bx(w,.09,.07,.09,gold,0,-.19,0,0,Math.PI/4,0);bx(w,.045,.03,.045,goldD,0,-.235,0);
@@ -48,8 +48,8 @@ function buildEfreet(seed,o={}){const B=VB.efreet,r=mulberry32(((seed*2654435761
   const skin=bm(sk[0],'skin'),skinD=bm(shade(sk[0],.84),'skin'),skinM=bm(shade(sk[0],.64),'skin'),skinX=bm(shade(sk[0],.42),'skin');
   const fMid=efGlow(F[0],.9),fHot=efGlow(F[1],1.2),fDeep=efGlow(F[2],.8),eyeM=efGlow(F[1],1.6),
     vest=bm(cloth[0],'cloth'),vestD=bm(shade(cloth[0],.7),'cloth'),sash=bm(cloth[1],'cloth'),sashD=bm(shade(cloth[1],.72),'cloth'),pants=bm(shade(cloth[1],.55),'cloth'),pantsD=bm(shade(cloth[1],.4),'cloth'),
-    gold=bm('#c8a050','plain'),goldD=bm('#9a7838','plain'),dark=bm('#1a1210','plain'),ivory=bm('#ece2c4','plain'),nail=bm('#2a201a','plain'),
-    hairM=bm('#1a1614','hair'),hairD=bm('#161311','hair'),horn=bm('#2a2422','plain'),hornD=bm('#4a3e36','plain'),turb=bm('#e6dcc4','cloth'),turbD=bm('#bcae92','cloth'),gem=efGlow('#f0502a',1.1);
+    gold=bm('#a78e5c','plain'),goldD=bm('#826c48','plain'),dark=bm('#191312','plain'),ivory=bm('#d9d2bc','plain'),nail=bm('#2a201d','plain'),
+    hairM=bm('#1a1615','hair'),hairD=bm('#151312','hair'),horn=bm('#2a2423','plain'),hornD=bm('#463c37','plain'),turb=bm('#d9d1c0','cloth'),turbD=bm('#a29986','cloth'),gem=efGlow('#dc664b',1.1);
   const eb=new THREE.Group();eb.name='ebody';root.add(eb);
   /* joints: same names, offsets and order as buildVillager */
   const hips=J('hips',eb,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);

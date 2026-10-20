@@ -8,13 +8,13 @@
    rate-limited, so arms never twist or flip. After each solve the weapon is tilted up until none of it is below the ground. */
 VB.oni=Object.assign({},VB.ogre,{thigh:.62,shin:.58,ankle:.12,hipOff:.1,spine:.3,chest:.3,neck:.44,headY:.1,shW:.78,ua:.62,fa:.56,g:2.9,hipW:.24,hand:2.1});
 {const b=VB.oni;b.key='oni';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
-const ON_SKIN={red:['#a94d3b','red (aka-oni)'],blue:['#41659a','blue (ao-oni)'],yellow:['#cdb84e','yellow (ki-oni)'],green:['#5a7a46','green (midori-oni)'],black:['#3c3836','black (kuro-oni)']};
-const ON_HAIR=[['#1a1614','black'],['#1a1614','black'],['#dcd6c8','white'],['#572c1e','dark red']];
+const ON_SKIN={red:['#835148','red (aka-oni)'],blue:['#46597f','blue (ao-oni)'],yellow:['#aea160','yellow (ki-oni)'],green:['#5b6b48','green (midori-oni)'],black:['#3b3736','black (kuro-oni)']};
+const ON_HAIR=[['#1a1615','black'],['#1a1615','black'],['#d9d4c9','white'],['#4a2f29','dark red']];
 const ON_WPN={kanabo:'iron kanabō',spiked:'spiked club',barbed:'barbed club'};
 
 /* weapons: grip at the origin, the heavy end along +y (about 1.8 m), a short handle below. Meshes sit directly in the group */
-function onWeapon(kind){const w=new THREE.Group(),ir=bm('#3a3a3e','plain'),irL=bm('#5a5a60','plain'),irD=bm('#26262a','plain'),grip=bm('#2a1e16','leather'),cordR=bm('#9a2a22','cloth'),
-    wd=bm('#5a3e28','leather'),wdD=bm('#3e2a1a','leather'),D=Math.PI;
+function onWeapon(kind){const w=new THREE.Group(),ir=bm('#3a393c','plain'),irL=bm('#545357','plain'),irD=bm('#272629','plain'),grip=bm('#2a1e1a','leather'),cordR=bm('#783936','cloth'),
+    wd=bm('#513b2e','leather'),wdD=bm('#3c2a21','leather'),D=Math.PI;
   /* handle: a leather-wrapped grip with red cord bands and an iron pommel */
   bx(w,.11,.5,.11,grip,0,-.06,0);for(const y of[-.24,-.06,.12])bx(w,.12,.03,.12,cordR,0,y,0);bx(w,.15,.06,.15,irD,0,-.33,0);
   if(kind==='kanabo'){
@@ -53,10 +53,10 @@ function buildOni(seed,o={}){const B=VB.oni,r=mulberry32(((seed*2654435761)>>>0)
   const rk=pick(['red','red','blue','blue','yellow','green','black']),rh=pick(['two','two','two','one']),hairC=pick(ON_HAIR),beard=r()<.5,beads=r()<.6,scar=r()<.4,ironRings=r()<.3;
   const opt=(kk,d)=>o[kk]&&o[kk]!=='random'?o[kk]:d,skinK=opt('skin',rk),horns=opt('horns',rh),wpn=o.weapon||'kanabo';
   const sk=ON_SKIN[skinK],shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),skin=bm(sk[0],'skin'),skinD=bm(shade(sk[0],.84),'skin'),skinM=bm(shade(sk[0],.64),'skin'),skinX=bm(shade(sk[0],.42),'skin');
-  const tig=bm('#cf9b48','hair'),tigD=bm('#1e1810','hair'),tigW=bm('#e8dcc0','hair'),rope=bm('#d2c08a','leather'),ropeD=bm('#a8945e','leather'),
-    gold=ironRings?bm('#5a5a60','plain'):bm('#c8a050','plain'),goldD=ironRings?bm('#3a3a3e','plain'):bm('#9a7838','plain'),dark=bm('#1a1210','plain'),
-    eyeW=bm('#ebe1c0','plain'),eyeR=bm('#b95141','plain'),ivory=bm('#ece2c4','plain'),horn=bm('#e6dcbc','plain'),hornD=bm('#8a7a58','plain'),nail=bm('#2a201a','plain'),
-    hairM=bm(hairC[0],'hair'),hairD=bm(shade(hairC[0],.75),'hair'),bead=bm('#5a3a22','leather'),beadR=bm('#8f3832','plain');
+  const tig=bm('#a88b5c','hair'),tigD=bm('#1e1813','hair'),tigW=bm('#d9d0bc','hair'),rope=bm('#b3a783','leather'),ropeD=bm('#91835f','leather'),
+    gold=ironRings?bm('#545357','plain'):bm('#a78e5c','plain'),goldD=ironRings?bm('#3a393c','plain'):bm('#826c48','plain'),dark=bm('#191312','plain'),
+    eyeW=bm('#d9d2ba','plain'),eyeR=bm('#8e574e','plain'),ivory=bm('#d9d2bc','plain'),horn=bm('#d9d1ba','plain'),hornD=bm('#796d57','plain'),nail=bm('#2a201d','plain'),
+    hairM=bm(hairC[0],'hair'),hairD=bm(shade(hairC[0],.75),'hair'),bead=bm('#4f382c','leather'),beadR=bm('#70403e','plain');
   /* joints: same names, offsets and order as buildVillager */
   const hips=J('hips',root,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
   const aw=.36,lw=.13*B.g,fk=B.ankle/.06,hk=B.hand,g=B.g;

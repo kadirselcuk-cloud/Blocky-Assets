@@ -12,7 +12,7 @@ const SH_SC=1.22,SH_LB=.62,SH_STAFF={gnarled:'gnarled staff',banner:'ragged bann
 const SH_BASIS=()=>new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,1),new THREE.Vector3(-1,0,0)));
 
 /* staffs: grip at the origin, foot at -SH_LB, top about 0.81 above the grip; hooks and the banner reach out towards +z */
-function shStaff(kind,clothC,patchC){const w=new THREE.Group(),r=mulberry32(7),wd=bm('#5a4028','leather'),wdD=bm('#3e2c1c','leather'),bone=bm('#d8ccaa','plain'),rope=vm('rope'),ir=vm('iron'),moss=bm('#4a5a2a','plain');
+function shStaff(kind,clothC,patchC){const w=new THREE.Group(),r=mulberry32(7),wd=bm('#4f3e2d','leather'),wdD=bm('#3a2d21','leather'),bone=bm('#d6ccb2','plain'),rope=vm('rope'),ir=vm('iron'),moss=bm('#4a5230','plain');
   if(kind==='gnarled'){
     /* crooked shaft of knotted segments, a knotted lump on top curling into a hook, a bone hung from the hook */
     for(const[y0,y1,x,z,rx,rz]of[[-.62,-.4,.004,0,0,.04],[-.42,-.18,-.006,.004,.03,-.04],[-.2,.04,.004,-.004,-.03,.03],[.02,.26,-.006,.004,.03,-.05],[.24,.48,.006,-.004,-.02,.04],[.46,.62,-.002,0,.02,-.03]])
@@ -31,7 +31,7 @@ function shStaff(kind,clothC,patchC){const w=new THREE.Group(),r=mulberry32(7),w
     for(let i=0;i<6;i++){const tw=.26/6*(.6+.3*r()),L=.03+.07*r(),z=.04+(i+.5)*.26/6;bx(w,.012,L,tw,cl,0,.335-L/2+.004,z);}}
   else{
     /* thick shaft with iron bands, a wooden knob with bone spikes, and a big stone bound on top with an iron strap */
-    const stone=bm('#6e6a62','plain'),stD=bm('#54504a','plain'),wrap=bm('#3c2a1c','leather');
+    const stone=bm('#64615b','plain'),stD=bm('#4f4c47','plain'),wrap=bm('#382b21','leather');
     bx(w,.068,1.2,.068,wd,0,-.02,0);bx(w,.078,.05,.078,ir,0,-.585,0);bx(w,.076,.035,.076,ir,0,-.24,0);bx(w,.074,.16,.074,wrap,0,0,0);bx(w,.03,.04,.03,wdD,.04,.3,0);
     bx(w,.13,.1,.13,wdD,0,.6,0);bx(w,.14,.03,.14,rope,0,.57,0);
     for(const[x,z,rx,rz]of[[.075,0,0,-.9],[-.075,0,0,.9],[0,.075,.9,0],[0,-.075,-.9,0]])bx(w,.022,.06,.022,bone,x,.615,z,rx,0,rz);
@@ -69,7 +69,7 @@ const SH_W=shStaffPose({HP:[0,-.08,0],h:[12,-14,0],sp:[10,-4,0],ch:[6,-4,0],nk:[
   T:[-.47,.012,.58],G:[-.45,.4],pl:[1],sl:[0],ap:[1],gR:[0,0,0],dR:[0,1,0],eR:[0,0,1],pR:[-.8,-.4,-.4],gL:[.24,.74,.36],dL:[.3,.6,.7],pL:[.85,-.5,-.2],fist:[45,95]});
 /* IK rig whose right socket matches the goblin's (deeper in the fist), and the staff's corners in socket space for the ground check */
 function shRig(B,kind){const R=wrRig(B,false),V=THREE.Vector3,hk=B.hand;R.J.socket_R.position.set(.012*hk,-.088*hk,0);
-  const st=shStaff(kind,'#808080','#808080'),bq=SH_BASIS(),C8=[];st.updateMatrixWorld(true);
+  const st=shStaff(kind,'#76726e','#76726e'),bq=SH_BASIS(),C8=[];st.updateMatrixWorld(true);
   st.traverse(m=>{if(!m.isMesh)return;const p=m.geometry.parameters;for(let i=0;i<8;i++)C8.push(new V((i&1?.5:-.5)*p.width,(i&2?.5:-.5)*p.height,(i&4?.5:-.5)*p.depth).applyMatrix4(m.matrix).applyQuaternion(bq));});
   const v=new V();R.low=sl=>{R.m.updateMatrixWorld(true);const M=R.J.socket_R.matrixWorld;let y=1e9;for(const c of C8){v.copy(c);v.z+=sl;v.applyMatrix4(M);if(v.y<y)y=v.y;}return y;};
   return R;}

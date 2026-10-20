@@ -1,37 +1,37 @@
 /* ======================= UNDEAD KIT (ud-): graveyards, crypts and the necromancer's castle =======================
    Same grid rules as the wasteland kit (docs/WASTELAND.md): 4 m cells, tiles with their top at 0.8 m, walls and fences 4 m long between grid vertices,
    centred on the grid line, outside towards +z, corner pieces (posts, pillars, towers) on the vertices. See docs/UNDEAD.md. */
-VXD.gSoil=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.12?'#2a2018':k<.22?'#4e4032':'#3a2e24',nz(r,.86,1.08));}};
-VXD.gSoilSide=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,y%5===1?'#2a2018':y%7===4?'#4a3c2e':'#3a2e24',nz(r,.86,1.08));};
-VXD.gGrass=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.18?'#323a24':k<.3?'#5a5e40':k<.36?'#4a4030':'#434c30',nz(r,.86,1.08));}};
-VXD.gGrassSide=(P,r)=>{const e=[];for(let x=0;x<16;x++)e.push(2+Math.floor(r()*3));for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,y<e[x]?'#434c30':y%5===1?'#2a2018':'#3a2e24',nz(r,.85,1.08));};
+VXD.gSoil=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.12?'#2b1f1c':k<.22?'#4f3f39':'#3b2d29',nz(r,.86,1.08));}};
+VXD.gSoilSide=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,y%5===1?'#2b1f1c':y%7===4?'#4b3a35':'#3b2d29',nz(r,.86,1.08));};
+VXD.gGrass=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.18?'#303b29':k<.3?'#565e47':k<.36?'#4b3e37':'#404d37',nz(r,.86,1.08));}};
+VXD.gGrassSide=(P,r)=>{const e=[];for(let x=0;x<16;x++)e.push(2+Math.floor(r()*3));for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,y<e[x]?'#404d37':y%5===1?'#2b1f1c':'#3b2d29',nz(r,.85,1.08));};
 VXD.gPath=(P,r)=>{const tone=[];for(let i=0;i<8;i++)tone.push(nz(r,.82,1.08));for(let y=0;y<16;y++){const row=y>>3,off=(row%2)*4;for(let x=0;x<16;x++){const id=row*2+(((x+off)>>3)&1),j=y%8===7||(x+off)%8===7;
-  P(x,y,j?(r()<.4?'#3e4a2c':'#2a2926'):'#5c5a54',j?nz(r,.9,1.05):tone[id]*nz(r,.92,1.05));}}};
-VXD.tomb=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.08?'#6a6862':k<.13?'#8a8a62':'#86847c',nz(r,.93,1.04));}};
-VXD.tombDark=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.1?'#46443f':'#5e5c58',nz(r,.9,1.05));}};
+  P(x,y,j?(r()<.4?'#3c4b33':'#2a2827'):'#5d5a56',j?nz(r,.9,1.05):tone[id]*nz(r,.92,1.05));}}};
+VXD.tomb=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.08?'#6b6864':k<.13?'#858b6b':'#87847f',nz(r,.93,1.04));}};
+VXD.tombDark=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=r();P(x,y,k<.1?'#464341':'#5e5b59',nz(r,.9,1.05));}};
 VXD.ashlarG=(P,r)=>{const tone=[];for(let i=0;i<4;i++)tone.push(nz(r,.86,1.06));for(let y=0;y<16;y++){const row=y>>3,off=(row%2)*8;for(let x=0;x<16;x++){const id=row*2+(((x+off)>>3)&1)%2,j=y%8===7||(x+off)%16===15;
-  P(x,y,j?'#4e4c48':'#7e7c74',j?nz(r,.9,1.05):tone[id]*nz(r,.93,1.04));}}};
-VXD.ironB=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.12?'#3e3e46':'#26262a',nz(r,.9,1.1));};
-VXD.coffin=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){let f=nz(r,.86,1.06);if(x%4===3)f=.62;P(x,y,'#3e2c22',f);}};
-VXD.velvet=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(x+y)%4===0?'#5a2232':'#4a1a2a',nz(r,.9,1.06));};
-VXD.udBark=(P,r)=>{const c=[];for(let x=0;x<16;x++)c.push(nz(r,.8,1.08));for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(y+((x>>2)*5))%6===0?'#1e1c1a':'#3e3a36',c[x]*nz(r,.92,1.05));};
-VXD.udMoss=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.3?'#4e5442':'#6a7058',nz(r,.85,1.1));};
-VXD.wax=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#e4dcc4',nz(r,.93,1.03));};
-VXD.deadFlower=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.3?'#5a2a2a':'#6e4a3a',nz(r,.86,1.08));};
+  P(x,y,j?'#4e4b49':'#7f7b77',j?nz(r,.9,1.05):tone[id]*nz(r,.93,1.04));}}};
+VXD.ironB=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.12?'#3e3e44':'#262629',nz(r,.9,1.1));};
+VXD.coffin=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){let f=nz(r,.86,1.06);if(x%4===3)f=.62;P(x,y,'#3e2b28',f);}};
+VXD.velvet=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(x+y)%4===0?'#4d2b3d':'#3f2232',nz(r,.9,1.06));};
+VXD.udBark=(P,r)=>{const c=[];for(let x=0;x<16;x++)c.push(nz(r,.8,1.08));for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,(y+((x>>2)*5))%6===0?'#1e1b1b':'#3e3938',c[x]*nz(r,.92,1.05));};
+VXD.udMoss=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.3?'#4c5446':'#67705e',nz(r,.85,1.1));};
+VXD.wax=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,'#d9d3c1',nz(r,.93,1.03));};
+VXD.deadFlower=(P,r)=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++)P(x,y,r()<.3?'#533028':'#6e4845',nz(r,.86,1.08));};
 /* emissive materials: necromantic green fire, glowing runes, purple fungus, ground mist */
-const NFIRE=new THREE.MeshStandardMaterial({color:new THREE.Color(0xa4ecbc).convertSRGBToLinear(),emissive:new THREE.Color(0x4cd88a).convertSRGBToLinear(),emissiveIntensity:1.8,roughness:.6,transparent:true,opacity:.88});
-const RUNEMAT=new THREE.MeshStandardMaterial({color:new THREE.Color(0xa4ecbc).convertSRGBToLinear(),emissive:new THREE.Color(0x4cd88a).convertSRGBToLinear(),emissiveIntensity:.9,roughness:.6});RUNEMAT.userData={glowScale:1.2,base:.9};GLOW.push(RUNEMAT);
-const UDGLOW=new THREE.MeshStandardMaterial({color:new THREE.Color(0xcca8f4).convertSRGBToLinear(),emissive:new THREE.Color(0x9a5ae0).convertSRGBToLinear(),emissiveIntensity:.6,roughness:.6});UDGLOW.userData={glowScale:1,base:.6};GLOW.push(UDGLOW);
+const NFIRE=new THREE.MeshStandardMaterial({color:new THREE.Color(0xb0e8c3).convertSRGBToLinear(),emissive:new THREE.Color(0x66d396).convertSRGBToLinear(),emissiveIntensity:1.8,roughness:.6,transparent:true,opacity:.88});
+const RUNEMAT=new THREE.MeshStandardMaterial({color:new THREE.Color(0xb0e8c3).convertSRGBToLinear(),emissive:new THREE.Color(0x66d396).convertSRGBToLinear(),emissiveIntensity:.9,roughness:.6});RUNEMAT.userData={glowScale:1.2,base:.9};GLOW.push(RUNEMAT);
+const UDGLOW=new THREE.MeshStandardMaterial({color:new THREE.Color(0xd0b0f4).convertSRGBToLinear(),emissive:new THREE.Color(0x9568c6).convertSRGBToLinear(),emissiveIntensity:.6,roughness:.6});UDGLOW.userData={glowScale:1,base:.6};GLOW.push(UDGLOW);
 const MISTMAT=(()=>{const c=document.createElement('canvas');c.width=c.height=16;const g=c.getContext('2d'),r=mulberry32(4711);for(let y=0;y<16;y++)for(let x=0;x<16;x++){const d=Math.hypot((x-7.5)/7.5,(y-7.5)/7.5),a=Math.max(0,1-d*d)*(.7+r()*.3);g.fillStyle='rgba(255,255,255,'+a.toFixed(3)+')';g.fillRect(x,y,1,1);}
-  const t=new THREE.CanvasTexture(c);t.magFilter=t.minFilter=THREE.NearestFilter;t.generateMipmaps=false;return new THREE.MeshStandardMaterial({color:new THREE.Color(0xd8dce4).convertSRGBToLinear(),map:t,transparent:true,opacity:.32,depthWrite:false,roughness:1});})();
-const UDWATER=new THREE.MeshStandardMaterial({color:new THREE.Color(0x14181a).convertSRGBToLinear(),roughness:.08,metalness:.2,transparent:true,opacity:.94});
+  const t=new THREE.CanvasTexture(c);t.magFilter=t.minFilter=THREE.NearestFilter;t.generateMipmaps=false;return new THREE.MeshStandardMaterial({color:new THREE.Color(0xd0d3d9).convertSRGBToLinear(),map:t,transparent:true,opacity:.32,depthWrite:false,roughness:1});})();
+const UDWATER=new THREE.MeshStandardMaterial({color:new THREE.Color(0x151719).convertSRGBToLinear(),roughness:.08,metalness:.2,transparent:true,opacity:.94});
 
 /* ---------- helpers ---------- */
 function udRoot(g){const r=new THREE.Group();r.userData.lights=[];r.userData.ground=g;r.userData.groundKind='grave';return r;}
 /* green necromantic flame with a light of its own (always on) */
 function udFlame(par,L,x,y,z,s=.2,minI=1){const g=new THREE.Group();put(par,g,x,y,z);const a=new THREE.Mesh(new THREE.BoxGeometry(s,s*1.5,s),NFIRE);a.position.y=s*.75;g.add(a);const b=new THREE.Mesh(new THREE.BoxGeometry(s*.55,s*.9,s*.55),NFIRE);b.position.y=s*1.75;g.add(b);
   a.onBeforeRender=()=>{const t=performance.now()/1000;NFIRE.emissiveIntensity=1.6+.5*Math.sin(t*7.3);b.position.x=Math.sin(t*5.1+x)*s*.08;b.scale.y=1+.15*Math.sin(t*9+z);};
-  if(L){const pl=new THREE.PointLight(0xa4ecbc,0,7,2);pl.position.set(0,s*2,0);pl.userData.lamp=true;pl.userData.min=minI;g.add(pl);L.push(pl);}return g;}
+  if(L){const pl=new THREE.PointLight(0xb0e8c3,0,7,2);pl.position.set(0,s*2,0);pl.userData.lamp=true;pl.userData.min=minI;g.add(pl);L.push(pl);}return g;}
 function udCandle(par,x,y,z,h=.2,w=.06){bx(par,w,h,w,vm('wax'),x,y+h/2,z);bx(par,w*1.4,.02,w*1.4,vm('wax'),x+.01,y+.01,z);const f=new THREE.Mesh(new THREE.BoxGeometry(.03,.05,.03),VFLAME);f.position.set(x,y+h+.03,z);par.add(f);}
 /* headstone, base at y = 0, inscription facing +z; style: rounded, slab, pointed, obelisk, skull, broken */
 const UD_STYLES=['rounded','slab','pointed','obelisk','skull','broken'];
@@ -94,7 +94,7 @@ function udTree(size){return s=>{const root=udRoot(size==='large'?5:3.2),r=mulbe
   for(let i=0;i<5;i++){const a=r()*6.28,d=.8+r()*1.2;wlTuft(root,Math.cos(a)*d,0,Math.sin(a)*d,r,r()<.5);}return root;};}
 function udShrooms(s){const root=udRoot(2),r=mulberry32((s||1)*919);for(let k=0;k<12;k++){const a=r()*6.28,d=Math.sqrt(r()),sc=.6+r()*1.5,x=Math.cos(a)*d,z=Math.sin(a)*d;
   bx(root,.06*sc,.22*sc,.06*sc,vm('woolWhite'),x,.11*sc,z);bx(root,.22*sc,.08*sc,.22*sc,UDGLOW,x,.25*sc,z);bx(root,.12*sc,.05*sc,.12*sc,UDGLOW,x,.315*sc,z);}
-  vlog(root,1.4,.3,.3,'x',-.3,.15,.6).rotation.y=.4;const pl=new THREE.PointLight(0x9a5ae0,0,4,2);pl.position.set(0,.6,0);pl.userData.lamp=true;pl.userData.min=.4;root.add(pl);root.userData.lights.push(pl);return root;}
+  vlog(root,1.4,.3,.3,'x',-.3,.15,.6).rotation.y=.4;const pl=new THREE.PointLight(0x9568c6,0,4,2);pl.position.set(0,.6,0);pl.userData.lamp=true;pl.userData.min=.4;root.add(pl);root.userData.lights.push(pl);return root;}
 /* ground mist: thin translucent slabs drifting slowly */
 function udMist(par,x,z,R,n,r){for(let i=0;i<n;i++){const a=r()*6.28,d=Math.sqrt(r())*R,w=1+r()*1.8,dd=.8+r()*1.4,y=.12+r()*.35,m=new THREE.Mesh(new THREE.PlaneGeometry(w,dd).rotateX(-Math.PI/2),MISTMAT);const px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,ph=r()*6.28;
   m.position.set(px,y,pz);m.castShadow=false;m.receiveShadow=false;m.renderOrder=2;m.onBeforeRender=()=>{const t=performance.now()/1000;m.position.x=px+Math.sin(t*.13+ph)*.6;m.position.z=pz+Math.cos(t*.11+ph)*.5;m.position.y=y+Math.sin(t*.4+ph)*.05;};par.add(m);}}

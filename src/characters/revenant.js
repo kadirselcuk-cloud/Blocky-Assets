@@ -10,13 +10,13 @@
 VB.revenant=Object.assign({},VB.male,{thigh:.44,shin:.42,spine:.12,chest:.24,shW:.3,ua:.29,fa:.27,g:1.3,hipW:.09,hand:1.15,sex:'male'});
 {const b=VB.revenant;b.key='revenant';b.hipH=b.thigh+b.shin+b.ankle+b.hipOff;b.legS=(b.thigh+b.shin)/.84;b.tS=(b.spine+b.chest)/.3;b.cS=b.neck/.22;}
 const RV_SC=1.12;
-const RV_ARM={black:[['#4a4e54','#2e3136','#7a6440'],'blackened plate'],rust:[['#6a5446','#46362c','#8a6a3a'],'rusted plate'],steel:[['#8e949a','#61676d','#7a5a3a'],'pale old steel']};
-const RV_EYES={ice:['#e8f6ff','#5ab4ec','icy blue'],green:['#e4fbe8','#4cd88a','pale green'],red:['#ffe0d8','#dc3a32','red'],violet:['#f2e4ff','#9a5ae0','violet']};
+const RV_ARM={black:[['#46494e','#2f3135','#715847'],'blackened plate'],rust:[['#614c48','#443330','#7c5c44'],'rusted plate'],steel:[['#7f8387','#5a5e62','#704f42'],'pale old steel']};
+const RV_EYES={ice:['#eaf7ff','#6fb3dd','icy blue'],green:['#e6fbea','#66d396','pale green'],red:['#ffe3dc','#c9524d','red'],violet:['#f3e7ff','#9568c6','violet']};
 const RV_HELM={great:'closed great helm',horned:'horned great helm',crowned:'crowned great helm',open:'open helm over a withered face'};
 const RV_WPN={sword:'short sword',axe:'axe',mace:'mace'};
 
 /* one-handed weapons: grip at the origin, along +y, edge (or the axe's blade) towards +x, flat sides towards ±z. Sizes in body units */
-function rvWeapon(kind){const w=new THREE.Group(),ir=vm('iron'),dk=bm('#3c4046','plain'),hi=bm('#9aa0a6','plain'),rust=bm('#6e4630','plain'),wrap=bm('#2e221a','leather'),wood=bm('#4e3826','leather');
+function rvWeapon(kind){const w=new THREE.Group(),ir=vm('iron'),dk=bm('#3b3d42','plain'),hi=bm('#898d91','plain'),rust=bm('#653e38','plain'),wrap=bm('#2f211f','leather'),wood=bm('#4b342d','leather');
   if(kind==='sword'){bx(w,.044,.15,.044,wrap,0,.025,0);bx(w,.054,.025,.054,dk,0,-.06,0);bx(w,.2,.035,.06,dk,0,.1,0);bx(w,.05,.05,.07,dk,0,.1,0);
     for(const[y0,y1,wd]of[[.12,.44,.08],[.44,.58,.068],[.58,.66,.048],[.66,.7,.026]])bx(w,wd,y1-y0,.022,ir,0,(y0+y1)/2,0);
     bx(w,.016,.44,.026,dk,0,.36,0);bx(w,.026,.05,.026,rust,.024,.3,0);bx(w,.022,.04,.026,rust,-.02,.5,0);w.userData.len=.7;}
@@ -35,8 +35,8 @@ function buildRevenant(seed,o={}){const B=VB.revenant,r=mulberry32(((seed*265443
   const arm0=pick(['black','black','rust','steel']),eye0=pick(['ice','ice','green','red','violet']),helm0=pick(['great','great','horned','crowned','open']),wR0=pick(['sword','axe','mace']),wL0=pick(['sword','axe','mace']);
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,armK=opt('armor',arm0),eyeK=opt('eyes',eye0),helmK=opt('helm',helm0),wR=opt('weaponR',wR0),wL=opt('weaponL',wL0);
   const shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),AC=RV_ARM[armK][0];
-  const P=bm(AC[0],'plain'),Pd=bm(AC[1],'plain'),T=bm(AC[2],'plain'),mail=bm(shade(AC[1],1.2),'plain'),rust=bm('#6e4630','plain'),leath=bm('#2e2018','leather'),dark=bm('#161311','plain');
-  const ey=RV_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.8,pxTex('plain')),skin=bm('#7e8078','skin'),skinD=bm('#585a52','skin'),teeth=bm('#b8ac88','plain'),horn=bm('#cfc4a6','plain'),hornD=bm('#8e846a','plain');
+  const P=bm(AC[0],'plain'),Pd=bm(AC[1],'plain'),T=bm(AC[2],'plain'),mail=bm(shade(AC[1],1.2),'plain'),rust=bm('#653e38','plain'),leath=bm('#2f1f1d','leather'),dark=bm('#161312','plain');
+  const ey=RV_EYES[eyeK],eyeM=wrGlow(ey[0],ey[1],1.8,pxTex('plain')),skin=bm('#71736e','skin'),skinD=bm('#51544e','skin'),teeth=bm('#9f977f','plain'),horn=bm('#cdc4ad','plain'),hornD=bm('#7f7466','plain');
   const hips=J('hips',root,0,B.hipH,0),spine=J('spine',hips,0,B.spine,0),chest=J('chest',spine,0,B.chest,0),neck=J('neck',chest,0,B.neck,0),head=J('head',neck,0,B.headY,0);
   /* hips: plated skirt over groin and seat (two lames), plate fauld and a broad belt with a buckle plate */
   bx(hips,.37,.17,.26,Pd,0,-.025,0);for(const y of[-.05,-.095])bx(hips,.375,.014,.265,P,0,y,0);bx(hips,.38,.07,.27,P,0,.055,0);bx(hips,.39,.04,.28,leath,0,.1,0);bx(hips,.07,.05,.012,T,0,.1,.146);

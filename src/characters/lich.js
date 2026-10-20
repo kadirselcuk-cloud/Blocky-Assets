@@ -11,16 +11,16 @@ VB.lich=Object.assign({},VB.skeleton);VB.lich.key='lich';
 const LI_SC=1.05,LI_LB=1.0;
 /* float height option (metres above the ground in the hover; the clips are authored for 0.45 body units and scaled to it) */
 const LI_FLOAT={low:[.12,'just off the ground'],medium:[.3,'knee height'],high:[.5,'half a metre']};
-const LI_ROBE={purple:['#3a2a4e','deep purple'],black:['#1f1d24','black'],red:['#5a1e24','blood red'],blue:['#22304a','midnight blue'],green:['#2c3a2a','grave green'],grey:['#57524a','ash grey'],brown:['#5e4a30','faded brown']};
-const LI_EYES={blue:['#a8dcfa','#5ab4ec','pale blue glow'],green:['#a4ecbc','#4cd88a','green glow'],purple:['#f2e4ff','#9a5ae0','purple glow'],red:['#f49488','#dc3a32','red glow'],gold:['#ffd890','#f0a838','golden glow'],white:['#f6f0e4','#a8dcfa','white glow']};
-const LI_GEM={emerald:['#a4ecbc','#4cd88a','emerald'],ruby:['#f49488','#dc3a32','ruby'],sapphire:['#a8dcfa','#1e5e94','sapphire']};
+const LI_ROBE={purple:['#342c44','deep purple'],black:['#1f1d23','black'],red:['#4b2431','blood red'],blue:['#262f41','midnight blue'],green:['#2d392e','grave green'],grey:['#524c49','ash grey'],brown:['#594237','faded brown']};
+const LI_EYES={blue:['#b0dffa','#6fb3dd','pale blue glow'],green:['#b0e8c3','#66d396','green glow'],purple:['#f3e7ff','#9568c6','purple glow'],red:['#e49d94','#c9524d','red glow'],gold:['#f8d9a2','#e4ae58','golden glow'],white:['#f6f1e6','#b0dffa','white glow']};
+const LI_GEM={emerald:['#b0e8c3','#66d396','emerald'],ruby:['#e49d94','#c9524d','ruby'],sapphire:['#b0dffa','#305f85','sapphire']};
 const LI_STAFF={gnarled:'gnarled staff',bone:'bone staff',emerald:'staff with an emerald',ruby:'staff with a ruby',sapphire:'staff with a sapphire'};
 const LI_HEAD={crown:'crown',coif:'chain mail coif',diadem:'diadem with a gem',none:'bare skull'};
 const liGlow=c=>wrGlow(c[0],c[1],1.6,pxTex('plain'));
 
 /* staffs: grip at the origin, foot at -LI_LB, top about 1 above the grip. The fingers point along +x (the bone staff's skull faces
    that way), +z is the outside of the right hand */
-function liStaff(kind,boneHex,eyeM){const w=new THREE.Group(),wd=bm('#4a3826','leather'),wdD=bm('#2e2216','leather'),wrap=bm('#2a1e16','leather'),ir=vm('iron'),irD=bm('#3e4248','plain'),cord=vm('rope');
+function liStaff(kind,boneHex,eyeM){const w=new THREE.Group(),wd=bm('#48342d','leather'),wdD=bm('#2f211c','leather'),wrap=bm('#2b1d1b','leather'),ir=vm('iron'),irD=bm('#3c3f44','plain'),cord=vm('rope');
   if(kind==='gnarled'){
     /* crooked shaft of knotted segments; at the top three roots curl up and out round a knot, a bone charm hangs from one */
     for(const[y0,y1,x,z,rx,rz]of[[-1,-.66,.006,0,0,.04],[-.68,-.32,-.008,.004,.03,-.04],[-.34,.02,.006,-.004,-.03,.03],[0,.36,-.008,.004,.03,-.05],[.34,.66,.006,-.004,-.02,.04],[.64,.84,-.002,0,.02,-.03]])
@@ -32,7 +32,7 @@ function liStaff(kind,boneHex,eyeM){const w=new THREE.Group(),wd=bm('#4a3826','l
     bx(w,.008,.09,.008,cord,.085,.96,0);bx(w,.024,.05,.02,bm(boneHex,'plain'),.085,.89,0);bx(w,.04,.016,.016,bm(boneHex,'plain'),.085,.86,0);}
   else if(kind==='bone'){
     /* long bones joined end to end with knuckles and cord bindings; a small skull on top facing along the fingers, on a vertebra */
-    const bn=bm(boneHex,'plain'),bnD=bm('#'+new THREE.Color(boneHex).multiplyScalar(.75).getHexString(),'plain'),dk=bm('#16120e','plain');
+    const bn=bm(boneHex,'plain'),bnD=bm('#'+new THREE.Color(boneHex).multiplyScalar(.75).getHexString(),'plain'),dk=bm('#161210','plain');
     for(const[y0,y1]of[[-1,-.62],[-.62,-.22],[-.22,.2],[.2,.62]]){bx(w,.04,y1-y0-.02,.04,bn,0,(y0+y1)/2,0);bx(w,.058,.04,.058,bn,0,y1,0);}
     bx(w,.05,.03,.05,bnD,0,-.985,0);for(const y of[-.6,-.22,.2])bx(w,.062,.016,.062,cord,0,y-.026,0);bx(w,.056,.17,.056,wrap,0,0,0);
     for(const y of[.66,.71,.76])bx(w,.07,.03,.06,bn,0,y,0);bx(w,.03,.03,.02,bnD,-.03,.71,0);
@@ -41,7 +41,7 @@ function liStaff(kind,boneHex,eyeM){const w=new THREE.Group(),wd=bm('#4a3826','l
     bx(w,.04,.02,.07,bnD,.035,.79,0);for(let i=-1;i<=1;i++)bx(w,.01,.014,.01,bn,.058,.8,i*.018);}
   else{
     /* dark straight shaft with iron bands and a leather grip; an iron head whose four prongs hold a glowing gem */
-    const sh=bm('#2c221c','leather'),gem=liGlow(LI_GEM[kind]);
+    const sh=bm('#2c2120','leather'),gem=liGlow(LI_GEM[kind]);
     bx(w,.044,1.74,.044,sh,0,-.13,0);bx(w,.054,.05,.054,ir,0,-.975,0);for(const y of[-.6,-.24,.3,.6])bx(w,.05,.022,.05,irD,0,y,0);bx(w,.054,.17,.054,wrap,0,0,0);
     bx(w,.066,.06,.066,ir,0,.76,0);bx(w,.09,.03,.09,irD,0,.8,0);
     for(const[x,z]of[[1,0],[-1,0],[0,1],[0,-1]]){bx(w,.02,.15,.02,ir,x*.05,.88,z*.05,z*.22,0,-x*.22);bx(w,.02,.04,.02,ir,x*.06,.97,z*.06,-z*.6,0,x*.6);}
@@ -86,8 +86,8 @@ function buildLich(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x71c4)
   const opt=(k,d)=>o[k]&&o[k]!=='random'?o[k]:d,headK=opt('head',head0),kind=opt('staff',staff0),robeK=opt('robe',robe0),eyeK=opt('eyes',eye0),boneK=opt('bones',bone0);
   const body=buildSkeleton(seed,{B:VB.lich,bones:boneK,eyes:eyeK,eyeTab:LI_EYES,armor:'none',gear:true,noClips:true});
   const Jn=n=>body.getObjectByName(n),shade=(h,f)=>'#'+new THREE.Color(h).multiplyScalar(f).getHexString(),RC=LI_ROBE[robeK][0],boneHex=SK_BONE[boneK][0];
-  const rb=bm(RC,'cloth'),rbD=bm(shade(RC,.65),'cloth'),hole=bm('#161212','plain'),cord=bm('#2a2420','leather'),trim=bm('#8a7444','plain'),eyeM=liGlow(LI_EYES[eyeK]);
-  const gold=bm('#c9a24a','plain'),goldD=bm('#886a30','plain'),chain=bm('#5a5650','plain');
+  const rb=bm(RC,'cloth'),rbD=bm(shade(RC,.65),'cloth'),hole=bm('#151212','plain'),cord=bm('#2a2322','leather'),trim=bm('#7d654c','plain'),eyeM=liGlow(LI_EYES[eyeK]);
+  const gold=bm('#a6905c','plain'),goldD=bm('#795d43','plain'),chain=bm('#54504d','plain');
   const pv=Jn('bone_pelvis'),sp=Jn('bone_spine'),rc=Jn('bone_ribs'),sk=Jn('bone_skull');
   /* torso: a shell over the ribs (back, sides, two front halves that leave the ribcage bare down the middle, shoulders round the neck) */
   bx(rc,.3,.38,.024,rb,0,.03,-.112);
@@ -114,7 +114,7 @@ function buildLich(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x71c4)
     for(const[x,z,h]of[[-.08,.124,.06],[0,.124,.09],[.08,.124,.06],[-.08,-.134,.06],[0,-.134,.07],[.08,-.134,.06]]){bx(sk,.03,h,.022,gold,x,.267+h/2,z);bx(sk,.016,.016,.016,goldD,x,.267+h+.008,z);}
     for(const s of[-1,1])for(const z of[-.06,.05]){bx(sk,.022,.06,.03,gold,s*.116,.297,z);bx(sk,.016,.016,.016,goldD,s*.116,.335,z);}
     bx(sk,.03,.03,.01,liGlow(LI_GEM[dGem]),0,.245,.137,0,0,Math.PI/4);for(const s of[-1,1])bx(sk,.02,.02,.008,goldD,s*.06,.245,.136);}
-  else if(headK==='coif'){const ml=vm('mail'),mlD=bm('#4a4e54','plain');
+  else if(headK==='coif'){const ml=vm('mail'),mlD=bm('#46494e','plain');
     bx(sk,.25,.05,.28,ml,0,.257,-.005);for(const s of[-1,1]){bx(sk,.025,.2,.25,ml,s*.125,.16,-.02);bx(sk,.025,.1,.18,ml,s*.125,.02,-.05);}
     bx(sk,.25,.28,.025,ml,0,.12,-.152);bx(sk,.25,.04,.025,ml,0,.215,.122);bx(sk,.26,.022,.29,mlD,0,.232,-.005);}
   else if(headK==='diadem'){bx(sk,.21,.022,.012,gold,0,.21,.121);for(const s of[-1,1])bx(sk,.012,.022,.25,gold,s*.111,.21,-.005);bx(sk,.21,.022,.012,gold,0,.21,-.131);
@@ -126,7 +126,7 @@ function buildLich(seed,o={}){const r=mulberry32(((seed*2654435761)>>>0)^0x71c4)
   wr.userData.restRule={long:'z',up:'x',L:'fwd',yaw:8,first:true,sd:.5,fw:.2,late:true};sk.userData.restRule={long:'z',up:'y',sgn:1,yaw:50,tilt:18,bounce:true,fw:.3,sd:-.3};
   /* spell orb in front of the left palm, hidden (tiny) unless a clip grows it */
   const orb=new THREE.Group();orb.name='orb_L';orb.userData.gear=true;orb.position.set(-.06,-.12,0);orb.scale.setScalar(.001);Jn('hand_L').add(orb);
-  const oc=LI_EYES[eyeK];bx(orb,.09,.09,.09,liGlow(oc),0,0,0,.6,.6,0);bx(orb,.06,.06,.06,wrGlow('#f6f0e4',oc[1],2.2,pxTex('plain')),0,0,0,0,.8,.6);
+  const oc=LI_EYES[eyeK];bx(orb,.09,.09,.09,liGlow(oc),0,0,0,.6,.6,0);bx(orb,.06,.06,.06,wrGlow('#f6f1e6',oc[1],2.2,pxTex('plain')),0,0,0,0,.8,.6);
   /* the right fist stays closed round the staff (until a death lets it go); the left hand follows the clips */
   const D2=Math.PI/180;
   body.userData.post=()=>{skirt.post(Jn('thigh_L'),Jn('thigh_R'),body);if(Math.abs(wr.quaternion.w)<.9999||wr.position.lengthSq()>1e-6)return;Jn('fingers_R').rotation.set(0,0,95*D2);Jn('fingerTips_R').rotation.set(0,0,90*D2);Jn('thumb_R').rotation.set(14*D2,0,33*D2);};
@@ -164,7 +164,7 @@ const LI_H=wrP(LI_N,{fl:[.45],pl:[0],HP:[0,0,0],h:[2,0,0],sp:[3,0,0],ch:[4,0,0],
 const LI_W=wrP(LI_H,{fl:[.5],ob:[.6],h:[8,-12,0],sp:[6,-4,0],ch:[6,-6,0],nk:[0,0,0],FL:[.1,.01,-6,-.05,48],FR:[-.09,-.07,-24,-.04,44],
   gR:[-.34,1.08,.36],dR:[-.12,.9,.42],pR:[-.45,-.5,-.7],gL:[.44,1.42,.48],dL:[.4,.3,-.9],pL:[.85,-.5,-.1],fist:[45,95]});
 /* IK rig and the staff's box corners in socket space, for the ground check */
-function liRig(kind){const B=VB.lich,R=wrRig(B,false),V=THREE.Vector3,st=liStaff(kind,'#d0c4a0',null),bq=SH_BASIS(),C8=[];st.updateMatrixWorld(true);
+function liRig(kind){const B=VB.lich,R=wrRig(B,false),V=THREE.Vector3,st=liStaff(kind,'#cdc4a9',null),bq=SH_BASIS(),C8=[];st.updateMatrixWorld(true);
   st.traverse(m=>{if(!m.isMesh)return;const p=m.geometry.parameters;for(let i=0;i<8;i++)C8.push(new V((i&1?.5:-.5)*p.width,(i&2?.5:-.5)*p.height,(i&4?.5:-.5)*p.depth).applyMatrix4(m.matrix).applyQuaternion(bq));});
   const v=new V();R.low=()=>{R.m.updateMatrixWorld(true);const M=R.J.socket_R.matrixWorld;let y=1e9;for(const c of C8){v.copy(c).applyMatrix4(M);if(v.y<y)y=v.y;}return y;};
   return R;}

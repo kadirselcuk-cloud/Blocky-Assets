@@ -9,7 +9,7 @@
    the right hand can leave the string for a free target (rh = position weight, rq = direction weight, hR/hD). */
 
 /* bow: limbs along z curving back towards the string (+y), leather grip at the origin; string halves are scaled boxes */
-function skaBow(){const g=new THREE.Group(),w=bm('#6e4828','leather'),wrap=bm('#3a2a1c','leather'),tip=bm('#cfc4a6','plain'),str=bm('#d8d0b8','plain');
+function skaBow(){const g=new THREE.Group(),w=bm('#634036','leather'),wrap=bm('#3a2823','leather'),tip=bm('#cdc4ad','plain'),str=bm('#d7d0be','plain');
   for(const s of[-1,1]){for(const[z0,z1,y,t,wd]of[[.05,.2,0,.04,.034],[.19,.34,.016,.036,.03],[.33,.46,.038,.032,.026],[.45,.57,.07,.028,.022]])bx(g,wd,t,z1-z0,w,0,y,s*(z0+z1)/2);
     bx(g,.024,.034,.05,tip,0,.098,s*.585);}
   bx(g,.044,.052,.12,wrap,0,0,0);
@@ -17,11 +17,11 @@ function skaBow(){const g=new THREE.Group(),w=bm('#6e4828','leather'),wrap=bm('#
   for(const[n,t]of[['string_top',U.tipT],['string_bot',U.tipB]]){const s=new THREE.Group();s.name=n;s.position.copy(t);bx(s,.008,1,.008,str,0,-.5,0);g.add(s);}
   return g;}
 /* arrow: nock at the origin, shaft along +z, flat iron head and one flat vane (no crossed fletching) */
-function skaArrow(){const g=new THREE.Group(),sh=bm('#a07a4a','leather'),ir=vm('iron'),fe=bm('#d8d2c0','plain'),nk=bm('#3a2a1c','leather');
+function skaArrow(){const g=new THREE.Group(),sh=bm('#8a6c50','leather'),ir=vm('iron'),fe=bm('#d7d2c4','plain'),nk=bm('#3a2823','leather');
   bx(g,.012,.012,.7,sh,0,0,.36);bx(g,.016,.016,.02,nk,0,0,.01);bx(g,.004,.044,.11,fe,0,0,.09);bx(g,.01,.034,.05,ir,0,0,.73);bx(g,.008,.016,.025,ir,0,0,.765);return g;}
 
 /* quiver on the back (top behind the right shoulder) with a strap across the chest, bow in the left hand, arrow on the right */
-function skaGear(root,chest,has,arm){const lea=bm('#5e3e24','leather'),leaD=bm('#3e2818','leather'),rim=bm('#2e2016','leather'),shM=bm('#a07a4a','leather'),fe=bm('#d8d2c0','plain');
+function skaGear(root,chest,has,arm){const lea=bm('#573830','leather'),leaD=bm('#3d2621','leather'),rim=bm('#2f1f1c','leather'),shM=bm('#8a6c50','leather'),fe=bm('#d7d2c4','plain');
   const q=new THREE.Group();q.name='quiver';q.userData.piece=true;q.userData.longAx=new THREE.Vector3(-Math.sin(.35),Math.cos(.35),0);chest.add(q);
   const zb=has.chest?(arm==='plate'?-.145:-.12):-.105,zf=has.chest?(arm==='plate'?.14:.115):.1,tube=new THREE.Group();put(q,tube,-.07,.1,zb-.065,0,0,.35);
   bx(tube,.12,.46,.12,lea,0,0,0);bx(tube,.13,.04,.13,rim,0,.215,0);bx(tube,.13,.03,.13,rim,0,-.215,0);bx(tube,.125,.03,.125,leaD,0,.03,0);
