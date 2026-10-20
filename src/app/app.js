@@ -6,7 +6,7 @@ const store={get(k,d){try{const v=localStorage.getItem('forge:'+k);return v==nul
 
 /* ---------- lighting presets ---------- */
 const PRESETS={
-  day:{sky:'#a9c4dc',hor:'#e3e1d6',hemiSky:0xdfeaff,hemiGround:0x5b4a32,hemiI:.62,sun:0xfff0d8,sunI:2.3,dir:[.95,1.15,1.05],glow:0,lamp:0,exp:1.0},
+  day:{sky:'#a9c4dc',hor:'#e3e1d6',hemiSky:0xdfeaff,hemiGround:0x5b4a32,hemiI:.62,sun:0xfff0d8,sunI:1.7,dir:[.95,1.15,1.05],glow:0,lamp:0,exp:.9},
   dusk:{sky:'#36426b',hor:'#e89a5c',hemiSky:0x8a7fb0,hemiGround:0x3a2a20,hemiI:.55,sun:0xff9a50,sunI:1.5,dir:[-1.2,.42,.9],glow:1.3,lamp:1.4,exp:1.05},
   night:{sky:'#060a16',hor:'#1d2a48',hemiSky:0x3a4c7a,hemiGround:0x0c0a10,hemiI:.36,sun:0x9fb4ff,sunI:.38,dir:[-.6,1.3,-.8],glow:2.6,lamp:2.6,exp:1.2},
 };
