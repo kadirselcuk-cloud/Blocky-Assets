@@ -9,27 +9,32 @@ Open it: `http://localhost:<port>/#/a/mercenary`
 | Option | Choices (default first) | Notes |
 |---|---|---|
 | Skin | Light, Pale, Tan, Dark, Black | |
-| Hair | Brown, White, Red, Black, Blonde, Gray | Hair and beard |
+| Face | Square jaw, Broad, Lean, Weathered | Head width, jaw, nose and brow per face (`MC_FACE`); lean adds cheekbone shadows, weathered adds forehead and eye lines |
 | Eyes | Brown, Green, Blue | |
-| Weapon | Arming sword, None | Right hand |
-| Shield | Heater shield, None | Left forearm |
-| Helmet | None, Nasal helm | The hair top is hidden under the helm |
-| Armour | Mail hauberk, Gambeson, Linen shirt | Mail: mail shirt with split skirt, leather pauldrons, gambeson sleeves; gambeson: quilted coat; shirt: half sleeves, bare forearms |
+| Hair colour | Brown, White, Red, Black, Blonde, Gray | Hair, brows and facial hair |
+| Hairstyle | Short, Long, Tied back, Buzz cut, Bald | Under a nasal helm or kettle hat only what hangs below the band shows; none under the coif or great helm |
+| Facial hair | Short beard, Full beard, Stubble, Moustache, Goatee, Clean-shaven | Stubble tints the jaw |
+| Scar | None, Cheek, Over the eye | |
+| Weapon | Arming sword, Falchion, Flanged mace, Bearded axe, None | Right fist. With the sword an empty scabbard hangs on the left hip |
+| Shield | Heater, Round, Kite, Buckler, None | Heater, round and kite on the left forearm; the buckler in the fist; the kite is carried 10 cm higher |
+| Shield colour | Red, Blue, Green, Black, Ochre, White | Painted face; the buckler is plain steel |
+| Helmet | None, Nasal helm, Mail coif, Kettle hat, Great helm | The great helm hides the face (horizontal eye slit only, no cross) |
+| Armour | Mail hauberk, Half plate, Studded leather, Gambeson, Linen shirt | Half plate: iron breastplate, faulds, steel pauldrons and vambraces, tassets over the mail skirt; studded leather: jerkin with brass rivets, tassets, bracers over linen sleeves |
 | Gloves | Leather gloves, None | |
 | Boots | Leather boots, None (barefoot) | |
 | Pants | Wool trousers, Leather trousers, None (linen braies) | |
 
-Male only. No "New look": the look is set by the options. Clips are cached per weapon and shield, the only options that change them.
+Male only. No "New look": the look is set by the options. Clips are cached per weapon and shield; Death is baked per weapon, shield, helmet, armour and long hair (`mcDeath`), so the lying body rests on what he wears.
 
 Adding a gear piece: one entry in `MC_SLOTS` (name) and one builder in `MC_GEAR[slot][key]`, which gets the joints and the materials. `buildMercenary` calls one builder per slot.
 
 ## Body
 
-Own boxes on joints named like the villager rig (`hips`, `spine`, `chest`, `neck`, `head`, `upperArm/foreArm/hand_L/R`, `thigh/shin/foot_L/R`, plus `toes_L/R`), so the viewer's rig overlay and `tools/check-character.mjs` work. Real metres (`MCB`): ankle 0.08 above the ground, shin and thigh 0.46, hips joint 1.06 with straight legs, chest 0.5 wide and 0.29 deep over a narrower waist, thick neck, upper arm 0.32, forearm 0.28, closed fists. Square jaw, heavy brow, short hair and a short full beard. Feet bend at the ball (`toes_*`), so a raised heel never pushes the toes into the ground.
+Own boxes on joints named like the villager rig (`hips`, `spine`, `chest`, `neck`, `head`, `upperArm/foreArm/hand_L/R`, `thigh/shin/foot_L/R`, plus `toes_L/R`), so the viewer's rig overlay and `tools/check-character.mjs` work. Real metres (`MCB`): ankle 0.08 above the ground, shin and thigh 0.46, hips joint 1.06 with straight legs, chest 0.5 wide and 0.29 deep over a narrower waist, thick neck, upper arm 0.32, forearm 0.28, closed fists. The head is built by `mcHead` (face shape, eyes, brows, nose, ears, scar), then the helmet, `mcBeard` and `mcHair`. Feet bend at the ball (`toes_*`), so a raised heel never pushes the toes into the ground.
 
 Own textures (`mcTex`): mail rings, brushed steel, wood planks; everything else uses the shared pixel textures (`bm`). Colours pass `tools/check-palette.mjs`.
 
-Props: the sword (`mc_sword`) sits in the right fist socket, blade along the hand's +z, edges along the knuckles. The heater shield (`mc_shield`) hangs on a mount on the left forearm (`mc_shmount`); the solver turns it every frame (see below). Plain painted face, iron rim, no emblem.
+Props: the weapon (always the group `mc_sword`, whatever it is) sits in the right fist socket, business end along the hand's +z, edges along the knuckles. The shield (`mc_shield`) hangs on a mount (`mc_shmount`) on the left forearm, or in the left fist for the buckler; the solver turns it every frame (see below). Shield boards are rows of planks with a painted face inset, so the wood shows as a rim (`mcShieldBoard`); no emblems. The scabbard (`mc_scab`) hangs on the hips and the solver swings it back so its tip never goes into the ground.
 
 ## Animations
 
@@ -46,12 +51,12 @@ Props: the sword (`mc_sword`) sits in the right fist socket, blade along the han
 | Strafe left / right | 0.85 s | loop | Side steps behind the guard, about 0.75 m/s |
 | Dodge left / right / back | 0.9–0.95 s | once | Quick hop out of reach and back into the guard |
 | Jump | 1.3 s | once | Dip, spring with an arm swing, tuck, land on the balls of the feet |
-| Attack 1 | 1.0 s | once | Forehand slash, right to left, step in; the shield opens out of the blade's path |
-| Attack 2 | 1.0 s | once | Backhand slash, left to right |
-| Attack 3 | 1.05 s | once | Overhead chop |
+| Attack 1 | 1.0 s | once | Forehand slash: the weapon cocked back past the right shoulder, the arm sweeps out wide with the blade trailing, then it whips round in front, right to left, with a step in; the shield opens out of the way |
+| Attack 2 | 1.0 s | once | Backhand slash: up over the left shoulder, round in front, left to right; the shield held out wide |
+| Attack 3 | 1.05 s | once | Overhead chop: raised behind the head, brought straight down in front |
 | Attack 4 | 0.95 s | once | Lunging thrust |
-| Combo | 2.25 s | once | Forehand, backhand, overhead, stepping in |
-| Heavy attack | 1.8 s | once | Big wind-up, a leap in and a diagonal cleave down |
+| Combo | 2.3 s | once | Forehand, backhand, overhead, stepping in |
+| Heavy attack | 1.8 s | once | Big wind-up over the right shoulder, a leap in and a diagonal cleave down to the left |
 | Spin attack | 1.45 s | once | Spins round once with the blade held out |
 | Shield bash | 1.0 s | once | Steps in and drives the shield forward |
 | Kick | 1.0 s | once | Front push kick with the rear leg |
@@ -76,17 +81,18 @@ All in `mercenary.js`:
 
 1. **Poses** (`MC_F` lists the channels): hips offset `P`, hips/spine/chest/neck/head angles, root turn `Y`, feet `FL`/`FR` `[x, z, yaw, lift, pitch]`, knees out `kL`/`kR`, wrists `hL`/`hR` and elbow hints `eL`/`eR` in the chest's frame, blade direction `bR` and shield facing `sn` in the body's frame, `fr` (frees the right arm when the sword is let go), FK leg blend `fk` with `LL`/`LR`, body ground clamp `gc`. The head undoes most of the torso's turn and pitch (`hc`).
 2. **Keys** (`mcKeys`): each key starts from the one before (`'ST'` starts again from the stance); monotone cubic splines, flat at both ends. **Gaits** (`mcGait`): each foot slides back at the ground speed while planted (heel strike, flat, heel-off on the ball) and swings forward lifted; bob, sway, pelvis turn and arm swing on top.
-3. **Solver** (`mcSolve`): two-bone leg IK (the hips drop when a leg can't reach; the hips' turn is kept within 40° of the planted feet, the spine takes the rest); left arm IK with its elbow hint; the sword arm searches the elbow circle for the elbow that lets a nearly neutral wrist point the blade (cost: wrist turn and bend, distance from the elbow opposite the blade, upper-arm twist, elbow inside the body; each frame stays within 14° of the last elbow), then the wrist bends the rest, clamped and rate-limited (16°/14° per frame) so fast cuts lag a little instead of flipping. Wrist targets are kept 0.36–0.585 m from the shoulder. The shield's face turns to `sn`, square to the forearm, top up. Props are lifted off the ground through their hand; dropped props fall flat and stay above the ground.
-4. **Bake** (`mcBake`): 60 fps quaternion tracks for every joint, hips position, and position/rotation tracks for the sword and the shield.
+3. **Cuts** (`mcCut`): attacks 1–3, the combo and the heavy attack are arcs, not loose keys. Each cut has a swing plane (`dir(θ) = cos θ·A + sin θ·B`); θ eases from the wind-up to the follow-through, the hand runs round the right shoulder at nearly full reach (0.56 m) 35° ahead of the blade, the blade leans a little towards the arm line, and the torso turn and lean drive it. Before this, blade directions were interpolated straight between keys, so mid-swing the blade cut through "straight up" and the arm stayed folded against the chest; and a bent arm with the blade along the shoulder-to-hand line bends the blade past what a wrist can do, which flipped the wrist.
+4. **Solver** (`mcSolve`): two-bone leg IK (the hips drop when a leg can't reach; the hips' turn is kept within 40° of the planted feet, the spine takes the rest); left arm IK with its elbow hint; the sword arm searches the elbow circle for the elbow that lets a nearly neutral wrist point the blade (cost: wrist turn and bend, distance from the elbow opposite the blade, upper-arm twist, elbow inside the body; each frame stays within 20° of the last elbow), then the wrist bends the rest, clamped and rate-limited (21°/18° per frame) so fast cuts lag a little instead of flipping. Wrist targets are kept 0.36–0.585 m from the shoulder. The shield's face turns to `sn`, square to the forearm, top up. Props are lifted off the ground through their hand; dropped props fall flat and stay above the ground.
+5. **Bake** (`mcBake`): 60 fps quaternion tracks for every joint, hips position, and position/rotation tracks for the sword and the shield.
 
 ## Checks done
 
-- `node tools/check-character.mjs mercenary` with sword and shield, no weapon, no shield, neither, and bare/other gear: all 34 clips pass.
-- Intersection pass (scratch script): blade and shield board sampled against every body box, forearms and hands against torso, head and legs: none.
+- `node tools/check-character.mjs mercenary` for all 25 weapon × shield combinations and the bulky gear (great helm, coif, plate, long hair, full beard): all 34 clips pass.
+- Intersection pass (scratch script) for all 25 weapon × shield combinations: blade and every shield box sampled against every body box, forearms and hands against torso, head and legs: none.
 - Viewer: Day, Dusk and Night; every clip from the front, both sides, three quarters and above; all gear and colour options.
 - `node tools/check-palette.mjs`: all colours within the tiers.
 - GLB export of the model with all 34 clips (about 8 MB).
 
 ## Possible next steps
 
-More weapons (falchion, mace, axe), more shields (round, kite, buckler), more helmets and armour, hair and beard styles, a scabbard with draw/sheathe clips, turn-in-place, roll, pick-up and interact clips.
+More hair and beard styles, cloth colour options, a cape, draw/sheathe clips with the scabbard, turn-in-place, roll, pick-up and interact clips.
