@@ -26,7 +26,7 @@ Open it: `http://localhost:<port>/#/a/mercenary`
 | Cape | None, Cape | Four cloth panels from the shoulders, laid every frame (see below) |
 | Cloth colour | Natural, Red, Blue, Green, Black, Brown | Gambeson, linen shirt and cape; Natural keeps the undyed quilt and linen and a grey-brown cape |
 
-Male only. No "New look": the look is set by the options. Clips are cached per weapon and shield; Death is baked per weapon, shield, helmet, armour and long hair (`mcDeath`), so the lying body rests on what he wears.
+Male only. No "New look": the look is set by the options. Clips are cached per weapon and shield; Roll and Death are baked per weapon, shield, helmet, armour, long hair and cape (`mcDeath`), so he rolls over and lies on what he wears.
 
 Adding a gear piece: one entry in `MC_SLOTS` (name) and one builder in `MC_GEAR[slot][key]`, which gets the joints and the materials. `buildMercenary` calls one builder per slot.
 

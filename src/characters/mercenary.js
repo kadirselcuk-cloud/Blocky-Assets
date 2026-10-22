@@ -208,7 +208,7 @@ function buildMercenary(o={}){const opt=k=>o[k]!==undefined&&o[k]!=='random'?o[k
   const joints=[];root.traverse(q=>{if(q.userData.joint&&!q.userData.socket)joints.push(q);});root.userData.joints=joints;root.userData.ground=2.2;root.userData.sel=sel;
   const nm=k=>MC_SLOTS[k][sel[k]],lk=k=>MC_LOOK[k][sel[k]].toLowerCase();
   root.userData.variantText=`${MC_SKIN[sel.skin][1]} skin, ${lk('face')} face, ${MC_EYE[sel.eyes][1].toLowerCase()} eyes, ${MC_HAIR[sel.hair][1].toLowerCase()} ${lk('hairStyle')} hair, ${lk('beard')}${sel.scar!=='none'?', scar '+lk('scar'):''}. ${nm('armor')}, ${nm('pants').toLowerCase()}, ${nm('boots').toLowerCase()}, gloves: ${nm('gloves').toLowerCase()}, helmet: ${nm('helmet').toLowerCase()}${sel.cape==='cape'?', a '+MC_CLOTH[sel.cloth][1].toLowerCase()+' cape':''}. ${nm('weapon')} and ${nm('shield').toLowerCase()}${sel.shield!=='none'&&sel.shield!=='buckler'?' ('+MC_SHCOL[sel.shieldCol][1].toLowerCase()+')':''}.`;
-  if(!o.noClips)root.userData.clips=mercenaryClips(sel.weapon,sel.shield,sel.cape).concat([mcDeath(sel.weapon,sel.shield,sel.helmet,sel.armor,sel.hairStyle==='long'?'long':'short',sel.cape)]);
+  if(!o.noClips)root.userData.clips=mercenaryClips(sel.weapon,sel.shield,sel.cape).concat(mcDeath(sel.weapon,sel.shield,sel.helmet,sel.armor,sel.hairStyle==='long'?'long':'short',sel.cape));
   return root;}
 
 /* ======================= the solver ======================= */
@@ -520,6 +520,13 @@ function mercenaryClips(w,s,cp){const ck=w+'|'+s+'|'+(cp||'none');if(MC_CLIPS[ck
         const piv=(Y-a)*.55*(k<1?1:0)*(k>0?1-k:1),yw=F[2]*(1-.55*Math.sin(Math.PI*u))+a-Y+piv;
         p['F'+sd]=[F[0]*c+F[1]*sn,-F[0]*sn+F[1]*c,yw,.07*Math.sin(Math.PI*k),0];}
       p.P[1]-=.02*Math.sin(Math.PI*u*2);return p;},sg>0?'Turns 90 degrees to the left on the spot, behind the shield':'Turns 90 degrees to the right on the spot, behind the shield',{next:'Idle (war mode)',turn:90*sg}));}
+  return MC_CLIPS[ck]=C;}
+/* the Roll and Death are baked on a rig wearing the same helmet, armour, hairstyle and cape, so he rolls over and lies on what he wears (a great helm or coif is bulkier) */
+const MC_DEATH={};
+function mcDeath(w,s,h,a,hs,cp){cp=cp||'none';const ck=[w,s,h,a,hs,cp].join('|');if(MC_DEATH[ck])return MC_DEATH[ck];const ST=MC_ST,C=[],WAR={next:'Idle (war mode)'};
+  const k=[w,s,h,a,hs,cp].join('|');if(!MC_RIGS[k]){const m=buildMercenary({weapon:w,shield:s,helmet:h,armor:a,hairStyle:hs,cape:cp,noClips:true}),j={};m.traverse(q=>{if(q.name&&!j[q.name])j[q.name]=q;});
+    MC_RIGS[k]={m,j,lOff:mcRig(w,s).lOff};}
+  const R=MC_RIGS[k],K=(name,dur,loop,base,keys,note,ex)=>C.push(mcBake(R,name,dur,loop,mcKeys(base,keys),note,ex));
   /* ---- forward roll: the body keeps touching the ground (gc 2), the shield rides on the chest (sc), the blade points out to the side so it
      never digs in; ends 1.4 m further on (clip.move) ---- */
   K('Roll',1.4,false,ST,[[0,{}],[.14,{gc:1,P:[0,-.3,.12],H:[30,-14,0],S:[12,-4,0],C:[10,-4,0],hc:.3,FL:[.15,.3,0,0,0],hR:[-.44,-.18,.1],eR:[-.4,-1,-.2],bR:[-1,0,.05],hL:[.5,-.12,.32],eL:[1,-.2,-.3],sn:[1,0,.25]}],
@@ -528,13 +535,6 @@ function mercenaryClips(w,s,cp){const ck=w+'|'+s+'|'+(cp||'none');if(MC_CLIPS[ck
     [.92,{H:[352,-14,0],P:[0,-.45,1.3],FL:[.15,1.5,0,0,0],FR:[-.17,1.2,-32,0,0],S:[14,-4,0],C:[10,-4,0],LL:[-75,8,110,10],LR:[-75,8,110,10]}],
     [1.05,{H:[360,-14,0],fk:0,gc:1,P:[0,-.3,1.36],FL:[.15,1.57,0,0,0],S:[10,-4,0],C:[8,-4,0],N:[0,0,0],Hd:[5,0,0],hc:.6,sc:0}],
     [1.4,Object.assign({},ST,{P:[0,-.1,1.4],H:[363,-14,0],FL:[.15,1.57,0,0,0],FR:[-.17,1.2,-32,0,0]})]],'Forward roll behind the shield, coming up 1.4 m further on in the guard',{next:'Idle (war mode)',move:[0,1.4],capeFree:[.18,1.05]});
-  return MC_CLIPS[ck]=C;}
-/* Death is baked on a rig wearing the same helmet, armour and hairstyle, so he lies on what he wears (a great helm or coif is bulkier) */
-const MC_DEATH={};
-function mcDeath(w,s,h,a,hs,cp){cp=cp||'none';const ck=[w,s,h,a,hs,cp].join('|');if(MC_DEATH[ck])return MC_DEATH[ck];const ST=MC_ST,C=[],WAR={next:'Idle (war mode)'};
-  const k=[w,s,h,a,hs,cp].join('|');if(!MC_RIGS[k]){const m=buildMercenary({weapon:w,shield:s,helmet:h,armor:a,hairStyle:hs,cape:cp,noClips:true}),j={};m.traverse(q=>{if(q.name&&!j[q.name])j[q.name]=q;});
-    MC_RIGS[k]={m,j,lOff:mcRig(w,s).lOff};}
-  const R=MC_RIGS[k],K=(name,dur,loop,base,keys,note,ex)=>C.push(mcBake(R,name,dur,loop,mcKeys(base,keys),note,ex));
   /* ---- death: staggers back, the knees go, falls on his back; sword and shield drop to the ground ---- */
   const DL={fk:1,hc:0,gc:1,P:[0,-.93,-.55],H:[-90,-8,0],S:[0,0,0],C:[-3,0,0],N:[14,0,0],Hd:[10,10,0],LL:[-4,7,4,22],LR:[-6,9,8,18],hR:[-.84,.1,-.03],eR:[0,-1,0],bR:[-.4,.1,-.9],hL:[.84,.12,-.03],eL:[0,-1,0],fr:1};
   K('Death',2.6,false,ST,[[0,{}],[.28,{P:[0,-.14,-.1],H:[-10,-14,0],S:[-8,-7,0],C:[-12,-9,0],hR:[-.42,-.05,.16],hL:[.46,-.02,.3],Hd:[-14,0,0]}],
@@ -542,7 +542,7 @@ function mcDeath(w,s,h,a,hs,cp){cp=cp||'none';const ck=[w,s,h,a,hs,cp].join('|')
     [1.15,{fk:.75,hc:0,gc:1,P:[0,-.74,-.34],H:[-40,-10,0],S:[-6,0,0],C:[-8,0,0],LL:[-70,8,95,10],LR:[-62,10,88,8],hR:[-.5,-.1,.16],hL:[.5,-.1,.16],eL:[.5,-1,0],Hd:[10,0,0]}],
     [1.55,Object.assign({},DL,{H:[-82,-8,0],Hd:[14,8,0],LL:[-30,7,40,20],LR:[-24,9,34,16]})],[1.85,DL],[2.6,DL]],'Staggers back, the knees give way and he falls on his back; sword and shield drop to the ground',
     {fps:60,capeFree:1.4,drops:[{obj:'mc_sword',t:.72,d:.42,at:[-.95,.1,30]},{obj:'mc_shield',t:1.0,d:.45,at:[.78,.05,-14]}]});
-  return MC_DEATH[ck]=C[0];}
+  return MC_DEATH[ck]=C;}
 
 FOLDERS['characters'].children.push('characters/players');FOLDERS['characters/players']={name:'Player characters',blurb:'Playable heroes with customisable looks and gear',children:[]};
 const MC_CH=t=>Object.entries(t).map(([k,v])=>[k,Array.isArray(v)?v[1]:v]);
