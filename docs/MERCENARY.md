@@ -23,6 +23,8 @@ Open it: `http://localhost:<port>/#/a/mercenary`
 | Gloves | Leather gloves, None | |
 | Boots | Leather boots, None (barefoot) | |
 | Pants | Wool trousers, Leather trousers, None (linen braies) | |
+| Cape | None, Cape | Four cloth panels from the shoulders, laid every frame (see below) |
+| Cloth colour | Natural, Red, Blue, Green, Black, Brown | Gambeson, linen shirt and cape; Natural keeps the undyed quilt and linen and a grey-brown cape |
 
 Male only. No "New look": the look is set by the options. Clips are cached per weapon and shield; Death is baked per weapon, shield, helmet, armour and long hair (`mcDeath`), so the lying body rests on what he wears.
 
@@ -38,7 +40,7 @@ Props: the weapon (always the group `mc_sword`, whatever it is) sits in the righ
 
 ## Animations
 
-34 clips. Combat clips start and end in the war-mode guard and set `clip.next = 'Idle (war mode)'`; walking clips store their ground speed in `clip.speed`.
+43 clips with a weapon (39 without: no sheathe, draw or sheathed idle and walk). Combat clips start and end in the war-mode guard and set `clip.next = 'Idle (war mode)'`; walking clips store their ground speed in `clip.speed`; the turns store `clip.turn` (±90°) and the roll `clip.move` ([0, 1.4] m): in a game the root takes that turn or step at the end of the clip.
 
 | Clip | Length | Loop | What it does |
 |---|---|---|---|
@@ -72,6 +74,14 @@ Props: the weapon (always the group `mc_sword`, whatever it is) sits in the righ
 | Taunt | 2.4 s | once | Bangs the sword hilt on the shield twice, spreads the arms |
 | Victory | 2.6 s | once | Raises the sword high and looks up |
 | Death | 2.6 s | once | Staggers, the knees go, falls on his back; sword and shield drop flat beside him |
+| Sheathe | 1.6 s | once | Reaches across to the left hip and slides the weapon into its holder (scabbard, or belt loop for mace and axe), then lets the arm hang |
+| Idle (weapon sheathed) | 4.0 s | loop | Relaxed with the weapon on the hip |
+| Walk (weapon sheathed) | 1.05 s | loop | Walking with the weapon on the hip, about 1.2 m/s |
+| Draw | 1.65 s | once | Grips the hilt at the left hip, pulls the weapon up along the holder and brings it into the guard |
+| Pick up | 1.7 s | once | Squats and picks something up from the ground in front of the feet with the free right hand (weapon sheathed) |
+| Interact | 1.3 s | once | Reaches out and pushes: a door, a lever, a chest (weapon sheathed) |
+| Turn left / right (war mode) | 0.8 s | once | Turns 90° on the spot behind the shield, one foot then the other, the planted foot pivoting on its ball |
+| Roll | 1.4 s | once | Forward roll, shield at the left side, blade out to the side, up in the guard 1.4 m further on |
 
 Spell clips are gestures only; the effects come from the Spells & effects kit.
 
@@ -83,7 +93,10 @@ All in `mercenary.js`:
 2. **Keys** (`mcKeys`): each key starts from the one before (`'ST'` starts again from the stance); monotone cubic splines, flat at both ends. **Gaits** (`mcGait`): each foot slides back at the ground speed while planted (heel strike, flat, heel-off on the ball) and swings forward lifted; bob, sway, pelvis turn and arm swing on top.
 3. **Cuts** (`mcCut`): attacks 1–3, the combo and the heavy attack are arcs, not loose keys. Each cut has a swing plane (`dir(θ) = cos θ·A + sin θ·B`); θ eases from the wind-up to the follow-through, the hand runs round the right shoulder at nearly full reach (0.56 m) 35° ahead of the blade, the blade leans a little towards the arm line, and the torso turn and lean drive it. Before this, blade directions were interpolated straight between keys, so mid-swing the blade cut through "straight up" and the arm stayed folded against the chest; and a bent arm with the blade along the shoulder-to-hand line bends the blade past what a wrist can do, which flipped the wrist.
 4. **Solver** (`mcSolve`): two-bone leg IK (the hips drop when a leg can't reach; the hips' turn is kept within 40° of the planted feet, the spine takes the rest); left arm IK with its elbow hint; the sword arm searches the elbow circle for the elbow that lets a nearly neutral wrist point the blade (cost: wrist turn and bend, distance from the elbow opposite the blade, upper-arm twist, elbow inside the body; each frame stays within 20° of the last elbow), then the wrist bends the rest, clamped and rate-limited (21°/18° per frame) so fast cuts lag a little instead of flipping. Wrist targets are kept 0.36–0.585 m from the shoulder. The shield's face turns to `sn`, square to the forearm, top up. Props are lifted off the ground through their hand; dropped props fall flat and stay above the ground.
-5. **Bake** (`mcBake`): 60 fps quaternion tracks for every joint, hips position, and position/rotation tracks for the sword and the shield.
+5. **Weapon away** (channel `ws`): every weapon has a holder `mc_scab` on the left front of the belt, tilted hilt forward for a cross-draw: a scabbard for the sword and falchion, a belt loop for the mace and axe (hung head down). `userData.stow` is where the weapon sits in it; `ws` 0..1 blends the weapon from the fist into it, turning it onto the holder's axis early so it slides in straight. Sheathe and Draw get their hand targets from the rig: the wrist where the hilt sits in the holder, and half a blade length up its axis. Each frame the holder swings to the angle nearest its tilt (plus `ht`) that keeps it off the ground and clear of the left leg, arm and shield; lying down it lies flat.
+6. **Cape** (`mcCape`): four panels, each hanging from the bottom of the one above in the chest's side plane; the angle springs towards hanging (plus drag from the gait speed, `capeDrag`) and is then moved, 5° at a time, to the nearest angle where its edge points clear every box of the body, weapon and shield and the ground. In the roll and once lying in Death (`capeFree`) only the ground counts; the dead body lies on the cape (3 cm up).
+7. **Roll**: `gc` 2 keeps the body touching the ground every frame (lowest corner at 0), `sc` 1 turns the shield with the chest, the legs tucked by FK (`fk`) and back to IK once upright.
+8. **Bake** (`mcBake`): 60 fps quaternion tracks for every joint, hips position, and position/rotation tracks for the weapon, the shield and the cape panels.
 
 ## Checks done
 
@@ -93,6 +106,8 @@ All in `mercenary.js`:
 - `node tools/check-palette.mjs`: all colours within the tiers.
 - GLB export of the model with all 34 clips (about 8 MB).
 
+Known contact: while the right hand reaches across for the hilt (Sheathe and Draw) the forearm grazes the front of the belly, and the blade brushes the mail skirt as it goes into the scabbard, as it does when a real cross-draw scabbard hangs against the leg.
+
 ## Possible next steps
 
-More hair and beard styles, cloth colour options, a cape, draw/sheathe clips with the scabbard, turn-in-place, roll, pick-up and interact clips.
+More hair and beard styles, a hood, a two-handed weapon set, a bow.
