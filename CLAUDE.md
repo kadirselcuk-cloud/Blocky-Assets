@@ -13,6 +13,7 @@ Read this file first in every session, then open only the doc you need:
 | How the code is organised, helper functions, how to add an asset | `docs/ARCHITECTURE.md` |
 | Every asset id, folder, options (generated) | `docs/ASSET_CATALOG.md` |
 | Using assets in another project (GLB, JS API, catalog.json) | `docs/EXPORT.md` |
+| The gear kit (`gr-`): every weapon, shield, helmet, armour, shoulders, gloves, boots, pants, belt and cape the Mercenary can wear, the same pieces on the ground (stand, stuck, pickup) with clips, metals, weapon/shield/protection effects (glow, burning, lightning, ward bubble, auras… any colour, five strengths), potions and power-ups | `docs/GEAR.md` |
 | Animated props (barrels breaking, coffins and lids opening, gates, catapult…): `propAnim`, the list of clips | `docs/ANIMATED_PROPS.md` |
 | The undead kit (`ud-`): graveyards, crypts (modular rooms), catacombs and the depths, the necromancer's castle; the Haunted necropolis scene | `docs/UNDEAD.md` |
 | The wasteland kit (`wl-`): 4 m grid rules, ruined castle, goblin fortress, raided village, cave, terrain, nature and props; the Goblin wasteland scene | `docs/WASTELAND.md` |

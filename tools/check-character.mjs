@@ -5,7 +5,8 @@
 //   jump  = the largest rotation of any arm or leg joint from one frame to the next (a flip shows as a jump; flagged over 25°)
 //   twist = the largest roll of a limb about its own bone axis (swing-twist about local y): upper arms, hands, thighs, feet
 //           (flagged over 100° for upper arms and hands, 50° for thighs and feet)
-//   low   = the lowest point of the model (ground is 0; flagged below -0.005 m; skinned meshes, e.g. wing membranes, per vertex). Death clips are checked too; clips marked
+//   low   = the lowest point of the model (effect meshes, userData.fx, are skipped: glow shells and particles are not solid)
+//           (ground is 0; flagged below -0.005 m; skinned meshes, e.g. wing membranes, per vertex). Death clips are checked too; clips marked
 //           clip.underground (a character climbing out of the ground) are not flagged.
 //   pile  = for clips named Death…/Fall…: the highest point of the body at the end (flagged over 0.55 m: a heap stacked up or
 //           pieces resting on other pieces in the air instead of lying on the ground)
@@ -25,7 +26,7 @@ const TW={upperArm_L:100,upperArm_R:100,hand_L:100,hand_R:100,thigh_L:50,thigh_R
 const J={};root.traverse(q=>{if(LIMB.includes(q.name)&&!J[q.name])J[q.name]=q;});
 const highest=()=>{root.updateMatrixWorld(true);let y=-1e9;root.traverse(q=>{if(!q.isMesh||!q.visible)return;let p=q,s=1,gear=false;while(p){s*=Math.min(p.scale.x,p.scale.y,p.scale.z);if(p.userData.gear)gear=true;p=p.parent;}if(s<.01||gear)return;
   const g=q.geometry.parameters;if(!g||g.width===undefined)return;for(let i=0;i<8;i++){v.set((i&1?.5:-.5)*g.width,(i&2?.5:-.5)*g.height,(i&4?.5:-.5)*g.depth).applyMatrix4(q.matrixWorld);if(v.y>y)y=v.y;}});return y;};
-let lowWho='';const v=new THREE.Vector3(),lowest=()=>{root.updateMatrixWorld(true);let y=1e9,w='';root.traverse(q=>{if(!q.isMesh||!q.visible)return;let p=q,s=1;while(p){s*=Math.min(p.scale.x,p.scale.y,p.scale.z);p=p.parent;}if(s<.01)return;
+let lowWho='';const v=new THREE.Vector3(),lowest=()=>{root.updateMatrixWorld(true);let y=1e9,w='';root.traverse(q=>{if(!q.isMesh||!q.visible||q.userData.fx)return;let p=q,s=1;while(p){s*=Math.min(p.scale.x,p.scale.y,p.scale.z);p=p.parent;}if(s<.01)return;
   if(q.isSkinnedMesh){q.skeleton.update();const n=q.geometry.attributes.position.count;for(let i=0;i<n;i++){q.boneTransform(i,v);v.applyMatrix4(q.matrixWorld);if(v.y<y){y=v.y;w=q.name;}}return;}
   const g=q.geometry.parameters;if(!g||g.width===undefined)return;for(let i=0;i<8;i++){v.set((i&1?.5:-.5)*g.width,(i&2?.5:-.5)*g.height,(i&4?.5:-.5)*g.depth).applyMatrix4(q.matrixWorld);if(v.y<y){y=v.y;let p=q.parent;while(p&&!p.name)p=p.parent;w=p?p.name:'';}}});lowWho=w;return y;};
 const twist=q=>Math.abs(2*Math.atan2(q.y,q.w)*D),wrap=a=>a>180?360-a:a;

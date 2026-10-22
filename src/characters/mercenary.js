@@ -48,12 +48,12 @@ const MC_GEAR={
     mail:(J,M)=>{const mail=M.mail;mcTorso(J,M,mail,mail,mail);mcSleeves(J,M,mail,M.quilt,true);
       bx(J.chest,.25,.07,.23,mail,0,.3,-.005);                                        /* mail collar */
       for(const sd of['L','R']){bx(J['thigh_'+sd],.215,.2,.225,mail,0,-.08,0);}      /* hauberk skirt, split per thigh */
-      mcBelt(J,M);for(const sd of['L','R'])mcPauldron(J['upperArm_'+sd],M);},
+      mcBelt(J,M);if(mcOwnSh(M))for(const sd of['L','R'])mcPauldron(J['upperArm_'+sd],M);},
     /* half plate over mail: breastplate, faulds, big pauldrons, vambraces, tassets over the mail skirt */
     plate:(J,M)=>{const st=M.iron,mail=M.mail;mcTorso(J,M,st,st,mail);mcSleeves(J,M,mail,st,true);bx(J.chest,.25,.07,.23,mail,0,.3,-.005);bx(J.chest,.44,.05,.3,M.ironD,0,.005,0);
       for(const y of[.03,-.03])bx(J.spine,.37+(y>0?0:.01),.055,.25+(y>0?0:.01),y>0?st:M.ironD,0,y+.06,0);
       for(const sd of['L','R']){const ua=J['upperArm_'+sd],fa=J['foreArm_'+sd],s=sd==='L'?1:-1;
-        bx(ua,.22,.05,.22,M.steel,0,.05,0);bx(ua,.225,.05,.225,M.ironD,0,0,0);bx(ua,.228,.05,.228,M.steel,0,-.05,0);bx(ua,.03,.03,.03,M.brass,s*.115,.0,0);
+        if(mcOwnSh(M)){bx(ua,.22,.05,.22,M.steel,0,.05,0);bx(ua,.225,.05,.225,M.ironD,0,0,0);bx(ua,.228,.05,.228,M.steel,0,-.05,0);bx(ua,.03,.03,.03,M.brass,s*.115,.0,0);}
         bx(fa,.145,.06,.145,M.ironD,0,-.02,0);bx(J['thigh_'+sd],.215,.2,.225,mail,0,-.08,0);bx(J['thigh_'+sd],.2,.16,.03,st,0,-.07,.118);}
       mcBelt(J,M);},
     /* studded leather jerkin over a linen shirt: rivets on the chest, leather tassets and bracers */
@@ -74,7 +74,7 @@ const MC_GEAR={
   gloves:{
     leather:(J,M)=>{for(const sd of['L','R']){mcFist(J['hand_'+sd],M.leather,sd);bx(J['foreArm_'+sd],.15,.07,.15,M.leatherL,0,-.245,0);}},
     none:(J,M)=>{for(const sd of['L','R'])mcFist(J['hand_'+sd],M.skin,sd);}},
-  /* helmets return which hair still shows: 'all', 'back' (below the helmet band) or 'none'; the great helm also hides the face */
+  /* helmets return which hair still shows: 'all', 'back' (below the helmet band), 'none', or 'hide' (a closed helm: no hair and no facial hair) */
   helmet:{
     none:()=>'all',
     nasal:(J,M,F)=>{const h=J.head,ir=M.steel,w=F.w;
@@ -88,7 +88,7 @@ const MC_GEAR={
     great:(J,M,F)=>{const h=J.head,ir=M.steel,w=F.w;
       bx(h,w+.07,.34,.345,ir,0,.15,.005);bx(h,w+.03,.03,.3,ir,0,.335,.005);bx(h,w+.074,.03,.35,M.ironD,0,.03,.005);
       bx(h,.2,.018,.012,M.slit,0,.165,.183);bx(h,.05,.012,.012,M.slit,-.06,.075,.183);bx(h,.05,.012,.012,M.slit,-.06,.05,.183);
-      bx(J.neck,.2,.1,.2,M.mail,0,.02,0);return 'none';}},
+      bx(J.neck,.2,.1,.2,M.mail,0,.02,0);return 'hide';}},
   /* weapons: one group 'mc_sword' in the right fist socket, the grip on the origin, the business end along +z, edges along y (knuckles at -y) */
   weapon:{
     sword:(J,M)=>{const g=mcWg(J);
@@ -119,7 +119,14 @@ const MC_GEAR={
       ()=>{}),
     buckler:(J,M)=>{const rows=[];for(let y=.15;y>-.17;y-=.05){const w=2*Math.sqrt(Math.max(0,.18*.18-y*y));rows.push([Math.round(w/.04)*.04,.05,y]);}
       return mcShieldBoard(J,M,rows,s=>{bx(s,.09,.09,.05,M.ironD,0,0,.055);bx(s,.05,.05,.03,M.steelL,0,0,.085);},{fist:true,metal:true});},
-    none:()=>null}};
+    none:()=>null},
+  /* shoulders (the armour builds its own pauldrons while this slot is 'armor'), belt (mcBelt calls it), cape; gear_items.js adds more */
+  shoulders:{armor:()=>{},none:()=>{}},
+  belt:{plain:(J,M)=>{bx(J.spine,.375,.06,.255,M.leatherD,0,0,0);bx(J.spine,.05,.045,.02,M.brass,0,0,.13);bx(J.spine,.08,.1,.04,M.leather,.12,-.06,.13);},none:()=>{}},
+  cape:{none:()=>{},cape:(J,M)=>mcCapeBuild(J,M)}};
+/* slots built on the body, in order (the coif's mantle sits on the armour, so the head comes after these) */
+const MC_ORDER=['armor','shoulders','pants','boots','gloves','weapon','shield'];
+const mcOwnSh=M=>!M.sel||!M.sel.shoulders||M.sel.shoulders==='armor';
 function mcWg(J){const g=new THREE.Group();g.name='mc_sword';J.socket_R.add(g);return g;}
 /* the weapon's holder on the left hip, 'mc_scab' (it swings back so it never goes into the ground, mcSolve): a scabbard for blades (thickness t,
    width w, length l), a leather belt loop for the mace and axe (hung head down through it, by the haft under the grip). userData.stow is where the
@@ -139,7 +146,7 @@ function mcShieldBoard(J,M,rows,extra,o={}){const mt=new THREE.Group();mt.name='
   const s=new THREE.Group();s.name='mc_shield';s.userData.fist=!!o.fist;mt.add(s);s.position.set(.075,0,0);
   s.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(0,0,-1),new THREE.Vector3(0,1,0),new THREE.Vector3(1,0,0)));
   /* shield frame: z = face normal, y = up; the solver turns it every frame (mcShield) */
-  for(const[w,h,y]of rows){if(w<=0)continue;bx(s,w,h,.035,o.metal?M.steel:M.planks,0,y,.0175);if(!o.metal&&w>.08)bx(s,w-.04,h,.01,M.paint,0,y,.04);}
+  for(const[w,h,y]of rows){if(w<=0)continue;bx(s,w,h,.035,o.board||(o.metal?M.steel:M.planks),0,y,.0175);if((o.paint||!o.metal&&!o.board)&&w>.08)bx(s,w-.04,h,.01,M.paint,0,y,.04);}
   extra(s);return s;}
 
 function mcTorso(J,M,chestM,bellyM,hipsM){bx(J.hips,.38,.2,.25,hipsM,0,-.03,0);bx(J.spine,.36,.22,.24,bellyM,0,.08,0);
@@ -147,7 +154,7 @@ function mcTorso(J,M,chestM,bellyM,hipsM){bx(J.hips,.38,.2,.25,hipsM,0,-.03,0);b
 function mcSleeves(J,M,upper,fore,long){for(const sd of['L','R']){const ua=J['upperArm_'+sd],fa=J['foreArm_'+sd];
   bx(ua,.18,.15,.18,upper,0,-.04,0);bx(ua,.15,.3,.15,long?upper:M.skin,0,-.17,0);if(!long)bx(ua,.16,.08,.16,upper,0,-.1,0);
   bx(fa,.14,.12,.14,fore||M.skin,0,-.06,0);bx(fa,.13,.28,.13,fore||M.skin,0,-.13,0);}}
-function mcBelt(J,M){bx(J.spine,.375,.06,.255,M.leatherD,0,0,0);bx(J.spine,.05,.045,.02,M.brass,0,0,.13);bx(J.spine,.08,.1,.04,M.leather,.12,-.06,.13);}
+function mcBelt(J,M){(MC_GEAR.belt[M.sel&&M.sel.belt||'plain']||MC_GEAR.belt.plain)(J,M);}
 function mcPauldron(ua,M){bx(ua,.21,.04,.21,M.leather,0,.045,0);bx(ua,.215,.05,.215,M.leatherD,0,-.005,0);bx(ua,.218,.045,.218,M.leather,0,-.05,0);
   const s=Math.sign(ua.position.x);for(const z of[-.06,.06])bx(ua,.02,.02,.02,M.brass,s*.11,.0,z);}
 function mcLegs(J,M,top,low,braies){for(const sd of['L','R']){const th=J['thigh_'+sd],sn=J['shin_'+sd];
@@ -170,7 +177,7 @@ function mcHead(J,M,sel){const h=J.head,F=MC_FACE[sel.face],w=F.w,hw=w/2;bx(J.ne
   if(sel.scar==='cheek')for(let i=0;i<4;i++)bx(h,.013,.013,.01,M.scar,-.06-i*.011,.088+i*.014,fz+.003);
   if(sel.scar==='eye')for(const y of[.198,.184,.122,.108,.094])bx(h,.012,.013,.01,M.scar,.062,y,y>.16?.139+F.brow:fz+.003);
   const helm=MC_GEAR.helmet[sel.helmet](J,M,F);
-  if(sel.helmet!=='great'){mcBeard(h,M,sel.beard,F);mcHair(h,M,sel.hairStyle,helm,F);}}
+  if(helm!=='hide'){mcBeard(h,M,sel.beard,F);mcHair(h,M,sel.hairStyle,helm,F);}}
 function mcBeard(h,M,st,F){const hr=M.hair,fz=.14;
   if(st==='none'||st==='stubble'){bx(h,.07,.01,.01,M.mouth,0,.055,fz+.009);if(st==='stubble')bx(h,.1,.016,.012,M.stub,0,.071,fz+.007);return;}
   if(st==='moustache'||st==='goatee'){bx(h,.12,.022,.03,hr,0,.072,.145);for(const s of[1,-1])bx(h,.02,.04,.025,hr,s*.058,.053,.148);bx(h,.06,.01,.01,M.mouth,0,.055,fz+.009);
@@ -188,28 +195,42 @@ function mcHair(h,M,st,show,F){const hr=M.hair,w=F.w,hw=w/2;if(st==='bald'||show
   if(st==='long'){bx(h,w+.01,.18,.05,hr,0,.06,-.13);for(const s of[1,-1])bx(h,.035,.18,.07,hr,s*(hw+.012),.09,-.08);}
   if(st==='tied'&&show==='back')bx(h,.05,.16,.04,hr,0,.1,-.165);}
 
-function buildMercenary(o={}){const opt=k=>o[k]!==undefined&&o[k]!=='random'?o[k]:MC_DEF[k];const sel={};for(const k in MC_DEF)sel[k]=opt(k);
-  const skinHex=MC_SKIN[sel.skin][0],hairHex=MC_HAIR[sel.hair][0],root=new THREE.Group();root.userData.lights=[];
+/* materials for one look (sel); gear_items.js adds the metals (mcMetal) */
+function mcMats(sel){const skinHex=MC_SKIN[sel.skin][0],hairHex=MC_HAIR[sel.hair][0];
   const M={skin:bm(skinHex,'skin'),skinD:bm(mcShade(skinHex,.85),'skin'),stub:bm(mcMix(skinHex,hairHex,.45),'skin'),scar:bm(mcMix(skinHex,'#d9b8a8',.45),'plain'),hair:bm(hairHex,'hair'),
     eye:bm(MC_EYE[sel.eyes][0],'plain'),eyeW:bm(MC_COL.eyeW,'plain'),lip:bm(MC_COL.lip,'plain'),mouth:bm(MC_COL.mouth,'plain'),slit:bm(MC_COL.slit,'plain'),
     linen:bm(MC_COL.linen),shirt:bm(MC_CLOTH[sel.cloth][0]||MC_COL.linen),quilt:bm(MC_CLOTH[sel.cloth][0]||MC_COL.quiltDye,'quilt'),cape:bm(MC_CLOTH[sel.cloth][0]||'#5e5446'),wool:bm(MC_COL.wool),leather:bm(MC_COL.leather,'leather'),leatherD:bm(MC_COL.leatherD,'leather'),leatherL:bm(MC_COL.leatherL,'leather'),
     boot:bm(MC_COL.boot,'leather'),sole:bm(MC_COL.sole,'leather'),brass:mcMat(MC_COL.brass,'steel'),iron:mcMat(MC_COL.iron,'steel'),ironD:mcMat(MC_COL.ironD,'steel'),steel:mcMat(MC_COL.steel,'steel'),
     steelL:mcMat(MC_COL.steelL,'steel'),mail:mcMat(MC_COL.iron,'mail'),planks:mcMat(MC_COL.wood,'planks'),wood:bm(MC_COL.woodD,'leather'),paint:bm(MC_SHCOL[sel.shieldCol][0])};
-  M.pantsTop={wool:M.wool,leather:M.leather,none:M.linen}[sel.pants];
-  /* joints */
-  const Jt={};const jn=(n,p,x,y,z)=>Jt[n]=J(n,p,x,y,z);
+  M.pantsTop={wool:M.wool,leather:M.leather,none:M.linen}[sel.pants]||M.wool;M.sel=sel;
+  /* skin, hair and face: never part of a gear piece (the ground versions and the armour glow skip them) */
+  M.bodyMats=new Set([M.skin,M.skinD,M.stub,M.scar,M.hair,M.eye,M.eyeW,M.lip,M.mouth]);return M;}
+/* the joints, in the rest pose (arms hanging, legs straight) */
+function mcJoints(root){const Jt={};const jn=(n,p,x,y,z)=>Jt[n]=J(n,p,x,y,z);
   jn('hips',root,0,MCB.hipsY,0);jn('spine',Jt.hips,0,MCB.spine,0);jn('chest',Jt.spine,0,MCB.chest,0);jn('neck',Jt.chest,0,MCB.neck,0);jn('head',Jt.neck,0,MCB.headY,0);
   for(const[sd,s]of[['L',1],['R',-1]]){jn('upperArm_'+sd,Jt.chest,s*MCB.shX,MCB.shY,0);jn('foreArm_'+sd,Jt['upperArm_'+sd],0,-MCB.ua,0);jn('hand_'+sd,Jt['foreArm_'+sd],0,-MCB.fa,0);
     jn('socket_'+sd,Jt['hand_'+sd],0,-MCB.grip,0).userData.socket=true;
     jn('thigh_'+sd,Jt.hips,s*MCB.hipX,-MCB.hipDrop,0);jn('shin_'+sd,Jt['thigh_'+sd],0,-MCB.thigh,0);jn('foot_'+sd,Jt['shin_'+sd],0,-MCB.shin,0);jn('toes_'+sd,Jt['foot_'+sd],0,-MCB.ank,MCB.ball);}
-  /* body gear first (the coif's mantle sits on the chest), then the head with its helmet, facial hair and hair */
-  for(const slot of['armor','pants','boots','gloves','weapon','shield'])MC_GEAR[slot][sel[slot]](Jt,M);
-  mcHead(Jt,M,sel);if(sel.cape==='cape')mcCapeBuild(Jt,M);
-  const joints=[];root.traverse(q=>{if(q.userData.joint&&!q.userData.socket)joints.push(q);});root.userData.joints=joints;root.userData.ground=2.2;root.userData.sel=sel;
-  const nm=k=>MC_SLOTS[k][sel[k]],lk=k=>MC_LOOK[k][sel[k]].toLowerCase();
-  root.userData.variantText=`${MC_SKIN[sel.skin][1]} skin, ${lk('face')} face, ${MC_EYE[sel.eyes][1].toLowerCase()} eyes, ${MC_HAIR[sel.hair][1].toLowerCase()} ${lk('hairStyle')} hair, ${lk('beard')}${sel.scar!=='none'?', scar '+lk('scar'):''}. ${nm('armor')}, ${nm('pants').toLowerCase()}, ${nm('boots').toLowerCase()}, gloves: ${nm('gloves').toLowerCase()}, helmet: ${nm('helmet').toLowerCase()}${sel.cape==='cape'?', a '+MC_CLOTH[sel.cloth][1].toLowerCase()+' cape':''}. ${nm('weapon')} and ${nm('shield').toLowerCase()}${sel.shield!=='none'&&sel.shield!=='buckler'?' ('+MC_SHCOL[sel.shieldCol][1].toLowerCase()+')':''}.`;
-  if(!o.noClips)root.userData.clips=mercenaryClips(sel.weapon,sel.shield,sel.cape).concat(mcDeath(sel.weapon,sel.shield,sel.helmet,sel.armor,sel.hairStyle==='long'?'long':'short',sel.cape));
+  return Jt;}
+/* which material set a slot gets: the weapon its own metal, armour pieces and shields the armour metal */
+const mcSlotM=(slot,M,Mw,Ma)=>slot==='weapon'?Mw:Ma;
+function buildMercenary(o={}){const opt=k=>o[k]!==undefined&&o[k]!=='random'?o[k]:MC_DEF[k];const sel={};for(const k in MC_DEF)sel[k]=opt(k);
+  for(const k in MC_SLOTS)if(!MC_GEAR[k][sel[k]])sel[k]=MC_DEF[k];
+  const root=new THREE.Group();root.userData.lights=[];
+  const M=mcMats(sel),Mw=mcMetal(M,sel.wmetal),Ma=mcMetal(M,sel.ametal);
+  const Jt=mcJoints(root);
+  /* body gear first (the coif's mantle sits on the chest), then the head with its helmet, facial hair and hair, then the cape */
+  for(const slot of MC_ORDER)MC_GEAR[slot][sel[slot]](Jt,mcSlotM(slot,M,Mw,Ma));
+  mcHead(Jt,Ma,sel);MC_GEAR.cape[sel.cape](Jt,M);
+  const joints=[];root.traverse(q=>{if(q.userData.joint&&!q.userData.socket)joints.push(q);});root.userData.joints=joints;root.userData.ground=2.2;root.userData.sel=sel;root.userData.M=M;
+  const nm=k=>MC_SLOTS[k][sel[k]],lk=k=>MC_LOOK[k][sel[k]].toLowerCase(),cape=sel.cape!=='none';
+  root.userData.variantText=`${MC_SKIN[sel.skin][1]} skin, ${lk('face')} face, ${MC_EYE[sel.eyes][1].toLowerCase()} eyes, ${MC_HAIR[sel.hair][1].toLowerCase()} ${lk('hairStyle')} hair, ${lk('beard')}${sel.scar!=='none'?', scar '+lk('scar'):''}. ${nm('armor')}${sel.shoulders!=='armor'?', shoulders: '+nm('shoulders').toLowerCase():''}, ${nm('pants').toLowerCase()}, ${nm('boots').toLowerCase()}, gloves: ${nm('gloves').toLowerCase()}, helmet: ${nm('helmet').toLowerCase()}, belt: ${nm('belt').toLowerCase()}${cape?', '+nm('cape').toLowerCase()+' ('+MC_CLOTH[sel.cloth][1].toLowerCase()+')':''}. ${nm('weapon')} and ${nm('shield').toLowerCase()}${sel.shield!=='none'&&sel.shield!=='buckler'?' ('+MC_SHCOL[sel.shieldCol][1].toLowerCase()+')':''}.`;
+  /* clips: every cape has the same four panels, so one clip set serves them all */
+  const cp=cape?'cape':'none';
+  if(!o.noClips)root.userData.clips=mercenaryClips(sel.weapon,sel.shield,cp).concat(mcDeath(sel.weapon,sel.shield,sel.helmet,sel.armor,sel.hairStyle==='long'?'long':'short',sel.cape,sel.shoulders,sel.belt));
   return root;}
+/* metals: gear_items.js replaces this with the metal choices */
+function mcMetal(M){return M;}
 
 /* ======================= the solver ======================= */
 const MC_R=Math.PI/180;
@@ -336,7 +357,7 @@ function mcKeys(base,keys){const T=[],Vs=[];let cur=Object.assign({},base);
 const MC_RIGS={};
 function mcRig(w,s,c){const k=w+'|'+s+'|'+(c||'none');if(MC_RIGS[k])return MC_RIGS[k];const m=buildMercenary({weapon:w,shield:s,cape:c||'none',noClips:true}),j={};m.traverse(q=>{if(q.name&&!j[q.name])j[q.name]=q;});
   /* the long kite shield is carried higher and a little further out, so it clears the legs */
-  return MC_RIGS[k]={m,j,lOff:s==='kite'?[.05,.14,0]:s==='buckler'?[.05,0,-.04]:[0,0,0]};}
+  return MC_RIGS[k]={m,j,lOff:j.mc_shield&&j.mc_shield.userData.lOff||(s==='kite'?[.05,.14,0]:s==='buckler'?[.05,0,-.04]:[0,0,0])};}
 const MC_TRK=['hips','spine','chest','neck','head','upperArm_L','foreArm_L','hand_L','upperArm_R','foreArm_R','hand_R','thigh_L','shin_L','foot_L','toes_L','thigh_R','shin_R','foot_R','toes_R','mc_shmount','mc_scab','mc_cape0','mc_cape1','mc_cape2','mc_cape3'];
 /* bake one clip: pose(t) solved every frame; drops: {obj:'mc_sword'|'mc_shield', t, d (fall time), at:[x,z,yaw]} let a prop go and lay it flat on the ground */
 function mcBake(R,name,dur,loop,pose,note,ex={}){const fps=ex.fps||60,n=Math.max(2,Math.round(dur*fps)),times=[],data={},prev={},Q=THREE.Quaternion,V3=THREE.Vector3;
@@ -474,9 +495,12 @@ function mercenaryClips(w,s,cp){const ck=w+'|'+s+'|'+(cp||'none');if(MC_CLIPS[ck
   K('Cast spell 3',2.4,false,ST,[[0,{}],[.24,{hR:[-.22,-.02,.48],bR:[-.05,.8,.6]}],[.5,{P:[0,-.04,0],H:[0,-6,0],S:[2,0,0],C:[0,0,0],hR:[-.07,.12,.43],eR:[-1,-.6,0],bR:[0,1,.1],hL:[.3,-.16,.24],eL:[1,-.2,-.4],sn:[.9,0,.45],Hd:[14,0,0]}],
     [1.3,{hR:[-.07,.13,.44],Hd:[16,0,0]}],[1.6,{P:[0,-.02,0],H:[-2,-6,0],C:[-6,0,0],hR:[-.22,.7,.2],eR:[-.8,.1,.6],bR:[-.05,1,.05],Hd:[-14,0,0]}],[1.9,{}],[2.4,'ST']],
     'Holds the sword upright before his face, head bowed, then thrusts it up to the sky: a blessing on himself',WAR);
+  /* with a weapon longer than the arming sword (or curved) he crouches less deep as he drives it down, so its point stops at the ground (gear kit weapons) */
+  let reach=0;if(R.j.mc_sword)R.j.mc_sword.traverse(q=>{const g=q.isMesh&&q.geometry.parameters;if(g&&g.width!==undefined)reach=Math.max(reach,Math.hypot(Math.abs(q.position.z)+g.depth/2,Math.abs(q.position.y)+g.height/2));});
+  const dy=['sword','falchion','mace','axe','none'].includes(w)?0:Math.max(0,reach-.75);
   K('Cast spell 4',2.6,false,ST,[[0,{}],[.22,RISE],[.45,UP],[.62,{P:[0,-.2,.03],H:[10,-14,0],S:[6,0,0],hR:[-.16,.2,.5],eR:[-.6,-1,-.2],bR:[0,.1,1]}],
-    [.8,{P:[0,-.42,.06],H:[22,-14,0],S:[14,0,0],C:[10,0,0],FL:[.15,.24,0,0,0],FR:[-.17,-.22,-32,0,24],hR:[-.12,-.24,.56],eR:[-.6,-1,-.2],bR:[0,-1,.12],hL:[.5,.04,.2],eL:[1,-.2,-.3],sn:[1,0,.25],Hd:[6,0,0]}],
-    [1.6,{P:[0,-.42,.06]}],[1.92,{P:[0,-.3,.05],hR:[-.3,-.02,.44],bR:[-.1,.2,1]}],[2.25,{P:[0,-.14,.02],H:[4,-14,0],S:[4,-7,0],C:[2,-9,0],FR:[-.17,-.2,-32,0,0],FL:[.15,.2,0,0,0],hR:[-.3,-.16,.32],eR:[-.4,-1,-.4],bR:[-.15,.55,.82],sn:[-.12,0,1],Hd:[0,0,0]}],[2.6,'ST']],
+    [.8,{P:[0,-.42+dy,.06],H:[22,-14,0],S:[14,0,0],C:[10,0,0],FL:[.15,.24,0,0,0],FR:[-.17,-.22,-32,0,24],hR:[-.12,-.24,.56],eR:[-.6,-1,-.2],bR:[0,-1,.12],hL:[.5,.04,.2],eL:[1,-.2,-.3],sn:[1,0,.25],Hd:[6,0,0]}],
+    [1.6,{P:[0,-.42+dy,.06]}],[1.92,{P:[0,-.3+dy*.5,.05],hR:[-.3,-.02,.44],bR:[-.1,.2,1]}],[2.25,{P:[0,-.14,.02],H:[4,-14,0],S:[4,-7,0],C:[2,-9,0],FR:[-.17,-.2,-32,0,0],FL:[.15,.2,0,0,0],hR:[-.3,-.16,.32],eR:[-.4,-1,-.4],bR:[-.15,.55,.82],sn:[-.12,0,1],Hd:[0,0,0]}],[2.6,'ST']],
     'Raises the sword and drives it point down to the ground in a deep crouch: a spell on the ground around him',WAR);
   K('Channel spell',2,true,Object.assign({},ST,UP,{P:[0,-.07,0]}),[[0,{}],[1,{P:[0,-.08,0],hR:[-.23,.7,.18],C:[-3,0,0]}],[2,'ST']],'Holds the sword up overhead while a spell is kept going');
   /* ---- reactions ---- */
@@ -521,10 +545,10 @@ function mercenaryClips(w,s,cp){const ck=w+'|'+s+'|'+(cp||'none');if(MC_CLIPS[ck
         p['F'+sd]=[F[0]*c+F[1]*sn,-F[0]*sn+F[1]*c,yw,.07*Math.sin(Math.PI*k),0];}
       p.P[1]-=.02*Math.sin(Math.PI*u*2);return p;},sg>0?'Turns 90 degrees to the left on the spot, behind the shield':'Turns 90 degrees to the right on the spot, behind the shield',{next:'Idle (war mode)',turn:90*sg}));}
   return MC_CLIPS[ck]=C;}
-/* the Roll and Death are baked on a rig wearing the same helmet, armour, hairstyle and cape, so he rolls over and lies on what he wears (a great helm or coif is bulkier) */
+/* the Roll and Death are baked on a rig wearing the same helmet, armour, shoulders, belt, hairstyle and cape, so he rolls over and lies on what he wears (a great helm or coif is bulkier) */
 const MC_DEATH={};
-function mcDeath(w,s,h,a,hs,cp){cp=cp||'none';const ck=[w,s,h,a,hs,cp].join('|');if(MC_DEATH[ck])return MC_DEATH[ck];const ST=MC_ST,C=[],WAR={next:'Idle (war mode)'};
-  const k=[w,s,h,a,hs,cp].join('|');if(!MC_RIGS[k]){const m=buildMercenary({weapon:w,shield:s,helmet:h,armor:a,hairStyle:hs,cape:cp,noClips:true}),j={};m.traverse(q=>{if(q.name&&!j[q.name])j[q.name]=q;});
+function mcDeath(w,s,h,a,hs,cp,sh,bl){cp=cp||'none';sh=sh||'armor';bl=bl||'plain';const ck=[w,s,h,a,hs,cp,sh,bl].join('|');if(MC_DEATH[ck])return MC_DEATH[ck];const ST=MC_ST,C=[],WAR={next:'Idle (war mode)'};
+  const k=ck;if(!MC_RIGS[k]){const m=buildMercenary({weapon:w,shield:s,helmet:h,armor:a,hairStyle:hs,cape:cp,shoulders:sh,belt:bl,noClips:true}),j={};m.traverse(q=>{if(q.name&&!j[q.name])j[q.name]=q;});
     MC_RIGS[k]={m,j,lOff:mcRig(w,s).lOff};}
   const R=MC_RIGS[k],K=(name,dur,loop,base,keys,note,ex)=>C.push(mcBake(R,name,dur,loop,mcKeys(base,keys),note,ex));
   /* ---- forward roll: the body keeps touching the ground (gc 2), the shield rides on the chest (sc), the blade points out to the side so it
@@ -546,12 +570,13 @@ function mcDeath(w,s,h,a,hs,cp){cp=cp||'none';const ck=[w,s,h,a,hs,cp].join('|')
 
 FOLDERS['characters'].children.push('characters/players');FOLDERS['characters/players']={name:'Player characters',blurb:'Playable heroes with customisable looks and gear',children:[]};
 const MC_CH=t=>Object.entries(t).map(([k,v])=>[k,Array.isArray(v)?v[1]:v]);
-ASSETS.push({id:'mercenary',folder:'characters/players',name:'Mercenary',kind:'character',groundR:2.2,build:(sd,o)=>buildMercenary(o||{}),
-  opts:[{key:'skin',label:'Skin',choices:MC_CH(MC_SKIN),def:'light'},{key:'face',label:'Face',choices:MC_CH(MC_LOOK.face),def:'square'},{key:'eyes',label:'Eyes',choices:MC_CH(MC_EYE),def:'brown'},
+function mcOpts(){return [{key:'skin',label:'Skin',choices:MC_CH(MC_SKIN),def:'light'},{key:'face',label:'Face',choices:MC_CH(MC_LOOK.face),def:'square'},{key:'eyes',label:'Eyes',choices:MC_CH(MC_EYE),def:'brown'},
     {key:'hair',label:'Hair colour',choices:MC_CH(MC_HAIR),def:'brown'},{key:'hairStyle',label:'Hairstyle',choices:MC_CH(MC_LOOK.hairStyle),def:'short'},
     {key:'beard',label:'Facial hair',choices:MC_CH(MC_LOOK.beard),def:'short'},{key:'scar',label:'Scar',choices:MC_CH(MC_LOOK.scar),def:'none'},
     {key:'weapon',label:'Weapon',choices:MC_CH(MC_SLOTS.weapon),def:'sword'},{key:'shield',label:'Shield',choices:MC_CH(MC_SLOTS.shield),def:'heater'},{key:'shieldCol',label:'Shield colour',choices:MC_CH(MC_SHCOL),def:'red'},
     {key:'helmet',label:'Helmet',choices:MC_CH(MC_SLOTS.helmet),def:'none'},{key:'armor',label:'Armour',choices:MC_CH(MC_SLOTS.armor),def:'mail'},
     {key:'gloves',label:'Gloves',choices:MC_CH(MC_SLOTS.gloves),def:'leather'},{key:'boots',label:'Boots',choices:MC_CH(MC_SLOTS.boots),def:'leather'},
-    {key:'pants',label:'Pants',choices:MC_CH(MC_SLOTS.pants),def:'wool'},{key:'cape',label:'Cape',choices:MC_CH(MC_SLOTS.cape),def:'none'},{key:'cloth',label:'Cloth colour',choices:MC_CH(MC_CLOTH),def:'natural'}],
+    {key:'pants',label:'Pants',choices:MC_CH(MC_SLOTS.pants),def:'wool'},{key:'cape',label:'Cape',choices:MC_CH(MC_SLOTS.cape),def:'none'},{key:'cloth',label:'Cloth colour',choices:MC_CH(MC_CLOTH),def:'natural'}];}
+ASSETS.push({id:'mercenary',folder:'characters/players',name:'Mercenary',kind:'character',groundR:2.2,build:(sd,o)=>buildMercenary(o||{}),
+  opts:mcOpts(),
   desc:'Mercenary: the first player character, a powerful fighter with a one-handed weapon and a shield, about 1.97 m tall, built from scratch. Looks: skin (pale, light, tan, dark, black), face (square jaw, broad, lean, weathered), eyes (green, blue, brown), hair colour (white, red, brown, black, blonde, gray), hairstyle (short, long, tied back, buzz cut, bald), facial hair (short beard, full beard, stubble, moustache, goatee, clean-shaven) and a scar. Every gear slot can be changed: weapon (arming sword with a scabbard on the hip, falchion, flanged mace, bearded axe, none), shield (heater, round, kite, buckler, none) and its colour, helmet (none, nasal helm, mail coif, kettle hat, great helm), armour (mail hauberk, half plate, studded leather, gambeson, linen shirt), gloves, boots, pants, a cape and the cloth colour. 43 clips with a weapon: Idle, Walk, Run, war-mode Idle and Walk, Walk back, Strafe left and right, Dodge left, right and back, Jump, Attack 1 (forehand), Attack 2 (backhand), Attack 3 (overhead), Attack 4 (thrust), Combo, Heavy attack, Spin attack, Shield bash, Kick, Block, Blocking (hold), Cast spell 1 to 4, Channel spell, Hit 1, Hit 2, Heavy hit, Taunt, Victory, Death (weapon and shield drop), Sheathe, Idle and Walk with the weapon sheathed, Draw, Pick up, Interact, Turn left and right, and a forward Roll.'});

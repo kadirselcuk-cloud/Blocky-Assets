@@ -15,20 +15,27 @@ Open it: `http://localhost:<port>/#/a/mercenary`
 | Hairstyle | Short, Long, Tied back, Buzz cut, Bald | Under a nasal helm or kettle hat only what hangs below the band shows; none under the coif or great helm |
 | Facial hair | Short beard, Full beard, Stubble, Moustache, Goatee, Clean-shaven | Stubble tints the jaw |
 | Scar | None, Cheek, Over the eye | |
-| Weapon | Arming sword, Falchion, Flanged mace, Bearded axe, None | Right fist. With the sword an empty scabbard hangs on the left hip |
-| Shield | Heater, Round, Kite, Buckler, None | Heater, round and kite on the left forearm; the buckler in the fist; the kite is carried 10 cm higher |
-| Shield colour | Red, Blue, Green, Black, Ochre, White | Painted face; the buckler is plain steel |
-| Helmet | None, Nasal helm, Mail coif, Kettle hat, Great helm | The great helm hides the face (horizontal eye slit only, no cross) |
-| Armour | Mail hauberk, Half plate, Studded leather, Gambeson, Linen shirt | Half plate: iron breastplate, faulds, steel pauldrons and vambraces, tassets over the mail skirt; studded leather: jerkin with brass rivets, tassets, bracers over linen sleeves |
-| Gloves | Leather gloves, None | |
-| Boots | Leather boots, None (barefoot) | |
-| Pants | Wool trousers, Leather trousers, None (linen braies) | |
-| Cape | None, Cape | Four cloth panels from the shoulders, laid every frame (see below) |
+| Weapon | Arming sword, Falchion, Flanged mace, Bearded axe, Longsword, Broadsword, Scimitar, Short sword, Dagger, Rapier, Cleaver, War hammer, Morning star, War pick, Hand axe, Double axe, Spiked club, Sceptre, Torch, None | Right fist. Blades hang in a scabbard on the left hip, hafted weapons in a belt loop. Pieces: docs/GEAR.md |
+| Weapon metal | Steel, Black iron, Bronze, Gold, Silver, Mithril, Obsidian, Bone | |
+| Weapon effect, colour, strength | None, Glow, Burning, Lightning, Frost, Dripping venom, Smoke, Pulsing runes, Radiant; any spell colour; Faint to Blazing | The torch burns unless another effect is chosen (gear_fx.js) |
+| Shield | Heater, Round, Kite, Buckler, Steel heater, Targe, Spiked buckler, Oblong, Ornate heater, Dark round, None | Heater, round, kite and the big ones on the left forearm; bucklers in the fist |
+| Shield colour | Red, Blue, Green, Black, Ochre, White | Painted face; bucklers and the targe are plain |
+| Shield effect | as the weapon effect | Uses the protection colour and strength |
+| Helmet | None, Nasal helm, Mail coif, Kettle hat, Great helm, Bascinet, Sallet, Armet, Horned, Winged, Ridge helm, Crown, Hood, Leather cap, Crested great helm, Dark helm, Mage hat | Closed helms hide the face (horizontal slits only, no cross) |
+| Armour | Mail hauberk, Half plate, Studded leather, Gambeson, Full plate, Ornate plate, Warlord plate, Brigandine, Scale, Lamellar, Surcoat over mail, Mail shirt, Battlemage robe, Ranger leathers, Barbarian furs, Linen shirt | |
+| Armour metal | as the weapon metal | Armour, shoulders, helmet, gloves, boots, pants and shield |
+| Shoulders | Armour's own, None, Leather, Steel, Spiked, Fur mantle, Gilded, Mail mantle | |
+| Gloves | Leather, Mail mittens, Plate gauntlets, Fingerless with bracers, Studded, Spiked gauntlets, None | |
+| Boots | Leather, Plate sabatons, Riding, Fur, Mail chausses and shoes, Iron-shod, None (barefoot) | |
+| Pants | Wool, Leather, Plate cuisses, Mail chausses, Padded, Fur leggings, None (linen braies) | |
+| Belt | Leather, With pouches, With potions, Gilded, Sash, Rope, None | |
+| Cape | None, Cape, Fur-collared, Royal, Tattered, Hooded | Four cloth panels from the shoulders, laid every frame (see below); one clip set for all |
+| Protection effect, colour, strength | None, Armour glow, Ward bubble, Rune rings, Flame, Frost, Holy, Shadow, Storm, Poison; any spell colour; Faint to Blazing | Baked into every clip (docs/GEAR.md) |
 | Cloth colour | Natural, Red, Blue, Green, Black, Brown | Gambeson, linen shirt and cape; Natural keeps the undyed quilt and linen and a grey-brown cape |
 
 Male only. No "New look": the look is set by the options. Clips are cached per weapon and shield; Roll and Death are baked per weapon, shield, helmet, armour, long hair and cape (`mcDeath`), so he rolls over and lies on what he wears.
 
-Adding a gear piece: one entry in `MC_SLOTS` (name) and one builder in `MC_GEAR[slot][key]`, which gets the joints and the materials. `buildMercenary` calls one builder per slot.
+Adding a gear piece: one entry in `MC_SLOTS` (name) and one builder in `MC_GEAR[slot][key]`, which gets the joints and the materials (gear_items.js). `buildMercenary` calls one builder per slot (`MC_ORDER`, then the head and the cape); the Gear folder gets the piece on the ground by itself.
 
 ## Body
 
