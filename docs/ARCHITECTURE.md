@@ -12,6 +12,7 @@
 | core/palette.js | `PAL`: the approved colour ramps (shared materials, faction skins, light ramps, rarity); loaded first; see PALETTE.md |
 | core/models.js | RNG (`mulberry32`, `hashStr`, `seed`), canvas texture helpers, `box()` with world-space UVs, `put()`, legacy smooth buildings (unused) |
 | core/anim.js | villager clip sampler (`sampleClip`) and the 13 villager clips scaled per body type `VB` |
+| core/elbows.js | `fixElbows(root)`: loaded after every asset file (before export), it wraps every `ASSETS[].build` (the unfixed builder stays as `buildRaw`) and turns reversed elbows out of every clip of a built character (see CHARACTER_CREATION.md, "nothing reversed") |
 | characters/villager.js | `bm()` pixel materials for characters, `bx()` box helper, `villagerTraits`, `buildVillager(kind,seed,job,force)`, `TOOLS` (held tools plus workpieces), `buildWorkpiece` |
 | characters/occ.js | `OCC` occupations (outfit, head, accessories, tool), `applyOccupation`, extra tools |
 | characters/registry_chars.js | registers the villager, woman, boy and girl |

@@ -33,6 +33,14 @@ last cut of the combo, draw). From now on:
 3. The same look applies to anything that leans or hangs: ladders lean into what they climb, lids against their box, a scabbard hangs from its
    top, straps run from the body to what they hold. Look for it in the contact sheets of every clip and in the asset views.
 4. When a solver chooses the elbow (Mercenary `mcArmR`), it carries the same rule as a cost, so the search never settles on a reversed elbow.
+5. For every other character the rule is applied after the build: `src/core/elbows.js` (`fixElbows`) runs on every built asset with clips.
+   For each clip and arm it finds the turn of the arm round the shoulder-hand line that puts the elbow out or down (the hand stays
+   where it is; a hand that holds something or pushes on the ground keeps its world rotation, so the grip does not move). A path search
+   over the whole clip keeps the turn small and smooth: it never makes the upper arm or hand move more than 22° (or what they already
+   moved) from one frame to the next, nor twist past 95° about their own bone, so no clip gets a new JUMP or TWIST. A looping clip ends
+   on the turn it starts with. A new character needs nothing extra; still author the elbow pole (`pL`/`pR`) the right way, since the
+   fix only turns what the keys got wrong. Known exceptions (2026-10-26), where the turn needed is faster than the jump limit allows and
+   the elbow stays slightly up: lich Spell 1 (bolt), ogre-magi Attack 1, skeleton Shield bash, efreet Appear.
 
 ## How twists happen, and how to avoid them
 
