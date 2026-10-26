@@ -8,6 +8,9 @@
 //   low   = the lowest point of the model (effect meshes, userData.fx, are skipped: glow shells and particles are not solid)
 //           (ground is 0; flagged below -0.005 m; skinned meshes, e.g. wing membranes, per vertex). Death clips are checked too; clips marked
 //           clip.underground (a character climbing out of the ground) are not flagged.
+//   elbow = a reversed elbow (decision 2026-10-24, docs/CHARACTER_CREATION.md): while a hand is below its shoulder and the arm is bent
+//           more than 25°, the elbow must not point up or into the body (in the chest's frame: up more than 0.55, inwards more than 0.35).
+//           Death…/Fall… clips (lying down) and clips with clip.elbowFree are skipped
 //   pile  = for clips named Death…/Fall…: the highest point of the body at the end (flagged over 0.55 m: a heap stacked up or
 //           pieces resting on other pieces in the air instead of lying on the ground)
 // Exit code 1 when anything is flagged.
@@ -23,7 +26,12 @@ if(!A){console.error('unknown asset id: '+id);process.exit(2);}
 const root=A.build(seedS?+seedS:A.defaultSeed||1,optJ?JSON.parse(optJ):{}),mx=new THREE.AnimationMixer(root),D=180/Math.PI;
 const LIMB=['upperArm_L','foreArm_L','hand_L','upperArm_R','foreArm_R','hand_R','thigh_L','shin_L','foot_L','thigh_R','shin_R','foot_R'];
 const TW={upperArm_L:100,upperArm_R:100,hand_L:100,hand_R:100,thigh_L:50,thigh_R:50,foot_L:50,foot_R:50};
-const J={};root.traverse(q=>{if(LIMB.includes(q.name)&&!J[q.name])J[q.name]=q;});
+const J={};root.traverse(q=>{if(LIMB.includes(q.name)&&!J[q.name])J[q.name]=q;});const CH=root.getObjectByName('chest');
+/* reversed elbow: the elbow's offset from the shoulder-hand line, in the chest's frame */
+const elbowBad=()=>{if(!CH||!J.upperArm_L||!J.foreArm_L)return null;root.updateMatrixWorld(true);const cq=CH.getWorldQuaternion(new THREE.Quaternion()).invert();let worst=null;
+  for(const[sd,sg]of[['L',1],['R',-1]]){const S=J['upperArm_'+sd].getWorldPosition(new THREE.Vector3()),E=J['foreArm_'+sd].getWorldPosition(new THREE.Vector3()),H=J['hand_'+sd].getWorldPosition(new THREE.Vector3());
+    if(H.y>S.y-.05)continue;const a=E.clone().sub(S),b=H.clone().sub(E);if(a.angleTo(b)*D<25)continue;const u=H.clone().sub(S).normalize(),p=a.sub(u.multiplyScalar(a.dot(u))).normalize().applyQuaternion(cq);
+    const up=p.y,inw=-sg*p.x;if(up>.55||inw>.35){const sc=Math.max(up-.55,inw-.35);if(!worst||sc>worst.sc)worst={sc,txt:`${sd} elbow ${up>.55?'up':'in'}`};}}return worst;};
 const highest=()=>{root.updateMatrixWorld(true);let y=-1e9;root.traverse(q=>{if(!q.isMesh||!q.visible)return;let p=q,s=1,gear=false;while(p){s*=Math.min(p.scale.x,p.scale.y,p.scale.z);if(p.userData.gear)gear=true;p=p.parent;}if(s<.01||gear)return;
   const g=q.geometry.parameters;if(!g||g.width===undefined)return;for(let i=0;i<8;i++){v.set((i&1?.5:-.5)*g.width,(i&2?.5:-.5)*g.height,(i&4?.5:-.5)*g.depth).applyMatrix4(q.matrixWorld);if(v.y>y)y=v.y;}});return y;};
 let lowWho='';const v=new THREE.Vector3(),lowest=()=>{root.updateMatrixWorld(true);let y=1e9,w='';root.traverse(q=>{if(!q.isMesh||!q.visible||q.userData.fx)return;let p=q,s=1;while(p){s*=Math.min(p.scale.x,p.scale.y,p.scale.z);p=p.parent;}if(s<.01)return;
@@ -31,12 +39,12 @@ let lowWho='';const v=new THREE.Vector3(),lowest=()=>{root.updateMatrixWorld(tru
   const g=q.geometry.parameters;if(!g||g.width===undefined)return;for(let i=0;i<8;i++){v.set((i&1?.5:-.5)*g.width,(i&2?.5:-.5)*g.height,(i&4?.5:-.5)*g.depth).applyMatrix4(q.matrixWorld);if(v.y<y){y=v.y;let p=q.parent;while(p&&!p.name)p=p.parent;w=p?p.name:'';}}});lowWho=w;return y;};
 const twist=q=>Math.abs(2*Math.atan2(q.y,q.w)*D),wrap=a=>a>180?360-a:a;
 let bad=0;console.log(`${id} ${optJ||''} seed ${seedS||A.defaultSeed||1}: ${root.userData.variantText||''}`);
-for(const c of root.userData.clips||[]){const a=mx.clipAction(c);a.play();const n=Math.max(2,Math.round(c.duration*60)),prev={};let lw='',jump=0,jw='',tw=0,twR=0,tww='',low=1e9,lt=0;
-  for(let i=0;i<=n;i++){a.time=i/n*c.duration;mx.update(0);root.userData.post&&root.userData.post();const y=lowest();if(y<low){low=y;lt=a.time;lw=lowWho;}
+for(const c of root.userData.clips||[]){const a=mx.clipAction(c);a.play();const n=Math.max(2,Math.round(c.duration*60)),prev={},eskip=/^(Death|Fall)/.test(c.name)||c.elbowFree;let ew='',lw='',jump=0,jw='',tw=0,twR=0,tww='',low=1e9,lt=0;
+  for(let i=0;i<=n;i++){a.time=i/n*c.duration;mx.update(0);root.userData.post&&root.userData.post();const y=lowest();if(!eskip&&!ew){const e=elbowBad();if(e)ew=`${e.txt} at ${a.time.toFixed(2)}s`;}if(y<low){low=y;lt=a.time;lw=lowWho;}
     for(const k in J){const q=J[k].quaternion.clone();if(prev[k]){const d=2*Math.acos(Math.min(1,Math.abs(prev[k].dot(q))))*D;if(d>jump){jump=d;jw=`${k} at ${a.time.toFixed(2)}s`;}}prev[k]=q;
       if(TW[k]){const t=wrap(twist(q));if(t/TW[k]>twR){twR=t/TW[k];tw=t;tww=`${k} at ${a.time.toFixed(2)}s`;}}}}
   const dead=/^(Death|Fall)/.test(c.name),pile=dead?highest():0;
   a.stop();mx.uncacheAction(c);
-  const twBad=twR>1,flags=[jump>25&&'JUMP',twBad&&'TWIST',low<-.005&&!c.underground&&'BELOW GROUND',pile>.55&&'PILE TOO HIGH'].filter(Boolean);if(flags.length)bad++;
-  console.log(`${flags.length?'!!':'ok'} ${c.name.padEnd(28)} jump ${jump.toFixed(0).padStart(3)}° (${jw})  twist ${tw.toFixed(0).padStart(3)}° (${tww})  low ${low.toFixed(3)} (${lw} at ${lt.toFixed(2)}s)${dead?'  pile '+pile.toFixed(2)+' m':''}${c.underground?'  (starts underground)':''} ${flags.join(' ')}`);}
+  const twBad=twR>1,flags=[jump>25&&'JUMP',twBad&&'TWIST',low<-.005&&!c.underground&&'BELOW GROUND',pile>.55&&'PILE TOO HIGH',ew&&'ELBOW'].filter(Boolean);if(flags.length)bad++;
+  console.log(`${flags.length?'!!':'ok'} ${c.name.padEnd(28)} jump ${jump.toFixed(0).padStart(3)}° (${jw})  twist ${tw.toFixed(0).padStart(3)}° (${tww})  low ${low.toFixed(3)} (${lw} at ${lt.toFixed(2)}s)${dead?'  pile '+pile.toFixed(2)+' m':''}${c.underground?'  (starts underground)':''}${ew?'  reversed '+ew:''} ${flags.join(' ')}`);}
 console.log(bad?`${bad} clip(s) flagged`:'all clips pass');process.exit(bad?1:0);

@@ -11,6 +11,8 @@ Code:
 | `src/items/gear_ground.js` | ground versions `gr-<slot>-<key>` (`grPiece`, `grBuild`), the Mercenary's full option list (`mcOptsAll`) |
 | `src/items/consumables.js` | potions `gr-potion-<brew>` (`poBuild`) and power-ups `gr-pu-<kind>` (`puBuild`) |
 
+Weapon builders end with `mcScabbard` or `mcFrog`; both now hang the weapon on the Mercenary's back (`mcBackHolder`, decision 2026-10-24: no scabbard on the hip).
+
 One builder per piece: the Mercenary wears it, and the ground asset runs the very same builder on a bare rest-pose rig (`mcJoints`, `mcMats`) and keeps its boxes. A new piece is one builder and one name; its ground asset appears by itself.
 
 ## Pieces

@@ -19,6 +19,21 @@ The checker samples every clip at 60 fps and flags:
 | BELOW GROUND | any box corner below the ground | −5 mm |
 | PILE TOO HIGH | Death/Fall clips: the body's highest point at the end (pieces resting in the air on other pieces) | 0.55 m |
 
+## Decision (2026-10-24): nothing reversed, checked by a tool, before reporting
+
+The owner found joints and parts set the wrong way round in some clips and assets, "like a ladder leaned towards the wall with its lower end
+touching the wall and its upper end in the air": elbows pointing up or into the body while the hand works low (Mercenary thrust, quick cast,
+last cut of the combo, draw). From now on:
+
+1. **Every clip and asset is checked for reversed parts before reporting.** For arms the checker does it: `tools/check-character.mjs` flags
+   **ELBOW** when, with the hand below its shoulder and the arm bent more than 25°, the elbow points up (more than 0.55 in the chest's frame)
+   or into the body (more than 0.35). Death…/Fall… clips (lying down) and clips with `clip.elbowFree` are skipped. Every clip must pass.
+2. Elbows point down and out when the hand is low, out or forward-up when it is raised (overhead, reaching over the shoulder). Knees point
+   where the foot points, and up when the foot is lifted high (kicks). Hands, weapons and shields face the way they act.
+3. The same look applies to anything that leans or hangs: ladders lean into what they climb, lids against their box, a scabbard hangs from its
+   top, straps run from the body to what they hold. Look for it in the contact sheets of every clip and in the asset views.
+4. When a solver chooses the elbow (Mercenary `mcArmR`), it carries the same rule as a cost, so the search never settles on a reversed elbow.
+
 ## How twists happen, and how to avoid them
 
 - **Don't aim a hand at a world direction.** Aiming a hand (`dR`, `dL`) is solved by rolling the hand about the forearm, and that roll is the twist. A free hand follows its forearm with small keyed wrist angles instead (ghoul `wr`, lich `wl`). A hand holding a prop is aimed only through the elbow: choose the elbow so that a straight wrist already points the prop where it should go (lich `pole()` with `wf`), and allow at most about 60° of roll.

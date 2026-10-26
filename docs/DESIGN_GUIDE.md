@@ -18,6 +18,7 @@ How assets in this library should look and behave. Most rules here come straight
 
 ## Forbidden and required
 - **No crosses**: not on banners, slits, emblems, icons, clock hands, finials or patterns. Use a diamond or blank placeholder on banners, plain vertical slits, and a gold ball on spires.
+- **Nothing reversed** (decision 2026-10-24): parts are never set the wrong way round, like a ladder leaned with its foot against the wall and its top in the air. Elbows point down and out under a working hand, knees point where the feet point, lids lean against their box, scabbards hang from their top, straps run from the body to what they hold. Check every asset and clip for it; for characters `tools/check-character.mjs` flags reversed elbows (see CHARACTER_CREATION.md).
 - **Nothing floating, nothing intersecting.** Check props, tools, signs, berries, fruit, leaves, scaffold rails, wheel axles (they need posts and bearings), ladders, lids and handles.
 - Ladders lean *into* what they climb. An open crate lid leans against the crate. Tools lean against walls or lie flat.
 - Containers that show contents are **hollow** (`hollow()` in items.js), and the contents sit below the rim.

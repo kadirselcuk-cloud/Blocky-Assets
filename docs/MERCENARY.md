@@ -33,7 +33,7 @@ Open it: `http://localhost:<port>/#/a/mercenary`
 | Protection effect, colour, strength | None, Armour glow, Ward bubble, Rune rings, Flame, Frost, Holy, Shadow, Storm, Poison; any spell colour; Faint to Blazing | Baked into every clip (docs/GEAR.md) |
 | Cloth colour | Natural, Red, Blue, Green, Black, Brown | Gambeson, linen shirt and cape; Natural keeps the undyed quilt and linen and a grey-brown cape |
 
-Male only. No "New look": the look is set by the options. Clips are cached per weapon and shield; Roll and Death are baked per weapon, shield, helmet, armour, long hair and cape (`mcDeath`), so he rolls over and lies on what he wears.
+Male only. No "New look": the look is set by the options. Clips are cached per weapon and shield; Death is baked per weapon, shield, helmet, armour, long hair and cape (`mcDeath`), so he lies on what he wears.
 
 Adding a gear piece: one entry in `MC_SLOTS` (name) and one builder in `MC_GEAR[slot][key]`, which gets the joints and the materials (gear_items.js). `buildMercenary` calls one builder per slot (`MC_ORDER`, then the head and the cape); the Gear folder gets the piece on the ground by itself.
 
@@ -47,7 +47,7 @@ Props: the weapon (always the group `mc_sword`, whatever it is) sits in the righ
 
 ## Animations
 
-43 clips with a weapon (39 without: no sheathe, draw or sheathed idle and walk). Combat clips start and end in the war-mode guard and set `clip.next = 'Idle (war mode)'`; walking clips store their ground speed in `clip.speed`; the turns store `clip.turn` (±90°) and the roll `clip.move` ([0, 1.4] m): in a game the root takes that turn or step at the end of the clip.
+43 clips with a weapon (39 without: no sheathe, draw or sheathed idle and walk). Combat clips start and end in the war-mode guard and set `clip.next = 'Idle (war mode)'`; walking clips store their ground speed in `clip.speed`; the turns store `clip.turn` (±90°) and Jump forward `clip.move` ([0, 1.2] m): in a game the root takes that turn or step at the end of the clip.
 
 | Clip | Length | Loop | What it does |
 |---|---|---|---|
@@ -60,15 +60,16 @@ Props: the weapon (always the group `mc_sword`, whatever it is) sits in the righ
 | Strafe left / right | 0.85 s | loop | Side steps behind the guard, about 0.75 m/s |
 | Dodge left / right / back | 0.9–0.95 s | once | Quick hop out of reach and back into the guard |
 | Jump | 1.3 s | once | Dip, spring with an arm swing, tuck, land on the balls of the feet |
+| Jump forward | 1.4 s | once | Takes off from both feet and lands 1.2 m further on (`clip.move`) |
 | Attack 1 | 1.0 s | once | Forehand slash: the weapon cocked back past the right shoulder, the arm sweeps out wide with the blade trailing, then it whips round in front, right to left, with a step in; the shield opens out of the way |
 | Attack 2 | 1.0 s | once | Backhand slash: up over the left shoulder, round in front, left to right; the shield held out wide |
 | Attack 3 | 1.05 s | once | Overhead chop: raised behind the head, brought straight down in front |
 | Attack 4 | 0.95 s | once | Lunging thrust |
 | Combo | 2.3 s | once | Forehand, backhand, overhead, stepping in |
 | Heavy attack | 1.8 s | once | Big wind-up over the right shoulder, a leap in and a diagonal cleave down to the left |
-| Spin attack | 1.45 s | once | Spins round once with the blade held out |
-| Shield bash | 1.0 s | once | Steps in and drives the shield forward |
-| Kick | 1.0 s | once | Front push kick with the rear leg |
+| Spin attack | 1.75 s | once | Spins round once to the left with the blade trailing out to the side, comes out of the turn with a forehand slash |
+| Shield bash | 1.1 s | once | Pulls the shield in to the chest, then lunges and punches it out at full reach |
+| Kick | 1.15 s | once | Hip kick: knee chambered to the chest, hips drive in, sole straight ahead at hip height, leaning back |
 | Block | 1.2 s | once | Shield up over the face, takes the blow, pushes back |
 | Blocking (hold) | 2.0 s | loop | Holds the shield up |
 | Cast spell 1 | 2.4 s | once | Sword straight up overhead (after the warrior's Cast spell), gathers, then points it at the target |
@@ -78,17 +79,16 @@ Props: the weapon (always the group `mc_sword`, whatever it is) sits in the righ
 | Channel spell | 2.0 s | loop | Holds the sword up overhead while a spell is kept going |
 | Hit 1 / Hit 2 | 0.7 / 0.75 s | once | Blow to the chest; blow from the left |
 | Heavy hit | 1.6 s | once | Knocked back two steps, steps in again |
-| Taunt | 2.4 s | once | Bangs the sword hilt on the shield twice, spreads the arms |
+| Taunt | 2.4 s | once | Bangs the sword hilt on the shield twice, then throws the arms wide |
 | Victory | 2.6 s | once | Raises the sword high and looks up |
 | Death | 2.6 s | once | Staggers, the knees go, falls on his back; sword and shield drop flat beside him |
-| Sheathe | 1.6 s | once | Reaches across to the left hip and slides the weapon into its holder (scabbard, or belt loop for mace and axe), then lets the arm hang |
-| Idle (weapon sheathed) | 4.0 s | loop | Relaxed with the weapon on the hip |
-| Walk (weapon sheathed) | 1.05 s | loop | Walking with the weapon on the hip, about 1.2 m/s |
-| Draw | 1.65 s | once | Grips the hilt at the left hip, pulls the weapon up along the holder and brings it into the guard |
+| Sheathe | 1.6 s | once | Reaches over the right shoulder and puts the weapon away on the back |
+| Idle (weapon sheathed) | 4.0 s | loop | Relaxed with the weapon on the back |
+| Walk (weapon sheathed) | 1.05 s | loop | Walking with the weapon on the back, about 1.2 m/s |
+| Draw | 1.45 s | once | Reaches over the right shoulder with the elbow up, pulls the weapon off the back and brings it over into the guard |
 | Pick up | 1.7 s | once | Squats and picks something up from the ground in front of the feet with the free right hand (weapon sheathed) |
 | Interact | 1.3 s | once | Reaches out and pushes: a door, a lever, a chest (weapon sheathed) |
 | Turn left / right (war mode) | 0.8 s | once | Turns 90° on the spot behind the shield, one foot then the other, the planted foot pivoting on its ball |
-| Roll | 1.4 s | once | Forward roll, shield at the left side, blade out to the side, up in the guard 1.4 m further on |
 
 Spell clips are gestures only; the effects come from the Spells & effects kit.
 
@@ -100,20 +100,18 @@ All in `mercenary.js`:
 2. **Keys** (`mcKeys`): each key starts from the one before (`'ST'` starts again from the stance); monotone cubic splines, flat at both ends. **Gaits** (`mcGait`): each foot slides back at the ground speed while planted (heel strike, flat, heel-off on the ball) and swings forward lifted; bob, sway, pelvis turn and arm swing on top.
 3. **Cuts** (`mcCut`): attacks 1–3, the combo and the heavy attack are arcs, not loose keys. Each cut has a swing plane (`dir(θ) = cos θ·A + sin θ·B`); θ eases from the wind-up to the follow-through, the hand runs round the right shoulder at nearly full reach (0.56 m) 35° ahead of the blade, the blade leans a little towards the arm line, and the torso turn and lean drive it. Before this, blade directions were interpolated straight between keys, so mid-swing the blade cut through "straight up" and the arm stayed folded against the chest; and a bent arm with the blade along the shoulder-to-hand line bends the blade past what a wrist can do, which flipped the wrist.
 4. **Solver** (`mcSolve`): two-bone leg IK (the hips drop when a leg can't reach; the hips' turn is kept within 40° of the planted feet, the spine takes the rest); left arm IK with its elbow hint; the sword arm searches the elbow circle for the elbow that lets a nearly neutral wrist point the blade (cost: wrist turn and bend, distance from the elbow opposite the blade, upper-arm twist, elbow inside the body; each frame stays within 20° of the last elbow), then the wrist bends the rest, clamped and rate-limited (21°/18° per frame) so fast cuts lag a little instead of flipping. Wrist targets are kept 0.36–0.585 m from the shoulder. The shield's face turns to `sn`, square to the forearm, top up. Props are lifted off the ground through their hand; dropped props fall flat and stay above the ground.
-5. **Weapon away** (channel `ws`): every weapon has a holder `mc_scab` on the left front of the belt, tilted hilt forward for a cross-draw: a scabbard for the sword and falchion, a belt loop for the mace and axe (hung head down). `userData.stow` is where the weapon sits in it; `ws` 0..1 blends the weapon from the fist into it, turning it onto the holder's axis early so it slides in straight. Sheathe and Draw get their hand targets from the rig: the wrist where the hilt sits in the holder, and half a blade length up its axis. Each frame the holder swings to the angle nearest its tilt (plus `ht`) that keeps it off the ground and clear of the left leg, arm and shield; lying down it lies flat.
+5. **Weapon away** (channel `ws`): every weapon hangs on the back (owner 2026-10-24: no scabbard on the hip): `mcBackHolder` (what `mcScabbard` and `mcFrog`, called by every weapon builder, now make) puts a holder `mc_scab` on the chest, diagonal, grip over the right shoulder, blade down to the left, the flat against the back or, with a cape, against the cape, held by a leather loop under the hilt. `userData.stow` is where the weapon sits in it; `ws` 0..1 blends the weapon from the fist into it, turning it onto the holder's axis early. Sheathe and Draw get their hand targets from the rig (the wrist where the grip sits on the back, and 0.2 m up its axis); the hand stays free (no blade aim) until it reaches the grip, so the empty hand never twists.
 6. **Cape** (`mcCape`): four panels, each hanging from the bottom of the one above in the chest's side plane; the angle springs towards hanging (plus drag from the gait speed, `capeDrag`) and is then moved, 5° at a time, to the nearest angle where its edge points clear every box of the body, weapon and shield and the ground. In the roll and once lying in Death (`capeFree`) only the ground counts; the dead body lies on the cape (3 cm up).
-7. **Roll**: `gc` 2 keeps the body touching the ground every frame (lowest corner at 0), `sc` 1 turns the shield with the chest, the legs tucked by FK (`fk`) and back to IK once upright.
+7. **Elbows** (decision 2026-10-24): the sword arm's elbow search pays a strong cost for an elbow pointing into the body anywhere, and for one pointing up while the hand is below the shoulder, the same rule `tools/check-character.mjs` checks (ELBOW). A foot lifted high turns the knee hint upwards (kicks).
 8. **Bake** (`mcBake`): 60 fps quaternion tracks for every joint, hips position, and position/rotation tracks for the weapon, the shield and the cape panels.
 
 ## Checks done
 
-- `node tools/check-character.mjs mercenary` for all 25 weapon × shield combinations and the bulky gear (great helm, coif, plate, long hair, full beard): all 34 clips pass.
+- `node tools/check-character.mjs mercenary` (with the ELBOW check) for all 25 weapon × shield combinations and the bulky gear (great helm, coif, plate, long hair, full beard): all 34 clips pass.
 - Intersection pass (scratch script) for all 25 weapon × shield combinations: blade and every shield box sampled against every body box, forearms and hands against torso, head and legs: none.
 - Viewer: Day, Dusk and Night; every clip from the front, both sides, three quarters and above; all gear and colour options.
 - `node tools/check-palette.mjs`: all colours within the tiers.
 - GLB export of the model with all 34 clips (about 8 MB).
-
-Known contact: while the right hand reaches across for the hilt (Sheathe and Draw) the forearm grazes the front of the belly, and the blade brushes the mail skirt as it goes into the scabbard, as it does when a real cross-draw scabbard hangs against the leg.
 
 ## Possible next steps
 
