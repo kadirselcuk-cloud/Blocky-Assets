@@ -107,6 +107,10 @@ img{max-width:100%;display:block}
 .v-hint{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);text-align:center;margin:0;color:#fff;font-size:.88rem;text-shadow:0 1px 3px rgba(0,0,0,.6);pointer-events:none;opacity:.85}
 #loading{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-family:var(--serif);font-size:1.3rem;text-shadow:0 1px 4px rgba(0,0,0,.5);pointer-events:none}
 [hidden]{display:none!important}
+/* loading progress: the library while the asset scripts load, the viewer while a scene builds */
+.boot{max-width:30rem;margin:0 0 40px}.boot p{margin:0 0 8px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:3px;background:var(--surface);overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .15s}
+#loading .ld{display:grid;gap:10px;justify-items:center;width:min(320px,80vw);font-variant-numeric:tabular-nums}#loading .bar{width:100%;background:rgba(255,255,255,.18)}
 
 /* dock: Animations, Options and Details share one window; the arrows in its header switch pages */
 .v-dock{right:16px;top:calc(env(safe-area-inset-top,0px) + 16px);width:264px;max-height:calc(100% - 120px);display:flex;flex-direction:column;padding:6px 8px 12px}
@@ -157,11 +161,11 @@ img{max-width:100%;display:block}
 <div id="library" class="shell">
   <header class="top"><a class="mark" href="#/">Asset Forge</a><nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
     <div class="search"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4.5 4.5"/></svg><input id="q" type="search" placeholder="Search assets and folders  ( / )" autocomplete="off" spellcheck="false" aria-label="Search assets" role="combobox" aria-controls="qres" aria-expanded="false"><ul class="sr" id="qres" role="listbox" hidden></ul></div></header>
-  <main id="app"></main>
+  <main id="app"><section class="intro"><h1>Asset library</h1><p>Each model is built in code and opens in a 3D viewer you can orbit, zoom and relight.</p></section><div class="boot"><p id="bootTxt">Loading assets… 0%</p><div class="bar"><i id="bootBar"></i></div></div></main>
 </div>
 <section id="viewer" hidden aria-label="3D viewer">
   <div id="stage"></div>
-  <div id="loading">Building model…</div>
+  <div id="loading"><div class="ld"><span id="ldTxt">Building model…</span><div class="bar" id="ldBarW" hidden><i id="ldBar"></i></div></div></div>
   <div class="v-panel v-head drag" id="vhead"><div class="search"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4.5 4.5"/></svg><input id="vq" type="search" placeholder="Search  ( / )" autocomplete="off" spellcheck="false" aria-label="Search assets" role="combobox" aria-controls="vqres" aria-expanded="false"><ul class="sr" id="vqres" role="listbox" hidden></ul></div><nav class="crumbs" id="vcrumbs" aria-label="Breadcrumb"></nav><h1 id="vname"></h1><p id="vdesc"></p><p id="vvar" hidden></p></div>
   <div class="v-panel v-dock" id="vdock">
     <div class="dock-head drag" id="dockHead">
@@ -196,9 +200,11 @@ img{max-width:100%;display:block}
 </section>
 <!--LOADER-->
 <script>
-/* Development loader: loads every script listed in src/manifest.json, in order. tools/build.mjs replaces this block with the inlined code. */
-(async()=>{const m=await (await fetch('src/manifest.json',{cache:'no-store'})).json();
-  for(const src of [...m.vendor,...m.library,...m.app])await new Promise((res,rej)=>{const s=document.createElement('script');s.src=src+'?v='+Date.now();s.async=false;s.onload=res;s.onerror=()=>{console.error('Failed to load '+src);rej(src);};document.body.appendChild(s);});})();
+/* Development loader: loads every script listed in src/manifest.json. tools/build.mjs replaces this block with the inlined code.
+   All scripts download in parallel (async=false keeps them running in manifest order); the library shows the percentage loaded. */
+(async()=>{const set=p=>{const t=document.getElementById('bootTxt'),b=document.getElementById('bootBar');if(t)t.textContent='Loading assets… '+p+'%';if(b)b.style.width=p+'%';};
+  const m=await (await fetch('src/manifest.json',{cache:'no-store'})).json(),list=[...m.vendor,...m.library,...m.app],v=Date.now();let done=0;
+  for(const src of list){const s=document.createElement('script');s.src=src+'?v='+v;s.async=false;s.onload=()=>set(Math.round(++done*100/list.length));s.onerror=()=>console.error('Failed to load '+src);document.body.appendChild(s);}})();
 </script>
 <!--/LOADER-->
 </body>

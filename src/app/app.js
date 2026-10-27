@@ -148,12 +148,18 @@ function setMode(m){V.mode=m;store.set('mode',m);if(V.scene)applyPreset(V.scene,
 function step(d){const sib=assetsIn(V.asset.folder,false),i=sib.indexOf(V.asset);V.asset=null;location.hash='#/a/'+sib[(i+d+sib.length)%sib.length].id;}
 function showAsset(id,vs){const a=ASSETS.find(x=>x.id===id);if(!a){location.hash='#/';return;}const sameAsset=V.asset&&(V.asset.id===a.id||V.asset.pair===a.id)&&!$('#viewer').hidden&&V.model,keep=sameAsset&&V.cur&&V.cur.getClip().loopMode?V.cur.getClip().name:'Idle';if(!sameAsset)V.tool='';const seedN=a.variants?(vs||a.defaultSeed):undefined;V.seed=seedN;
   $('#library').hidden=true;$('#viewer').hidden=false;document.title=a.name+' — Asset Forge';ensureViewer();resize();
-  $('#vcrumbs').innerHTML=crumbs(a.folder);$('#vname').textContent=a.name;$('#vdesc').textContent=a.desc;$('#vvar').hidden=true;$('#tVar').hidden=!a.variants;$('#tPair').hidden=!a.pair;if(a.pair)$('#tPair').textContent=a.folder.endsWith('blocky')?'Smooth version':'Blocky version';$('#vspecs').innerHTML='';$('#loading').hidden=false;
+  $('#vcrumbs').innerHTML=crumbs(a.folder);$('#vname').textContent=a.name;$('#vdesc').textContent=a.desc;$('#vvar').hidden=true;$('#tVar').hidden=!a.variants;$('#tPair').hidden=!a.pair;if(a.pair)$('#tPair').textContent=a.folder.endsWith('blocky')?'Smooth version':'Blocky version';$('#vspecs').innerHTML='';$('#loading').hidden=false;loadPct(a.kind==='scene'?0:null);
   const sib=assetsIn(a.folder,false);$('#vprev').hidden=$('#vnext').hidden=sib.length<2;
   V.asset=a;
   setTimeout(()=>{if(V.asset!==a)return;
-    if(V.model){disposeModel(V.model);}
-    const scene=new THREE.Scene(),model=buildAsset(a,seedN);scene.add(model);poseStill(model,'Idle',.6);const fr=frameOf(model),env=buildEnv(scene,fr,model.userData.ground??a.groundR,model.userData.groundKind);
+    const model=buildAsset(a,seedN),q=model.userData.later;
+    /* scenes queue their heavy characters: build every one of them first, showing the percentage, then show the scene */
+    if(q&&q.length){const n=q.length,next=()=>{if(V.asset!==a){disposeModel(model);return;}if(!q.length){showModel(a,model,seedN,sameAsset,keep);return;}q.shift()();loadPct(Math.round(10+90*(n-q.length)/n));setTimeout(next,0);};loadPct(10);setTimeout(next,0);}
+    else showModel(a,model,seedN,sameAsset,keep);
+  },30);}
+function loadPct(p){$('#ldTxt').textContent=p==null?'Building model…':'Loading scene… '+p+'%';$('#ldBarW').hidden=p==null;if(p!=null)$('#ldBar').style.width=p+'%';}
+function showModel(a,model,seedN,sameAsset,keep){
+    if(V.model)disposeModel(V.model);const scene=new THREE.Scene();scene.add(model);poseStill(model,'Idle',.6);const fr=frameOf(model),env=buildEnv(scene,fr,model.userData.ground??a.groundR,model.userData.groundKind);
     if(model.userData.variantText){$('#vvar').hidden=false;$('#vvar').innerHTML=`${a.variants?`<span>Look ${seedN}</span> `:''}${esc(model.userData.variantText)}`;}
     applyWire(false);Object.assign(V,{scene,model,env});applyWire();applyPreset(scene,env,model,V.mode,V.renderer);
     const ch=a.kind==='character',it=a.folder.startsWith('items')||a.folder.startsWith('spells'),scn=a.kind==='scene',r=Math.max(.6,fr.radius)/Math.sin(THREE.MathUtils.degToRad(19))*(ch?1.45:it?1.5:scn?.5:.82);V.ctl.minR=ch?.6:fr.radius*.35;V.ctl.maxR=env.GR*2.2;
@@ -163,7 +169,7 @@ function showAsset(id,vs){const a=ASSETS.find(x=>x.id===id);if(!a){location.hash
     setupAnim(model,keep);setupOpts(model,a);setDock();
     $('#loading').hidden=true;syncBar();
     if(!V.raf){let last=performance.now();const loop=t=>{V.raf=requestAnimationFrame(loop);const dt=Math.min(.05,(t-last)/1000);last=t;V.ctl.update(dt);if(V.env)followShadow(V.env,V.ctl);if(V.model&&V.model.userData.tick)V.model.userData.tick(dt,V.cam);if(V.mixer){V.mixer.update(dt*V.speed);V.model.userData.post&&V.model.userData.post();toolPost();}if(V.rig)updateRig();V.renderer.render(V.scene,V.cam);V.fpsN=(V.fpsN||0)+1;if(!V.fpsT0)V.fpsT0=t;if(t-V.fpsT0>=500){const e=document.getElementById('vfps');if(e)e.textContent=Math.round(V.fpsN*1000/(t-V.fpsT0));V.fpsN=0;V.fpsT0=t;}};V.raf=requestAnimationFrame(loop);}
-  },30);}
+}
 function applyWire(on=V.wire){if(!V.model)return;V.model.traverse(o=>{if(o.isMesh)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.wireframe=on);});}
 function closeViewer(){applyWire(false);$('#viewer').hidden=true;document.title='Asset Forge';if(V.raf){cancelAnimationFrame(V.raf);V.raf=0;}}
 
