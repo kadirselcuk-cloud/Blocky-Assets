@@ -8,7 +8,7 @@
    Pieces: btActor (mixer: one-shot clips hand back to the idle; walking, facing, knock-back), btFx (pooled fx- spell effects with their
    own lights removed, lit by a small pool of lights instead, so no shader recompiles when effects come and go), btParts (instanced
    particles: sparks, bone chips, dust, blood, necrotic motes, smoke), btDirector (coroutines: generators yield seconds or a condition). */
-const BT_LOOP=new Set(['Idle','Walk','Run','Idle (war mode)','Walk (war mode)','Run (war mode)','Walk back (war mode)','Strafe left','Strafe right','Blocking (hold)','Channel spell','Idle (weapon sheathed)','Walk (weapon sheathed)','Float','Float (war mode)']);
+const BT_LOOP=new Set(['Idle','Walk','Run','Idle (war mode)','Walk (war mode)','Run (war mode)','Walk back (war mode)','Strafe left','Strafe right','Blocking (hold)','Channel spell','Idle (weapon sheathed)','Walk (weapon sheathed)','Float','Float (war mode)','Hover','Fly','Fly (war mode)','Stalk']);
 function btActor(m,idle){const mx=new THREE.AnimationMixer(m),acts={};
   const A={m,mx,idle,cur:null,name:'',once:false,hold:false,end:0,next:null,mv:null,look:null,kb:null,turnK:5,dead:false};
   A.clip=n=>m.userData.clips.find(c=>c.name===n);
@@ -39,7 +39,7 @@ function btParts(par){const G=new THREE.BoxGeometry(1,1,1),K={},o3=new THREE.Obj
   const kind=(k,mat,n)=>{const im=new THREE.InstancedMesh(G,mat,n);im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);im.frustumCulled=false;im.count=0;im.castShadow=false;par.add(im);K[k]={im,n,list:[]};};
   kind('spark',new THREE.MeshBasicMaterial({color:0xfff0b8}),220);kind('green',new THREE.MeshBasicMaterial({color:0x8ff0b0}),320);
   kind('bone',new THREE.MeshLambertMaterial({color:0xd8cfb4}),160);kind('dust',new THREE.MeshLambertMaterial({color:0x8a8478,transparent:true,opacity:.5,depthWrite:false}),120);
-  kind('blood',new THREE.MeshLambertMaterial({color:0x7a1c1e}),80);kind('holy',new THREE.MeshBasicMaterial({color:0xffe28a}),260);kind('dirt',new THREE.MeshLambertMaterial({color:0x4a3a2a}),140);kind('ash',new THREE.MeshLambertMaterial({color:0x3c3a38,transparent:true,opacity:.6,depthWrite:false}),160);kind('smoke',new THREE.MeshLambertMaterial({color:0x26222c,transparent:true,opacity:.55,depthWrite:false}),160);
+  kind('blood',new THREE.MeshLambertMaterial({color:0x7a1c1e}),80);kind('holy',new THREE.MeshBasicMaterial({color:0xffe28a}),260);kind('dirt',new THREE.MeshLambertMaterial({color:0x4a3a2a}),140);kind('ash',new THREE.MeshLambertMaterial({color:0x3c3a38,transparent:true,opacity:.6,depthWrite:false}),160);kind('ember',new THREE.MeshBasicMaterial({color:0xffa040}),260);kind('frost',new THREE.MeshBasicMaterial({color:0xc4ecff}),260);kind('smoke',new THREE.MeshLambertMaterial({color:0x26222c,transparent:true,opacity:.55,depthWrite:false}),160);
   const rnd=()=>Math.random()*2-1;
   /* o: n, v (speed), dir (unit-ish), spread, g (gravity, negative rises), life, size, grow, drag, home (fn -> Vector3: homes in on it), R (spawn radius), ring (flat ring burst) */
   const emit=(k,p,o={})=>{const L=K[k];if(!L)return;const n=o.n||8;for(let i=0;i<n&&L.list.length<L.n;i++){const d=o.ring?new V3(rnd(),.15*Math.random(),rnd()):new V3(rnd(),rnd(),rnd());

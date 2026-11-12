@@ -93,6 +93,7 @@
     "src/scenes/scenes9.js",
     "src/scenes/scenes10.js",
     "src/scenes/scenes11.js",
+    "src/scenes/scenes12.js",
     "src/core/elbows.js",
     "src/export/export.js"
   ],
